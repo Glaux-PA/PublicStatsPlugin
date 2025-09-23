@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-11-27T16:21:26+00:00\n"
+"PO-Revision-Date: 2020-11-27T16:21:26+00:00\n"
+"Language: en_US"
+
+# Plugin information
+msgid "plugins.generic.publicStats.displayName"
+msgstr "Public Statistics"
+
+msgid "plugins.generic.publicStats.description"
+msgstr "Plugin to display public statistics for the journal."
+
+# Navigation menu
+msgid "manager.navigationMenus.statistics.description"
+msgstr "Link to the journal's public statistics page."
+
+msgid "manager.navigationMenus.statistics.conditionalWarning"
+msgstr "This link will only appear if the public statistics plugin is enabled."
+
+# Page content
+msgid "plugins.publicStats.title.key"
+msgstr "Public Statistics"
+
+msgid "plugins.publicStats.page.title"
+msgstr "Journal Statistics"
+
+msgid "plugins.publicStats.page.description"
+msgstr "View the public statistics and usage metrics for the journal."
+
+msgid "plugins.generic.publicStats.downloadsLast12Months"
+msgstr "Downloads (Last 12 months)"
+
+msgid "plugins.generic.publicStats.worldwideDistribution"
+msgstr "Worldwide Download Distribution"
+
+msgid "plugins.generic.publicStats.legend.moreThan1000"
+msgstr "More than 1000 downloads"
+
+msgid "plugins.generic.publicStats.legend.between500and1000"
+msgstr "500-1000 downloads"
+
+msgid "plugins.generic.publicStats.legend.between100and500"
+msgstr "100-500 downloads"
+
+msgid "plugins.generic.publicStats.legend.lessThan100"
+msgstr "Less than 100 downloads"
+
+msgid "plugins.generic.publicStats.mostDownloaded"
+msgstr "Most Downloaded Articles"
+
+msgid "plugins.generic.publicStats.articleTitle"
+msgstr "Article Title"
+
+msgid "plugins.generic.publicStats.downloads"
+msgstr "Downloads"

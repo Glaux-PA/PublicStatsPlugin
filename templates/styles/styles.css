@@ -1,0 +1,146 @@
+body {
+  background-color: #f4f7fa;
+}
+
+.stats-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 15px;
+}
+
+.page-header h1 {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+.stats-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.card-header h2 {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.map-legend {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  font-size: 0.85em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.card-body {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.stats-table th {
+  font-weight: 600;
+  color: #555;
+}
+
+.stats-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.stats-table td:last-child {
+  text-align: right;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Estilos para popups del mapa */
+.leaflet-popup-content {
+  font-family: Arial, sans-serif;
+}
+
+.country-popup {
+  text-align: center;
+  min-width: 120px;
+}
+
+.country-popup h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1em;
+}
+
+.country-popup .downloads {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #2c5aa0;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .map-legend {
+    font-size: 0.75em;
+    gap: 10px;
+  }
+
+  #worldMap {
+    height: 300px !important;
+  }
+}

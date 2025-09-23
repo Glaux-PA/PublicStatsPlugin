@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: Catalan\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-11-27T16:21:26+00:00\n"
+"PO-Revision-Date: 2020-11-27T16:21:26+00:00\n"
+"Language: ca"
+
+# Plugin information
+msgid "plugins.generic.publicStats.displayName"
+msgstr "Estadístiques públiques"
+
+msgid "plugins.generic.publicStats.description"
+msgstr "Connector per a mostrar les estadístiques públiques de la revista."
+
+# Navigation menu
+msgid "manager.navigationMenus.statistics.description"
+msgstr "Enllaç a les estadístiques públiques de la revista."
+
+msgid "manager.navigationMenus.statistics.conditionalWarning"
+msgstr "Aquest enllaç només apareixerà si el connector d'estadístiques està habilitat."
+
+# Page content
+msgid "plugins.publicStats.title.key"
+msgstr "Estadístiques públiques"
+
+msgid "plugins.publicStats.page.title"
+msgstr "Estadístiques de la revista"
+
+msgid "plugins.publicStats.page.description"
+msgstr "Visualitzeu les estadístiques públiques i les mètriques d'ús de la revista."
+
+# Template content
+msgid "plugins.generic.publicStats.downloadsLast12Months"
+msgstr "Descàrregues (Últims 12 mesos)"
+
+msgid "plugins.generic.publicStats.worldwideDistribution"
+msgstr "Distribució mundial de descàrregues"
+
+msgid "plugins.generic.publicStats.legend.moreThan1000"
+msgstr "Més de 1000 descàrregues"
+
+msgid "plugins.generic.publicStats.legend.between500and1000"
+msgstr "500-1000 descàrregues"
+
+msgid "plugins.generic.publicStats.legend.between100and500"
+msgstr "100-500 descàrregues"
+
+msgid "plugins.generic.publicStats.legend.lessThan100"
+msgstr "Menys de 100 descàrregues"
+
+msgid "plugins.generic.publicStats.mostDownloaded"
+msgstr "Articles més descarregats"
+
+msgid "plugins.generic.publicStats.articleTitle"
+msgstr "Títol de l'Article"
+
+msgid "plugins.generic.publicStats.downloads"
+msgstr "Descàrregues"
