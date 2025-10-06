@@ -1,298 +1,458 @@
 {**
  * templates/publicStats.tpl
- *
- * 
- * 
+ * Public Statistics Display Template
  *}
 {include file="frontend/components/header.tpl"}
 
-{* Chart.js *}
+{* External Dependencies *}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-
-{* Leaflet CSS y JS *}
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+{* Initialize data *}
+<script>
+    {literal}
+        var statsData = {
+            monthlyStats: {/literal}{$monthlyStats}{literal},
+            topArticlesByDownloads: {/literal}{$topDownloadedArticles}{literal},
+            topArticlesByViews: {/literal}{$topViewedArticles}{literal},
+            countryData: {/literal}{$countryData}{literal},
+            annualStats: {/literal}{$annualStats}{literal},
+            issueStats: {/literal}{$issueStats}{literal},
+            sectionStats: {/literal}{$sectionStats}{literal},
+            recentTopDownloaded: {/literal}{$recentTopDownloaded}{literal},
+            recentTopViewed: {/literal}{$recentTopViewed}{literal},
+            editorialStats: {/literal}{$editorialStats}{literal}
+        };
+    {/literal}
+</script>
+
 <div class="page page_statistics">
     <div class="container">
-        {include file="frontend/components/breadcrumbs.tpl" currentTitleKey="plugins.publicStats.title.key"}
-        <header class="page-header">
-            <h1>{translate key="plugins.generic.publicStats.displayName"}</h1>
-        </header>
 
-        <div class="stats-grid">
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading statistics...</p>
+        </div>
+        {* Sidebar Navigation *}
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Statistics</h1>
+            </div>
 
-            {* --- GRÁFICO DE TENDENCIA --- *}
-            <div class="stats-card">
-                <div class="card-header">
-                    <h2>{translate key="plugins.generic.publicStats.downloadsLast12Months"}</h2>
+            {* General Statistics Section *}
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <div class="section-title" onclick="toggleSection('general')">
+                        <span>📊 General Statistics</span>
+                        <span class="section-toggle">▼</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="monthlyDownloadsChart"></canvas>
+                <div class="section-content" id="general-content">
+                    <ul class="sidebar-menu">
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('monthly-trends')">Monthly Trends</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('annual-trends')">Annual Trends</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('general-downloads')">Contributions (Downloads)
+                            </div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('general-views')">Contributions (Views)</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('general-sections')">Sections</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('general-issues')">Issues</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('geographic-distribution')">Geographic
+                                distribution</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {* Editorial Statistics Section *}
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <div class="section-title" onclick="toggleSection('editorial')">
+                        <span>📝 Editorial Statistics</span>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                </div>
+                <div class="section-content section-collapsed" id="editorial-content">
+                    <ul class="sidebar-menu">
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('editorial-submissions')">Monthly contributions
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {* Article Reach Section *}
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <div class="section-title" onclick="toggleSection('reach')">
+                        <span>🌍 Article Reach</span>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                </div>
+                <div class="section-content section-collapsed" id="reach-content">
+                    <ul class="sidebar-menu">
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('recent-downloads')">Most Downloaded (60 days)
+                            </div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" onclick="showSection('recent-views')">Most Viewed (60 days)</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {* Main Content Area *}
+        <div class="main-content">
+            {* Year Selector *}
+            <div class="year-selector-container">
+                <label for="yearSelector">Select Year:</label>
+                <select id="yearSelector" onchange="changeYear(this.value)">
+                    <option value="">All Time</option>
+                    {foreach from=$availableYears item=year}
+                        <option value="{$year}" {if $selectedYear == $year}selected{/if}>{$year}</option>
+                    {/foreach}
+                </select>
+            </div>
+
+            {* Monthly Trends Section *}
+            <div id="monthly-trends" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Monthly overview{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Downloads and views over the year</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Activity</h2>
+                            <button onclick="resetChartZoom('monthlyStatsChart')" class="reset-zoom-btn">Reset
+                                Zoom</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="monthlyStatsChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {* --- MAPA MUNDIAL --- *}
-            <div class="stats-card">
-                <div class="card-header">
-                    <h2>{translate key="plugins.generic.publicStats.worldwideDistribution"}</h2>
-                    <div class="map-legend">
-                        <span class="legend-item">
-                            <div class="legend-color" style="background: #ff6b6b;"></div>
-                            <span>{translate key="plugins.generic.publicStats.legend.moreThan1000"}</span>
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-color" style="background: #4ecdc4;"></div>
-                            <span>{translate key="plugins.generic.publicStats.legend.between500and1000"}</span>
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-color" style="background: #45b7d1;"></div>
-                            <span>{translate key="plugins.generic.publicStats.legend.between100and500"}</span>
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-color" style="background: #96ceb4;"></div>
-                            <span>{translate key="plugins.generic.publicStats.legend.lessThan100"}</span>
-                        </span>
-                    </div>
+            {* Annual Trends Section *}
+            <div id="annual-trends" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Annual overview</h1>
+                    <p class="content-subtitle">Yearly downloads and views since journal inception</p>
                 </div>
-                <div class="card-body">
-                    <div id="worldMap" style="height: 450px; width: 100%;"></div>
-                </div>
-            </div>
-
-            {* --- TABLA DE TOP 10 ARTÍCULOS --- *}
-            <div class="stats-card">
-                <div class="card-header">
-                    <h2>{translate key="plugins.generic.publicStats.mostDownloaded"}</h2>
-                </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>{translate key="plugins.generic.publicStats.articleTitle"}</th>
-                                    <th>{translate key="plugins.generic.publicStats.downloads"}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="topArticlesTableBody">
-                            </tbody>
-                        </table>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Annual activity</h2>
+                            <button onclick="resetChartZoom('annualStatsChart')" class="reset-zoom-btn">Reset
+                                Zoom</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="annualStatsChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            {* Geographic Distribution Section *}
+            <div id="geographic-distribution" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Geographic distribution</h1>
+                    <p class="content-subtitle">Worldwide distribution of article access</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">World access map</h2>
+                            <div class="map-legend">
+                                <span class="legend-item">
+                                    <div class="legend-color" style="background: #ff6b6b;"></div>
+                                    <span>Over 1000</span>
+                                </span>
+                                <span class="legend-item">
+                                    <div class="legend-color" style="background: #4ecdc4;"></div>
+                                    <span>500-1000</span>
+                                </span>
+                                <span class="legend-item">
+                                    <div class="legend-color" style="background: #45b7d1;"></div>
+                                    <span>100-500</span>
+                                </span>
+                                <span class="legend-item">
+                                    <div class="legend-color" style="background: #96ceb4;"></div>
+                                    <span>Under 100</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="worldMap" class="map-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Top Downloaded Articles Section *}
+            <div id="general-downloads" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Most downloaded articles{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Ranking of articles by download count</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Top articles by downloads</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ARTICLE TITLE</th>
+                                            <th>DOWNLOADS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topArticlesByDownloadsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Top Viewed Articles Section *}
+            <div id="general-views" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Most viewed articles{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Ranking of articles by view count</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Top articles by views</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ARTICLE TITLE</th>
+                                            <th>VIEWS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topArticlesByViewsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Issues Section *}
+            <div id="general-issues" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Downloads by Issue{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Distribution of downloads across journal issues</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Issue distribution</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="issueStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Downloads by issue{if $selectedYear} ({$selectedYear}){/if}</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;"></th>
+                                            <th>ISSUE</th>
+                                            <th>VIEWS</th>
+                                            <th>ARTICLES</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="issueStatsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Sections Section *}
+            <div id="general-sections" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Downloads by section{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Distribution of downloads across journal sections</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Section distribution</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="sectionStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Downloads by section</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;"></th>
+                                            <th>SECTION</th>
+                                            <th>DOWNLOADS</th>
+                                            <th>ARTICLES</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sectionStatsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Editorial Submissions Section *}
+            <div id="editorial-submissions" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Submissions Overview{if $selectedYear} ({$selectedYear}){/if}</h1>
+                    <p class="content-subtitle">Monthly tracking of received, declined, published, and in-process
+                        submissions</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Submission Activity</h2>
+                            <button onclick="resetChartZoom('editorialStatsChart')" class="reset-zoom-btn">Reset
+                                Zoom</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="editorialStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    {* Summary of totals *}
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="editorialSummary"
+                                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                                {* Populated by JavaScript *}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Recent Top Downloaded Articles Section *}
+            <div id="recent-downloads" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Most downloaded articles (Last 60 days)</h1>
+                    <p class="content-subtitle">Ranking of articles by download count in the last 60 days</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Top articles by recent downloads</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ARTICLE TITLE</th>
+                                            <th>DOWNLOADS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentTopDownloadsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Recent Top Viewed Articles Section *}
+            <div id="recent-views" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Most viewed articles (Last 60 days)</h1>
+                    <p class="content-subtitle">Ranking of articles by view count in the last 60 days</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Top articles by recent views</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ARTICLE TITLE</th>
+                                            <th>VIEWS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentTopViewsTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script>
-    {literal}
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const topArticlesData = {/literal}{$topArticlesData}{literal};
-            const monthlyDownloadsData = {/literal}{$monthlyDownloadsData}{literal};
-            const countryDownloadsData = {/literal}{$countryDownloadsData}{literal};
-
-            // --- POBLAR LA TABLA ---
-            if (topArticlesData && topArticlesData.length > 0) {
-                const tableBody = document.getElementById('topArticlesTableBody');
-                topArticlesData.forEach(item => {
-                    let row = tableBody.insertRow();
-                    row.insertCell(0).innerHTML = item.title;
-                    row.insertCell(1).innerHTML = item.total_downloads;
-                });
-            }
-
-            // --- CREAR EL GRÁFICO DE LÍNEAS ---
-            if (monthlyDownloadsData && monthlyDownloadsData.length > 0) {
-                const monthlyDownloadsCtx = document.getElementById('monthlyDownloadsChart').getContext('2d');
-                new Chart(monthlyDownloadsCtx, {
-                    type: 'line',
-                    data: {
-                        labels: monthlyDownloadsData.map(item => item.month_name),
-                        datasets: [{
-                            label: 'Total Descargas',
-                            data: monthlyDownloadsData.map(item => item.total_downloads),
-                            fill: true,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true }
-                        },
-                        plugins: {
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-
-            // --- CREAR EL MAPA MUNDIAL CON LEAFLET ---
-            if (countryDownloadsData && countryDownloadsData.length > 0) {
-                const map = L.map('worldMap', {
-                    center: [20, 0],
-                    zoom: 2,
-                    zoomControl: true,
-                    scrollWheelZoom: true
-                });
-
-                L.tileLayer('https://{/literal}{ldelim}s{rdelim}{literal}.tile.openstreetmap.org/{/literal}{ldelim}z{rdelim}{literal}/{/literal}{ldelim}x{rdelim}{literal}/{/literal}{ldelim}y{rdelim}{literal}.png', {
-                attribution: '© OpenStreetMap contributors',
-                    maxZoom: 18
-            }).addTo(map);
-
-        const countryCoordinates = {
-            'US': [39.8283, -98.5795],
-            'ES': [40.4637, -3.7492],
-            'MX': [23.6345, -102.5528],
-            'AR': [-38.4161, -63.6167],
-            'CO': [4.5709, -74.2973],
-            'CL': [-35.6751, -71.5430],
-            'PE': [-9.1900, -75.0152],
-            'BR': [-14.2350, -51.9253],
-            'CA': [56.1304, -106.3468],
-            'GB': [55.3781, -3.4360],
-            'DE': [51.1657, 10.4515],
-            'FR': [46.6034, 1.8883],
-            'IT': [41.8719, 12.5674],
-            'PT': [39.3999, -8.2245],
-            'NL': [52.1326, 5.2913],
-            'BE': [50.5039, 4.4699],
-            'AU': [-25.2744, 133.7751],
-            'JP': [36.2048, 138.2529],
-            'CN': [35.8617, 104.1954],
-            'IN': [20.5937, 78.9629],
-            'RU': [61.5240, 105.3188],
-            'ZA': [-30.5595, 22.9375],
-            'TR': [38.9637, 35.2433],
-            'GR': [39.0742, 21.8243],
-            'PL': [51.9194, 19.1451],
-            'SE': [60.1282, 18.6435],
-            'NO': [60.4720, 8.4689],
-            'DK': [56.2639, 9.5018],
-            'FI': [61.9241, 25.7482],
-            'CH': [46.8182, 8.2275],
-            'AT': [47.5162, 14.5501],
-            'CZ': [49.8175, 15.4730],
-            'HU': [47.1625, 19.5033],
-            'RO': [45.9432, 24.9668],
-            'BG': [42.7339, 25.4858],
-            'HR': [45.1000, 15.2000],
-            'RS': [44.0165, 21.0059],
-            'UA': [48.3794, 31.1656],
-            'BY': [53.7098, 27.9534],
-            'LT': [55.1694, 23.8813],
-            'LV': [56.8796, 24.6032],
-            'EE': [58.5953, 25.0136],
-            'SI': [46.1512, 14.9955],
-            'SK': [48.6690, 19.6990],
-            'IE': [53.4129, -8.2439],
-            'IS': [64.9631, -19.0208],
-            'MT': [35.9375, 14.3754],
-            'CY': [35.1264, 33.4299],
-            'IL': [31.0461, 34.8516],
-            'EG': [26.0975, 30.0444],
-            'MA': [31.7917, -7.0926],
-            'DZ': [28.0339, 1.6596],
-            'TN': [33.8869, 9.5375],
-            'LY': [26.3351, 17.2283],
-            'NG': [9.0820, 8.6753],
-            'KE': [-0.0236, 37.9062],
-            'GH': [7.9465, -1.0232],
-            'KR': [35.9078, 127.7669],
-            'TH': [15.8700, 100.9925],
-            'VN': [14.0583, 108.2772],
-            'PH': [12.8797, 121.7740],
-            'ID': [-0.7893, 113.9213],
-            'MY': [4.2105, 101.9758],
-            'SG': [1.3521, 103.8198],
-            'NZ': [-40.9006, 174.8860],
-            'EC': [-1.8312, -78.1834],
-            'VE': [6.4238, -66.5897],
-            'UY': [-32.5228, -55.7658],
-            'PY': [-23.4425, -58.4438],
-            'BO': [-16.2902, -63.5887],
-            'CR': [9.7489, -83.7534],
-            'PA': [8.5380, -80.7821],
-            'GT': [15.7835, -90.2308],
-            'HN': [15.2000, -86.2419],
-            'NI': [12.2658, -85.2072],
-            'SV': [13.7942, -88.8965],
-            'DO': [18.7357, -70.1627],
-            'CU': [21.5218, -77.7812],
-            'JM': [18.1096, -77.2975],
-            'HT': [18.9712, -72.2852],
-            'PR': [18.2208, -66.5901]
-        };
-        // Función para determinar color según las descargas
-        function getCircleColor(downloads) {
-            if (downloads >= 1000) return '#ff6b6b';
-            if (downloads >= 500) return '#4ecdc4';
-            if (downloads >= 100) return '#45b7d1';
-            return '#96ceb4';
-        }
-
-        // Función para determinar tamaño del círculo según las descargas
-        function getCircleSize(downloads) {
-            const minSize = 8;
-            const maxSize = 30;
-            const maxDownloads = Math.max(...countryDownloadsData.map(c => c.total_downloads));
-            const normalizedSize = (downloads / maxDownloads) * (maxSize - minSize) + minSize;
-            return Math.max(minSize, Math.min(maxSize, normalizedSize));
-        }
-
-        // Agregar círculos para cada país con datos
-        countryDownloadsData.forEach(country => {
-            const coordinates = countryCoordinates[country.country_code];
-
-            if (coordinates) {
-                const circleSize = getCircleSize(country.total_downloads);
-                const circleColor = getCircleColor(country.total_downloads);
-
-                L.circleMarker(coordinates, {
-                        radius: circleSize,
-                        fillColor: circleColor,
-                        color: '#fff',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.7
-                    })
-                    .bindPopup(`
-                        <div class="country-popup">
-<h3>${country.country_name}</h3>
-<div class="downloads">${country.total_downloads.toLocaleString()}</div>
-                            <div>descargas</div>
-                        </div>
-                    `)
-                    .addTo(map);
-            }
-        });
-
-        // Ajustar vista del mapa para mostrar todos los marcadores
-        setTimeout(() => {
-            const group = new L.featureGroup();
-            countryDownloadsData.forEach(country => {
-                const coordinates = countryCoordinates[country.country_name];
-                if (coordinates) {
-                    group.addLayer(L.marker(coordinates));
-                }
-            });
-            if (group.getLayers().length > 0) {
-                map.fitBounds(group.getBounds().pad(0.1));
-            }
-        }, 100);
-        }
-
-        });
-    {/literal}
-</script>
 
 {include file="frontend/components/footer.tpl"}

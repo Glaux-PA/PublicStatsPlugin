@@ -5,13 +5,17 @@ use APP\handler\Handler;
 use APP\template\TemplateManager;
 use APP\core\Services;
 use APP\statistics\StatisticsHelper;
-use PKP\db\DAORegistry;
+use APP\core\Application;
 use PKP\plugins\PluginRegistry;
-use Sokil\IsoCodes\IsoCodesFactory;
+use APP\facades\Repo;
+use APP\plugins\generic\publicStats\classes\StatisticsAggregator;
+use APP\plugins\generic\publicStats\classes\CountryDataFormatter;
+use APP\plugins\generic\publicStats\classes\ArticleStatsRetriever;
 
 class PublicStatisticsHandler extends Handler
 {
     private $plugin;
+    private const MIN_YEAR = '2015';
 
     public function __construct()
     {
@@ -19,197 +23,296 @@ class PublicStatisticsHandler extends Handler
         $this->plugin = PluginRegistry::getPlugin('generic', 'publicstatsplugin');
     }
 
+    /**
+     * Main handler for displaying statistics page
+     */
     public function total(array $args, $request)
     {
         $templateMgr = TemplateManager::getManager($request);
         $context = $request->getContext();
         $contextId = $context->getId();
-        $primaryLocale = $context->getPrimaryLocale();
 
-        $siteDao = DAORegistry::getDAO('SiteDAO');
+        $selectedYear = $request->getUserVar('year');
+        $dateRanges = $this->calculateDateRanges($selectedYear);
 
-        // --- OBTENER TOP 10 ARTÍCULOS MÁS DESCARGADOS ---
-        $topArticlesQuery = '
-            SELECT 
-                s.submission_id,
-                COALESCE(
-                    MAX(CASE WHEN ps.locale = ? THEN ps.setting_value END),
-                    MAX(ps.setting_value),
-                    CONCAT("Artículo ", s.submission_id)
-                ) as title,
-                SUM(m.metric_requests) as total_downloads
-            FROM metrics_counter_submission_monthly as m
-            JOIN submissions as s ON m.submission_id = s.submission_id
-            JOIN publications as p ON s.current_publication_id = p.publication_id
-            LEFT JOIN publication_settings as ps ON p.publication_id = ps.publication_id 
-                AND ps.setting_name = "title" 
-                AND ps.setting_value IS NOT NULL 
-                AND ps.setting_value != ""
-            WHERE m.context_id = ?
-            GROUP BY s.submission_id, p.publication_id
-            ORDER BY total_downloads DESC
-            LIMIT 10';
+        $statsData = $this->gatherStatisticsData($request, $contextId, $dateRanges);
 
-        $result = $siteDao->retrieve($topArticlesQuery, [$primaryLocale, $contextId]);
-         
-        $topArticlesData = [];
-        
-        foreach ($result as $row) {
-            $topArticlesData[] = [
-                'title' => $row->title,
-                'total_downloads' => (int) $row->total_downloads,
-            ];
-        }
-
-        // --- OBTENER DESCARGAS MENSUALES ---
-        $endDate = date('Ym');
-        $startDate = date('Ym', strtotime('-11 months'));
-
-        $monthlyDownloadsQuery = '
-            SELECT month, SUM(metric_requests) as total_downloads
-            FROM metrics_counter_submission_monthly
-            WHERE context_id = ? AND month BETWEEN ? AND ?
-            GROUP BY month
-            ORDER BY month ASC';
-            
-        $result = $siteDao->retrieve($monthlyDownloadsQuery, [$contextId, $startDate, $endDate]);
-
-        $monthlyDownloadsData = [];
-        foreach ($result as $row) {
-            $year = substr($row->month, 0, 4);
-            $monthNum = substr($row->month, 4, 2);
-            $dateObj = \DateTime::createFromFormat('!m', $monthNum);
-            $monthName = $dateObj->format('M');
-            $monthlyDownloadsData[] = [
-                'month_name' => $monthName . ' ' . $year,
-                'total_downloads' => (int) $row->total_downloads,
-            ];
-        }
-
-        // --- OBTENER DESCARGAS POR PAÍS USANDO EL SERVICIO GEOSTATS ---
-        $countryDownloadsData = $this->getCountryDataUsingGeoStats($contextId);
-       
         $templateMgr->assign([
-            'pageTitle' => 'Estadísticas Públicas',
-            'topArticlesData' => json_encode($topArticlesData),
-            'monthlyDownloadsData' => json_encode($monthlyDownloadsData),
-            'countryDownloadsData' => json_encode($countryDownloadsData),
+            'pageTitle' => 'Public Statistics',
+            'topDownloadedArticles' => json_encode($statsData['topDownloadedArticles']),
+            'topViewedArticles' => json_encode($statsData['topViewedArticles']),
+            'monthlyStats' => json_encode($statsData['monthlyStats']),
+            'annualStats' => json_encode($statsData['annualStats']),
+            'countryData' => json_encode($statsData['countryData']),
+            'issueStats' => json_encode($statsData['issueStats']),
+            'sectionStats' => json_encode($statsData['sectionStats']),
+            'recentTopDownloaded' => json_encode($statsData['recentTopDownloaded']),
+            'recentTopViewed' => json_encode($statsData['recentTopViewed']),
+            'editorialStats' => json_encode($statsData['editorialStats']), 
+            'availableYears' => $this->getAvailableYears(),
+            'selectedYear' => $selectedYear,
         ]);
 
-            $templateMgr->addJavaScript(
-        'publicStatsScript', 
-        $request->getBaseUrl() . '/' . $this->plugin->getPluginPath() . '/js/script.js',
-        ['contexts' => 'frontend']
-    );
-        $templateMgr->addStyleSheet(
-        'publicStatsStyles', 
-        $request->getBaseUrl() . '/' . $this->plugin->getPluginPath() . '/templates/styles/styles.css',
-        ['contexts' => 'frontend']
-    );
+        $this->addStylesAndScripts($templateMgr, $request);
 
         return $templateMgr->display($this->plugin->getTemplateResource('publicStats.tpl'));
     }
 
-   
-    private function getCountryDataUsingGeoStats($contextId): array
+    /**
+     * Calculate date ranges based on selected year
+     */
+    private function calculateDateRanges($selectedYear): array
     {
-        try {
-            $geoStatsService = Services::get('geoStats');
-            
-            $args = [
-                'contextIds' => [$contextId],
-                'dateStart' => StatisticsHelper::STATISTICS_EARLIEST_DATE,
-                'dateEnd' => date('Y-m-d', strtotime('yesterday')),
-                'orderDirection' => StatisticsHelper::STATISTICS_ORDER_DESC,
-                'count' => 50,
-                'offset' => 0
+        if ($selectedYear) {
+            return [
+                'dateStart' => $selectedYear . '0101',
+                'dateEnd' => $selectedYear . '1231'
             ];
-
-    
-            $totalCountries = $geoStatsService->getCount($args, StatisticsHelper::STATISTICS_DIMENSION_COUNTRY);
-            
-            if ($totalCountries == 0) {
-                error_log("No hay datos geográficos disponibles para el contexto: " . $contextId);
-                return $this->generateSampleGeoData();
-            }
-
-            $countriesData = $geoStatsService->getTotals($args, StatisticsHelper::STATISTICS_DIMENSION_COUNTRY);
-            $countryDownloadsData = [];
-            $isoCodes = app(IsoCodesFactory::class);
-            
-            foreach ($countriesData as $total) {
-                if (!empty($total->country)) {
-                    try {
-                        $country = $isoCodes->getCountries()->getByAlpha2($total->country);
-                        $countryName = $country ? $country->getLocalName() : $total->country;
-              
-                        $countryDownloadsData[] = [
-                            'country_code' => $total->country,
-                            'country_name' => $countryName,
-                            'total_downloads' => (int) $total->metric,
-                            'unique_downloads' => (int) ($total->metric_unique ?? 0),
-                        ];
-
-                       
-
-                    } catch (\Exception $e) {
-                        if (strlen($total->country) == 2) {
-                            $countryDownloadsData[] = [
-                                'country_code' => $total->country,
-                                'country_name' => $total->country,
-                                'total_downloads' => (int) $total->metric,
-                                'unique_downloads' => (int) ($total->metric_unique ?? 0),
-                            ];
-       
-                        }
-                    }
-                }
-            }
-
-            error_log("Datos obtenidos del servicio geoStats: " . count($countryDownloadsData) . " países");
-            
-            if (empty($countryDownloadsData)) {
-                error_log("No se pudieron procesar los datos geográficos, usando fallback");
-                return $this->generateSampleGeoData();
-            }
-
-            return $countryDownloadsData;
-            
-        } catch (\Exception $e) {
-            error_log("Error completo obteniendo datos geográficos: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return $this->generateSampleGeoData();
         }
+
+        return [
+            'dateStart' => self::MIN_YEAR . '0101',
+            'dateEnd' => null
+        ];
     }
 
-    public function getCountryData(array $args, $request)
+    /**
+     * Gather all statistics data
+     */
+    private function gatherStatisticsData($request, $contextId, $dateRanges): array
+    {
+        return [
+            'topDownloadedArticles' => ArticleStatsRetriever::getTopDownloadedArticles(
+                $request, $contextId, 20, $dateRanges['dateStart'], $dateRanges['dateEnd']
+            ),
+            'topViewedArticles' => ArticleStatsRetriever::getTopViewedArticles(
+                $request, $contextId, 20, $dateRanges['dateStart'], $dateRanges['dateEnd']
+            ),
+            'monthlyStats' => StatisticsAggregator::getMonthlyStats(
+                $contextId, $dateRanges['dateStart'], $dateRanges['dateEnd']
+            ),
+            'annualStats' => StatisticsAggregator::getAnnualStats($contextId),
+            'countryData' => CountryDataFormatter::getCountryStatistics($contextId),
+            'issueStats' => $this->getIssueStats($request, $dateRanges['dateStart'], $dateRanges['dateEnd']),
+            'sectionStats' => $this->getSectionStatsDetailed($request, $contextId, $dateRanges['dateStart'], $dateRanges['dateEnd']),
+            'recentTopDownloaded' => ArticleStatsRetriever::getRecentTopDownloadedArticles($request, $contextId, 20),
+            'recentTopViewed' => ArticleStatsRetriever::getRecentTopViewedArticles($request, $contextId, 20),
+            'editorialStats' => $this->getEditorialStats($request, $dateRanges['dateStart'], $dateRanges['dateEnd']), // NUEVO
+        ];
+    }
+    /**
+     * Get available years for selector
+     */
+    private function getAvailableYears(): array
+    {
+        $currentYear = (int)date('Y');
+        return range($currentYear, self::MIN_YEAR);
+    }
+
+    /**
+     * Add styles and scripts to template
+     */
+    private function addStylesAndScripts($templateMgr, $request): void
+    {
+        $baseUrl = $request->getBaseUrl() . '/' . $this->plugin->getPluginPath();
+        
+        $templateMgr->addJavaScript(
+            'publicStatsScript', 
+            $baseUrl . '/templates/js/statistics.js',
+            ['contexts' => 'frontend']
+        );
+        
+        $templateMgr->addStyleSheet(
+            'publicStatsStyles', 
+            $baseUrl . '/templates/styles/styles.css',
+            ['contexts' => 'frontend']
+        );
+    }
+
+    /**
+     * Get issue statistics
+     */
+    public function getIssueStats($request, $dateStart = null, $dateEnd = null): array 
+    {
+        $statsService = Services::get('issueStats');
+        $context = $request->getContext();
+        $contextId = $context->getId();
+
+        $params = [
+            'contextIds' => [$contextId],
+            'dateStart' => $dateStart ?? StatisticsHelper::STATISTICS_EARLIEST_DATE,
+            'dateEnd' => $dateEnd ?? date('Ymd', strtotime('yesterday')),
+            'orderBy' => 'total',
+            'orderDirection' => 'DESC'
+        ];
+
+        $records = $statsService->getTotals($params);
+        $results = [];
+
+        foreach ($records as $record) {
+            if (!isset($record->issue_id)) {
+                continue;
+            }
+
+            $issue = Repo::issue()->get($record->issue_id);
+            
+            if (!$issue || $issue->getData('journalId') != $contextId) {
+                continue;
+            }
+
+            $articleCount = Repo::submission()
+                ->getCollector()
+                ->filterByContextIds([$contextId])
+                ->filterByIssueIds([$issue->getId()])
+                ->filterByStatus([STATUS_PUBLISHED])
+                ->getCount();
+
+            $results[] = [
+                'issueId' => $issue->getId(),
+                'title' => $issue->getIssueIdentification(),
+                'downloads' => $record->metric ?? 0,
+                'articleCount' => $articleCount
+            ];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get statistics by section with views and downloads
+     */
+    public function getSectionStatsDetailed($request, $contextId, $dateStart = null, $dateEnd = null): array 
+    {
+        $statsService = Services::get('publicationStats');
+
+        $baseParams = [
+            'contextIds' => [$contextId],
+            'dateStart' => $dateStart ?? StatisticsHelper::STATISTICS_EARLIEST_DATE,
+            'dateEnd' => $dateEnd ?? date('Ymd', strtotime('yesterday'))
+        ];
+
+        $downloadParams = array_merge($baseParams, [
+            'assocTypes' => [Application::ASSOC_TYPE_SUBMISSION_FILE]
+        ]);
+        $downloadRecords = $statsService->getTotals($downloadParams);
+
+        $viewParams = array_merge($baseParams, [
+            'assocTypes' => [Application::ASSOC_TYPE_SUBMISSION]
+        ]);
+        $viewRecords = $statsService->getTotals($viewParams);
+
+        $sectionStats = StatisticsAggregator::aggregateBySection($downloadRecords, $contextId, 'downloads');
+        $viewsBySection = StatisticsAggregator::aggregateBySection($viewRecords, $contextId, 'views');
+
+        foreach ($viewsBySection as $sectionId => $data) {
+            if (isset($sectionStats[$sectionId])) {
+                $sectionStats[$sectionId]['views'] = $data['views'];
+            } else {
+                $sectionStats[$sectionId] = $data;
+                $sectionStats[$sectionId]['downloads'] = 0;
+            }
+        }
+
+        foreach ($sectionStats as $sectionId => &$stats) {
+            if (!isset($stats['views'])) {
+                $stats['views'] = 0;
+            }
+            $stats['total'] = $stats['downloads'] + $stats['views'];
+        }
+
+        $results = array_values($sectionStats);
+        usort($results, function($a, $b) {
+            return $b['total'] - $a['total'];
+        });
+
+        return $results;
+    }
+
+  /**
+     * Get editorial statistics by month (submissions received, declined, published, in process)
+     */
+    public function getEditorialStats($request, $dateStart = null, $dateEnd = null): array
     {
         $context = $request->getContext();
         $contextId = $context->getId();
         
-        $countryDownloadsData = $this->getCountryDataUsingGeoStats($contextId);
+        $dateStart = $dateStart ?? (self::MIN_YEAR . '0101');
+        $dateEnd = $dateEnd ?? date('Ymd', strtotime('yesterday'));
+        
+        $startTime = strtotime($dateStart);
+        $endTime = strtotime($dateEnd);
+        
+        $monthlyStats = [];
+        $currentTime = $startTime;
+        
+        while ($currentTime <= $endTime) {
+            $monthKey = date('Y-m', $currentTime);
+            $monthlyStats[$monthKey] = [
+                'month' => $monthKey,
+                'label' => date('M Y', $currentTime), 
+                'received' => 0,
+                'declined' => 0,
+                'published' => 0,
+                'inProcess' => 0
+            ];
+            
+            $currentTime = strtotime('+1 month', $currentTime);
+        }
+        
+        $submissions = Repo::submission()
+            ->getCollector()
+            ->filterByContextIds([$contextId])
+            ->getMany();
+        
+        foreach ($submissions as $submission) {
+            $dateSubmitted = $submission->getData('dateSubmitted');
+            if (!$dateSubmitted) continue;
+            
+            $submissionTime = strtotime($dateSubmitted);
+            
+            if ($submissionTime < $startTime || $submissionTime > $endTime) continue;
+            
+            $monthKey = date('Y-m', $submissionTime);
+            
+            if (!isset($monthlyStats[$monthKey])) continue;
 
-        header('Content-Type: application/json');
-        echo json_encode($countryDownloadsData);
-        exit();
+            $monthlyStats[$monthKey]['received']++;
+
+            $status = $submission->getData('status');
+            
+            switch ($status) {
+                case STATUS_PUBLISHED:
+                    $monthlyStats[$monthKey]['published']++;
+                    break;
+                case STATUS_DECLINED:
+                    $monthlyStats[$monthKey]['declined']++;
+                    break;
+                case STATUS_QUEUED:
+                case STATUS_SCHEDULED:
+                    $monthlyStats[$monthKey]['inProcess']++;
+                    break;
+            }
+        }
+
+        return array_values($monthlyStats);
     }
-   
-    private function generateSampleGeoData(): array
+
+
+    /**
+     * Get statistics data as JSON via AJAX
+     */
+    public function getStatsData(array $args, $request)
     {
-        return [
-            ['country_code' => 'ES', 'country_name' => 'Spain', 'total_downloads' => 1250, 'unique_downloads' => 950],
-            ['country_code' => 'MX', 'country_name' => 'Mexico', 'total_downloads' => 890, 'unique_downloads' => 720],
-            ['country_code' => 'AR', 'country_name' => 'Argentina', 'total_downloads' => 670, 'unique_downloads' => 540],
-            ['country_code' => 'CO', 'country_name' => 'Colombia', 'total_downloads' => 450, 'unique_downloads' => 380],
-            ['country_code' => 'US', 'country_name' => 'United States', 'total_downloads' => 2100, 'unique_downloads' => 1680],
-            ['country_code' => 'BR', 'country_name' => 'Brazil', 'total_downloads' => 780, 'unique_downloads' => 620],
-            ['country_code' => 'FR', 'country_name' => 'France', 'total_downloads' => 340, 'unique_downloads' => 270],
-            ['country_code' => 'DE', 'country_name' => 'Germany', 'total_downloads' => 520, 'unique_downloads' => 410],
-            ['country_code' => 'IT', 'country_name' => 'Italy', 'total_downloads' => 290, 'unique_downloads' => 230],
-            ['country_code' => 'GB', 'country_name' => 'United Kingdom', 'total_downloads' => 380, 'unique_downloads' => 300],
-            ['country_code' => 'CL', 'country_name' => 'Chile', 'total_downloads' => 215, 'unique_downloads' => 170],
-            ['country_code' => 'PE', 'country_name' => 'Peru', 'total_downloads' => 185, 'unique_downloads' => 150],
-        ];
+        $context = $request->getContext();
+        $contextId = $context->getId();
+
+        $selectedYear = $request->getUserVar('year');
+        $dateRanges = $this->calculateDateRanges($selectedYear);
+        
+        $statsData = $this->gatherStatisticsData($request, $contextId, $dateRanges);
+        
+        header('Content-Type: application/json');
+        echo json_encode($statsData);
+        exit;
     }
-
-
 }

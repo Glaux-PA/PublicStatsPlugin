@@ -103,25 +103,23 @@ class PublicStatsPlugin extends GenericPlugin
         return false; 
     }
 
-   public function loadHandler($hookName, $args){
+  public function loadHandler($hookName, $args){
+    $page=$args[0];
+    $op = $args[1] ?? '';
 
-        $page=$args[0];
-        $op = $args[1] ?? '';
-
-        if($this->getEnabled() && $page=="publicStats"){
-
-            define('HANDLER_CLASS', PublicStatisticsHandler::class);
-            
-            if ($op === 'countries') {
-                define('HANDLER_OP', 'getCountryData');
-            } 
-            return true;
-
+    if($this->getEnabled() && $page=="publicStats"){
+        define('HANDLER_CLASS', PublicStatisticsHandler::class);
+        
+        if ($op === 'getStatsData') {
+            define('HANDLER_OP', 'getStatsData');
+        } elseif ($op === 'countries') {
+            define('HANDLER_OP', 'getCountryData');
         }
-        return false;
+        
+        return true;
     }
-
-    
+    return false;
+}
     
 
 }
