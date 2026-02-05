@@ -14,10 +14,11 @@ namespace APP\plugins\generic\publicStats;
 
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
+use PKP\core\JSONMessage;
+use PKP\linkAction\LinkAction;
+use PKP\linkAction\request\AjaxModal;
 use APP\core\Application;
 use APP\plugins\generic\publicStats\controllers\PublicStatisticsHandler;
-
-
 
 class PublicStatsPlugin extends GenericPlugin
 {
@@ -27,11 +28,9 @@ class PublicStatsPlugin extends GenericPlugin
         $success = parent::register($category, $path);
 
         if ($success && $this->getEnabled()) {
-            // Display the publication statement on the article details page
             Hook::add('NavigationMenus::itemTypes', [$this, 'addMenuItemType']);
-            Hook::add('NavigationMenus::displaySettings', callback: [$this, 'addMenuItemTypeSettings']);
-            Hook::add("LoadHandler",callback: [$this,"loadHandler"]);
-
+            Hook::add('NavigationMenus::displaySettings', [$this, 'addMenuItemTypeSettings']);
+            Hook::add('LoadHandler', [$this, 'loadHandler']);
         }
 
         return $success;
@@ -39,9 +38,6 @@ class PublicStatsPlugin extends GenericPlugin
 
     /**
      * Provide a name for this plugin
-     *
-     * The name will appear in the Plugin Gallery where editors can
-     * install, enable and disable plugins.
      */
     public function getDisplayName(): string
     {
@@ -50,78 +46,128 @@ class PublicStatsPlugin extends GenericPlugin
 
     /**
      * Provide a description for this plugin
-     *
-     * The description will appear in the Plugin Gallery where editors can
-     * install, enable and disable plugins.
      */
     public function getDescription(): string
     {
         return __('plugins.generic.publicStats.description');
     }
 
+    /**
+     * @copydoc Plugin::getActions()
+     */
+    public function getActions($request, $actionArgs)
+    {
+        $router = $request->getRouter();
+        return array_merge(
+            $this->getEnabled() ? [
+                new LinkAction(
+                    'settings',
+                    new AjaxModal(
+                        $router->url(
+                            $request,
+                            null,
+                            null,
+                            'manage',
+                            null,
+                            [
+                                'verb' => 'settings',
+                                'plugin' => $this->getName(),
+                                'category' => 'generic'
+                            ]
+                        ),
+                        $this->getDisplayName()
+                    ),
+                    __('manager.plugins.settings'),
+                    null
+                ),
+            ] : [],
+            parent::getActions($request, $actionArgs)
+        );
+    }
 
-    public function addMenuItemType($hookName, $args){
+    /**
+     * @copydoc Plugin::manage()
+     */
+    public function manage($args, $request)
+    {
+        switch ($request->getUserVar('verb')) {
+            case 'settings':
+                $form = new PublicStatsSettingsForm($this);
+                
+                if ($request->getUserVar('save')) {
+                    // Handle form submission
+                    $form->readInputData();
+                    if ($form->validate()) {
+                        $form->execute();
+                        return new JSONMessage(true);
+                    }
+                } else {
+                    // Display form - must call initData first!
+                    $form->initData();
+                }
+                
+                return new JSONMessage(true, $form->fetch($request));
+        }
+        return parent::manage($args, $request);
+    }
 
-        $types=&$args[0];
-        $types["NMI_TYPE_STATISTICS"]=[
+    /**
+     * Add navigation menu item type
+     */
+    public function addMenuItemType($hookName, $args)
+    {
+        $types = &$args[0];
+        $types['NMI_TYPE_STATISTICS'] = [
             'title' => __('manager.setup.statistics'),
             'description' => __('manager.navigationMenus.statistics.description'),
-
         ];
-
         return false;
     }
 
-
-    public function addMenuItemTypeSettings($hookName, $args){
-
+    /**
+     * Add navigation menu item settings
+     */
+    public function addMenuItemTypeSettings($hookName, $args)
+    {
         $navigationMenuItem = $args[0];
-        $navigationMenu = $args[1];
         
-        if ($navigationMenuItem->getType() == "NMI_TYPE_STATISTICS") {
+        if ($navigationMenuItem->getType() == 'NMI_TYPE_STATISTICS') {
             $request = Application::get()->getRequest();
-    
+
             if ($navigationMenuItem->getIsDisplayed()) {
                 $dispatcher = $request->getDispatcher();
-                $contextPath=$request->getContext()->getPath();
+                $contextPath = $request->getContext()->getPath();
                 $url = $dispatcher->url(
                     $request,
                     \PKP\core\PKPApplication::ROUTE_PAGE,
                     $contextPath,
                     'publicStats',
-                    "total",
+                    'total',
                     null,
                     null
-
                 );
                 $navigationMenuItem->setUrl($url);
             }
             
-            return true; 
+            return true;
         }
         
-        return false; 
+        return false;
     }
 
-  public function loadHandler($hookName, $args){
-    $page=$args[0];
-    $op = $args[1] ?? '';
+    /**
+     * Load handler for public stats pages
+     */
+    public function loadHandler($hookName, $args)
+    {
+        $page = $args[0];
 
-    if($this->getEnabled() && $page=="publicStats"){
-        define('HANDLER_CLASS', PublicStatisticsHandler::class);
-        
-        if ($op === 'getStatsData') {
-            define('HANDLER_OP', 'getStatsData');
-        } elseif ($op === 'countries') {
-            define('HANDLER_OP', 'getCountryData');
+        if ($this->getEnabled() && $page == 'publicStats') {
+            define('HANDLER_CLASS', PublicStatisticsHandler::class);
+            return true;
         }
-        
-        return true;
+        return false;
     }
-    return false;
-}
-    
-
 }
 
 // For backwards compatibility -- expect this to be removed approx. OJS/OMP/OPS 3.6

@@ -1,318 +1,374 @@
 <?php
+/**
+ * @file plugins/generic/publicStats/controllers/PublicStatisticsHandler.php
+ *
+ * @class PublicStatisticsHandler
+ * @brief Main handler for public statistics display
+ */
+
+declare(strict_types=1);
+
 namespace APP\plugins\generic\publicStats\controllers;
 
+// Core OJS
 use APP\handler\Handler;
 use APP\template\TemplateManager;
-use APP\core\Services;
-use APP\statistics\StatisticsHelper;
-use APP\core\Application;
+use PKP\core\PKPRequest;
 use PKP\plugins\PluginRegistry;
-use APP\facades\Repo;
-use APP\plugins\generic\publicStats\classes\StatisticsAggregator;
-use APP\plugins\generic\publicStats\classes\CountryDataFormatter;
-use APP\plugins\generic\publicStats\classes\ArticleStatsRetriever;
 
+// Plugin classes
+use APP\plugins\generic\publicStats\classes\InputValidator;
+use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
+use APP\plugins\generic\publicStats\classes\ColorHelper;
+
+// Services
+use APP\plugins\generic\publicStats\services\StatisticsService;
+use APP\plugins\generic\publicStats\services\ArticleStatsService;
+use APP\plugins\generic\publicStats\services\EditorialStatsService;
+use APP\plugins\generic\publicStats\services\DecisionStatsService;
+use APP\plugins\generic\publicStats\services\AuthorReviewerStatsService;
+use APP\plugins\generic\publicStats\services\IssueStatsService;
+use APP\plugins\generic\publicStats\services\SectionStatsService;
+use APP\plugins\generic\publicStats\services\AuthorStatsService;
+use APP\plugins\generic\publicStats\services\OpenAlexService;
+use APP\plugins\generic\publicStats\services\EnrichedStatsService;
+
+// Traits
+use APP\plugins\generic\publicStats\controllers\traits\ArticleStatsTrait;
+use APP\plugins\generic\publicStats\controllers\traits\EditorialStatsTrait;
+use APP\plugins\generic\publicStats\controllers\traits\AuthorReviewerStatsTrait;
+use APP\plugins\generic\publicStats\controllers\traits\EnrichedStatsTrait;
+use APP\plugins\generic\publicStats\controllers\traits\CsvExportTrait;
+
+// External
+use Illuminate\Support\Facades\Cache;
+
+/**
+ * Main handler for public statistics
+ */
 class PublicStatisticsHandler extends Handler
 {
-    private $plugin;
-    private const MIN_YEAR = '2015';
+    use ArticleStatsTrait;
+    use EditorialStatsTrait;
+    use AuthorReviewerStatsTrait;
+    use EnrichedStatsTrait;
+    use CsvExportTrait;
+    
+    // ========================================
+    // Properties
+    // ========================================
+    
+    private ?object $plugin = null;
+    private StatisticsService $statsService;
+    private ArticleStatsService $articleService;
+    private EditorialStatsService $editorialService;
+    private DecisionStatsService $decisionService;
+    private AuthorReviewerStatsService $authorReviewerService;
+    private IssueStatsService $issueService;
+    private SectionStatsService $sectionService;
+    private AuthorStatsService $authorStatsService;
+    private OpenAlexService $openalexService;
+    private EnrichedStatsService $enrichedService;
 
+    // ========================================
+    // Constructor
+    // ========================================
+
+    /**
+     * Initialize handler with all service dependencies
+     */
     public function __construct()
     {
         parent::__construct();
+        
         $this->plugin = PluginRegistry::getPlugin('generic', 'publicstatsplugin');
+        
+        // Initialize all services
+        $this->statsService = app(StatisticsService::class);
+        $this->articleService = app(ArticleStatsService::class);
+        $this->editorialService = app(EditorialStatsService::class);
+        $this->decisionService = app(DecisionStatsService::class);
+        $this->authorReviewerService = app(AuthorReviewerStatsService::class);
+        $this->issueService = app(IssueStatsService::class);
+        $this->sectionService = app(SectionStatsService::class);
+        $this->authorStatsService = app(AuthorStatsService::class);
+        $this->openalexService = app(OpenAlexService::class);
+        $this->enrichedService = new EnrichedStatsService();
     }
 
+    // ========================================
+    // Core Endpoints
+    // ========================================
+
     /**
-     * Main handler for displaying statistics page
+     * Display main statistics page with year selector and navigation
+     *
+     * @param array $args URL arguments
+     * @param PKPRequest $request Current request
+     * @return string Rendered template
      */
-    public function total(array $args, $request)
+    public function total(array $args, PKPRequest $request)
     {
-        $templateMgr = TemplateManager::getManager($request);
         $context = $request->getContext();
-        $contextId = $context->getId();
+        if (!$context) {
+            return $request->getDispatcher()->handle404();
+        }
 
-        $selectedYear = $request->getUserVar('year');
-        $dateRanges = $this->calculateDateRanges($selectedYear);
+        $selectedYear = InputValidator::validateYear($request->getUserVar('year'));
+        $templateMgr = TemplateManager::getManager($request);
 
-        $statsData = $this->gatherStatisticsData($request, $contextId, $dateRanges);
+        // Get color settings
+        $colorVariants = $this->getColorSettings($context->getId());
 
         $templateMgr->assign([
-            'pageTitle' => 'Public Statistics',
-            'topDownloadedArticles' => json_encode($statsData['topDownloadedArticles']),
-            'topViewedArticles' => json_encode($statsData['topViewedArticles']),
-            'monthlyStats' => json_encode($statsData['monthlyStats']),
-            'annualStats' => json_encode($statsData['annualStats']),
-            'countryData' => json_encode($statsData['countryData']),
-            'issueStats' => json_encode($statsData['issueStats']),
-            'sectionStats' => json_encode($statsData['sectionStats']),
-            'recentTopDownloaded' => json_encode($statsData['recentTopDownloaded']),
-            'recentTopViewed' => json_encode($statsData['recentTopViewed']),
-            'editorialStats' => json_encode($statsData['editorialStats']), 
+            'pageTitleTranslated' => __('plugins.generic.publicStats.statistics'),
             'availableYears' => $this->getAvailableYears(),
             'selectedYear' => $selectedYear,
+            // Color variables
+            'primaryColor' => $colorVariants['primary'],
+            'primaryColorLight' => $colorVariants['light'],
+            'primaryColorDark' => $colorVariants['dark'],
+            'primaryColorDarker' => $colorVariants['darker'],
+            'primaryColorRgb' => $colorVariants['rgb'],
         ]);
 
-        $this->addStylesAndScripts($templateMgr, $request);
+        $this->setupAssets($templateMgr, $request);
 
         return $templateMgr->display($this->plugin->getTemplateResource('publicStats.tpl'));
     }
 
     /**
-     * Calculate date ranges based on selected year
+     * Get color settings from plugin configuration
+     *
+     * @param int $contextId Context ID
+     * @return array Color variants
      */
-    private function calculateDateRanges($selectedYear): array
+    private function getColorSettings(int $contextId): array
     {
-        if ($selectedYear) {
-            return [
-                'dateStart' => $selectedYear . '0101',
-                'dateEnd' => $selectedYear . '1231'
-            ];
+        $primaryColor = $this->plugin->getSetting($contextId, 'primaryColor');
+        
+        if (empty($primaryColor) || !preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $primaryColor)) {
+            $primaryColor = '#8b2635'; // Default burgundy
+        }
+        
+        return ColorHelper::calculateVariants($primaryColor);
+    }
+
+    /**
+     * Get monthly statistics with optional year and section filters
+     *
+     * @param array $args URL arguments
+     * @param PKPRequest $request Current request
+     * @return void Outputs JSON
+     */
+    public function monthly(array $args, PKPRequest $request): void
+    {
+        $context = $request->getContext();
+        if (!$context) {
+            $this->outputError('Context not found', 404);
+            return;
         }
 
-        return [
-            'dateStart' => self::MIN_YEAR . '0101',
-            'dateEnd' => null
-        ];
+        $year = InputValidator::validateYear($request->getUserVar('year'));
+        $sectionId = InputValidator::validateSectionId($request, $request->getUserVar('sectionId'));
+
+        try {
+            $contextId = $context->getId();
+            $dateRanges = $this->getDateRanges($year, $sectionId);
+            
+            $cacheKey = sprintf(
+                'monthly_%d_%s_%s_%s',
+                $contextId,
+                $dateRanges['start'],
+                $dateRanges['end'],
+                $sectionId ?? 'all'
+            );
+            
+            $data = Cache::remember(
+                $cacheKey,
+                PublicStatsConstants::CACHE_TTL_INTERNAL,
+                fn() => $this->statsService->getMonthlyStats(
+                    $contextId,
+                    $dateRanges['start'],
+                    $dateRanges['end'],
+                    $sectionId
+                )
+            );
+            
+            $this->outputJson($data);
+        } catch (\Exception $e) {
+            error_log("Error in monthly stats: " . $e->getMessage());
+            $this->outputError('Error loading monthly statistics', 500);
+        }
     }
 
     /**
-     * Gather all statistics data
+     * Get annual statistics aggregated by year
+     *
+     * @param array $args URL arguments
+     * @param PKPRequest $request Current request
+     * @return void Outputs JSON
      */
-    private function gatherStatisticsData($request, $contextId, $dateRanges): array
+    public function annual(array $args, PKPRequest $request): void
     {
-        return [
-            'topDownloadedArticles' => ArticleStatsRetriever::getTopDownloadedArticles(
-                $request, $contextId, 20, $dateRanges['dateStart'], $dateRanges['dateEnd']
-            ),
-            'topViewedArticles' => ArticleStatsRetriever::getTopViewedArticles(
-                $request, $contextId, 20, $dateRanges['dateStart'], $dateRanges['dateEnd']
-            ),
-            'monthlyStats' => StatisticsAggregator::getMonthlyStats(
-                $contextId, $dateRanges['dateStart'], $dateRanges['dateEnd']
-            ),
-            'annualStats' => StatisticsAggregator::getAnnualStats($contextId),
-            'countryData' => CountryDataFormatter::getCountryStatistics($contextId),
-            'issueStats' => $this->getIssueStats($request, $dateRanges['dateStart'], $dateRanges['dateEnd']),
-            'sectionStats' => $this->getSectionStatsDetailed($request, $contextId, $dateRanges['dateStart'], $dateRanges['dateEnd']),
-            'recentTopDownloaded' => ArticleStatsRetriever::getRecentTopDownloadedArticles($request, $contextId, 20),
-            'recentTopViewed' => ArticleStatsRetriever::getRecentTopViewedArticles($request, $contextId, 20),
-            'editorialStats' => $this->getEditorialStats($request, $dateRanges['dateStart'], $dateRanges['dateEnd']), // NUEVO
-        ];
+        $context = $request->getContext();
+        if (!$context) {
+            $this->outputError('Context not found', 404);
+            return;
+        }
+
+        $contextId = $context->getId();
+        $sectionId = InputValidator::validateSectionId($request, $request->getUserVar('sectionId'));
+        
+        $cacheKey = sprintf(
+            'annual_stats_%d_%s',
+            $contextId,
+            $sectionId ?? 'all'
+        );
+        
+        try {
+            $data = Cache::remember(
+                $cacheKey,
+                PublicStatsConstants::CACHE_TTL_INTERNAL,
+                fn() => $this->statsService->getAnnualStats(
+                    $contextId,
+                    null,
+                    null,
+                    PublicStatsConstants::MIN_YEAR
+                )
+            );
+            
+            $this->outputJson($data);
+        } catch (\Exception $e) {
+            error_log("Error in annual stats: " . $e->getMessage());
+            $this->outputError('Error loading annual statistics', 500);
+        }
     }
+
     /**
-     * Get available years for selector
+     * Get country statistics for geographic distribution
+     *
+     * @param array $args URL arguments
+     * @param PKPRequest $request Current request
+     * @return void Outputs JSON
+     */
+    public function countries(array $args, PKPRequest $request): void
+    {
+        $context = $request->getContext();
+        if (!$context) {
+            $this->outputError('Context not found', 404);
+            return;
+        }
+
+        $contextId = $context->getId();
+        
+        try {
+            $data = Cache::remember(
+                "country_data_{$contextId}",
+                PublicStatsConstants::CACHE_TTL_INTERNAL,
+                fn() => $this->statsService->getCountryStatistics($contextId)
+            );
+            
+            $this->outputJson($data);
+        } catch (\Exception $e) {
+            error_log("Error in countries: " . $e->getMessage());
+            $this->outputError('Error loading country statistics', 500);
+        }
+    }
+
+    // ========================================
+    // Helper Methods
+    // ========================================
+
+    /**
+     * Get date ranges based on selected year and section
+     *
+     * @param string|null $selectedYear Year in YYYY format
+     * @param int|null $sectionId Optional section filter
+     * @return array Date ranges with start/end keys
+     */
+    protected function getDateRanges(?string $selectedYear, ?int $sectionId = null): array
+    {
+        $ranges = [
+            'start' => $selectedYear 
+                ? $selectedYear . '0101' 
+                : PublicStatsConstants::MIN_YEAR . '0101',
+            'end' => $selectedYear 
+                ? $selectedYear . '1231' 
+                : date('Ymd', strtotime('yesterday')),
+        ];
+        
+        if ($sectionId !== null) {
+            $ranges['sectionId'] = $sectionId;
+        }
+        
+        return $ranges;
+    }
+
+    /**
+     * Get available years for year selector
+     *
+     * @return array Years from current to MIN_YEAR
      */
     private function getAvailableYears(): array
     {
         $currentYear = (int)date('Y');
-        return range($currentYear, self::MIN_YEAR);
+        $minYear = PublicStatsConstants::MIN_YEAR;
+        return range($currentYear, $minYear);
     }
 
     /**
-     * Add styles and scripts to template
+     * Output JSON response with proper headers
+     *
+     * @param mixed $data Data to encode
+     * @return void
      */
-    private function addStylesAndScripts($templateMgr, $request): void
+    protected function outputJson(mixed $data): void
+    {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('X-Content-Type-Options: nosniff');
+        echo json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    /**
+     * Output error response
+     *
+     * @param string $message Error message
+     * @param int $code HTTP status code
+     * @return void
+     */
+    protected function outputError(string $message, int $code = 500): void
+    {
+        http_response_code($code);
+        $this->outputJson([
+            'error' => true,
+            'message' => $message,
+            'code' => $code
+        ]);
+    }
+
+    /**
+     * Setup CSS and JavaScript assets for statistics page
+     *
+     * @param TemplateManager $templateMgr Template manager instance
+     * @param PKPRequest $request Current request
+     * @return void
+     */
+    private function setupAssets(TemplateManager $templateMgr, PKPRequest $request): void
     {
         $baseUrl = $request->getBaseUrl() . '/' . $this->plugin->getPluginPath();
-        
+
         $templateMgr->addJavaScript(
-            'publicStatsScript', 
+            'publicStatsScript',
             $baseUrl . '/templates/js/statistics.js',
             ['contexts' => 'frontend']
         );
-        
+
         $templateMgr->addStyleSheet(
-            'publicStatsStyles', 
+            'publicStatsStyles',
             $baseUrl . '/templates/styles/styles.css',
             ['contexts' => 'frontend']
         );
-    }
-
-    /**
-     * Get issue statistics
-     */
-    public function getIssueStats($request, $dateStart = null, $dateEnd = null): array 
-    {
-        $statsService = Services::get('issueStats');
-        $context = $request->getContext();
-        $contextId = $context->getId();
-
-        $params = [
-            'contextIds' => [$contextId],
-            'dateStart' => $dateStart ?? StatisticsHelper::STATISTICS_EARLIEST_DATE,
-            'dateEnd' => $dateEnd ?? date('Ymd', strtotime('yesterday')),
-            'orderBy' => 'total',
-            'orderDirection' => 'DESC'
-        ];
-
-        $records = $statsService->getTotals($params);
-        $results = [];
-
-        foreach ($records as $record) {
-            if (!isset($record->issue_id)) {
-                continue;
-            }
-
-            $issue = Repo::issue()->get($record->issue_id);
-            
-            if (!$issue || $issue->getData('journalId') != $contextId) {
-                continue;
-            }
-
-            $articleCount = Repo::submission()
-                ->getCollector()
-                ->filterByContextIds([$contextId])
-                ->filterByIssueIds([$issue->getId()])
-                ->filterByStatus([STATUS_PUBLISHED])
-                ->getCount();
-
-            $results[] = [
-                'issueId' => $issue->getId(),
-                'title' => $issue->getIssueIdentification(),
-                'downloads' => $record->metric ?? 0,
-                'articleCount' => $articleCount
-            ];
-        }
-
-        return $results;
-    }
-
-    /**
-     * Get statistics by section with views and downloads
-     */
-    public function getSectionStatsDetailed($request, $contextId, $dateStart = null, $dateEnd = null): array 
-    {
-        $statsService = Services::get('publicationStats');
-
-        $baseParams = [
-            'contextIds' => [$contextId],
-            'dateStart' => $dateStart ?? StatisticsHelper::STATISTICS_EARLIEST_DATE,
-            'dateEnd' => $dateEnd ?? date('Ymd', strtotime('yesterday'))
-        ];
-
-        $downloadParams = array_merge($baseParams, [
-            'assocTypes' => [Application::ASSOC_TYPE_SUBMISSION_FILE]
-        ]);
-        $downloadRecords = $statsService->getTotals($downloadParams);
-
-        $viewParams = array_merge($baseParams, [
-            'assocTypes' => [Application::ASSOC_TYPE_SUBMISSION]
-        ]);
-        $viewRecords = $statsService->getTotals($viewParams);
-
-        $sectionStats = StatisticsAggregator::aggregateBySection($downloadRecords, $contextId, 'downloads');
-        $viewsBySection = StatisticsAggregator::aggregateBySection($viewRecords, $contextId, 'views');
-
-        foreach ($viewsBySection as $sectionId => $data) {
-            if (isset($sectionStats[$sectionId])) {
-                $sectionStats[$sectionId]['views'] = $data['views'];
-            } else {
-                $sectionStats[$sectionId] = $data;
-                $sectionStats[$sectionId]['downloads'] = 0;
-            }
-        }
-
-        foreach ($sectionStats as $sectionId => &$stats) {
-            if (!isset($stats['views'])) {
-                $stats['views'] = 0;
-            }
-            $stats['total'] = $stats['downloads'] + $stats['views'];
-        }
-
-        $results = array_values($sectionStats);
-        usort($results, function($a, $b) {
-            return $b['total'] - $a['total'];
-        });
-
-        return $results;
-    }
-
-  /**
-     * Get editorial statistics by month (submissions received, declined, published, in process)
-     */
-    public function getEditorialStats($request, $dateStart = null, $dateEnd = null): array
-    {
-        $context = $request->getContext();
-        $contextId = $context->getId();
-        
-        $dateStart = $dateStart ?? (self::MIN_YEAR . '0101');
-        $dateEnd = $dateEnd ?? date('Ymd', strtotime('yesterday'));
-        
-        $startTime = strtotime($dateStart);
-        $endTime = strtotime($dateEnd);
-        
-        $monthlyStats = [];
-        $currentTime = $startTime;
-        
-        while ($currentTime <= $endTime) {
-            $monthKey = date('Y-m', $currentTime);
-            $monthlyStats[$monthKey] = [
-                'month' => $monthKey,
-                'label' => date('M Y', $currentTime), 
-                'received' => 0,
-                'declined' => 0,
-                'published' => 0,
-                'inProcess' => 0
-            ];
-            
-            $currentTime = strtotime('+1 month', $currentTime);
-        }
-        
-        $submissions = Repo::submission()
-            ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
-        
-        foreach ($submissions as $submission) {
-            $dateSubmitted = $submission->getData('dateSubmitted');
-            if (!$dateSubmitted) continue;
-            
-            $submissionTime = strtotime($dateSubmitted);
-            
-            if ($submissionTime < $startTime || $submissionTime > $endTime) continue;
-            
-            $monthKey = date('Y-m', $submissionTime);
-            
-            if (!isset($monthlyStats[$monthKey])) continue;
-
-            $monthlyStats[$monthKey]['received']++;
-
-            $status = $submission->getData('status');
-            
-            switch ($status) {
-                case STATUS_PUBLISHED:
-                    $monthlyStats[$monthKey]['published']++;
-                    break;
-                case STATUS_DECLINED:
-                    $monthlyStats[$monthKey]['declined']++;
-                    break;
-                case STATUS_QUEUED:
-                case STATUS_SCHEDULED:
-                    $monthlyStats[$monthKey]['inProcess']++;
-                    break;
-            }
-        }
-
-        return array_values($monthlyStats);
-    }
-
-
-    /**
-     * Get statistics data as JSON via AJAX
-     */
-    public function getStatsData(array $args, $request)
-    {
-        $context = $request->getContext();
-        $contextId = $context->getId();
-
-        $selectedYear = $request->getUserVar('year');
-        $dateRanges = $this->calculateDateRanges($selectedYear);
-        
-        $statsData = $this->gatherStatisticsData($request, $contextId, $dateRanges);
-        
-        header('Content-Type: application/json');
-        echo json_encode($statsData);
-        exit;
     }
 }

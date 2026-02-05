@@ -1,3 +1,27 @@
+/**
+ * Public Statistics Plugin - Styles
+ * 
+ * Uses CSS custom properties (variables) for the primary color scheme.
+ * The primary color is set dynamically from plugin settings.
+ */
+
+/* ========================================
+   CSS VARIABLES - Primary Color Scheme
+   ======================================== */
+
+:root {
+  /* Default colors - will be overridden by inline styles from plugin settings */
+  --ps-primary: #8b2635;
+  --ps-primary-light: #9b3645;
+  --ps-primary-dark: #6b1e2a;
+  --ps-primary-darker: #5b1620;
+  --ps-primary-rgb: 139, 38, 53;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+
 * {
   margin: 0;
   padding: 0;
@@ -21,6 +45,10 @@ body {
   min-height: 100vh;
 }
 
+/* ========================================
+   SIDEBAR
+   ======================================== */
+
 .sidebar {
   width: 280px;
   background: #fff;
@@ -35,11 +63,9 @@ body {
   padding: 20px;
   border-bottom: 1px solid #e5e5e5;
 }
-.sidebar-header h1 {
-  margin-bottom: 0;
-}
 
 .sidebar-header h1 {
+  margin-bottom: 0;
   font-size: 18px;
   font-weight: 600;
   color: #333;
@@ -64,6 +90,7 @@ body {
   align-items: center;
   cursor: pointer;
 }
+
 .section-content {
   overflow: hidden;
   transition: max-height 0.3s ease, opacity 0.3s ease;
@@ -82,12 +109,6 @@ body {
   font-size: 12px;
   transition: transform 0.3s ease;
   display: inline-block;
-}
-
-/* Cuando la sección padre tiene contenido colapsado, rotar la flecha */
-.section-collapsed ~ .section-header .section-toggle,
-.section-content.section-collapsed {
-  /* Manejado por JS */
 }
 
 .sidebar-menu {
@@ -114,15 +135,22 @@ body {
   color: #333;
 }
 
+/* ACTIVE MENU - Uses primary color */
 .menu-link.active {
-  background-color: #8b2635;
+  background-color: var(--ps-primary);
   color: white;
-  border-left-color: #6b1e2a;
+  border-left-color: var(--ps-primary-dark);
 }
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
 
 .main-content {
   flex: 1;
-  padding: 30px;
+  margin: 30px;
+  position: relative;
+  min-height: 400px;
 }
 
 .content-header {
@@ -188,6 +216,10 @@ body {
   overflow-x: auto;
 }
 
+/* ========================================
+   TABLES
+   ======================================== */
+
 .stats-table {
   width: 100%;
   border-collapse: collapse;
@@ -215,6 +247,31 @@ body {
   color: #333;
 }
 
+.stats-table th:last-child {
+  text-align: right;
+
+}
+
+.stats-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* TABLE LINKS - Uses primary color */
+.stats-table a {
+  color: var(--ps-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.stats-table a:hover {
+  color: var(--ps-primary-dark);
+  text-decoration: underline;
+}
+
+/* ========================================
+   MAP LEGEND
+   ======================================== */
+
 .map-legend {
   display: flex;
   gap: 15px;
@@ -234,6 +291,10 @@ body {
   border-radius: 50%;
 }
 
+/* ========================================
+   SECTION TOGGLE
+   ======================================== */
+
 .section-collapsed .section-toggle {
   transform: rotate(-90deg);
 }
@@ -246,7 +307,282 @@ body {
   max-height: 500px;
 }
 
-@media (max-width: 768px) {
+/* ========================================
+   YEAR SELECTOR & FILTERS
+   ======================================== */
+
+.year-selector-container {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease;
+}
+
+.year-selector-container label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   TABLE COLOR INDICATOR
+   ======================================== */
+
+.table-color-indicator {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   RESET ZOOM BUTTON - Uses primary color
+   ======================================== */
+
+.reset-zoom-btn {
+  padding: 6px 12px;
+  background-color: var(--ps-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.reset-zoom-btn:hover {
+  background-color: var(--ps-primary-dark);
+}
+
+/* ========================================
+   LOADING INDICATOR - Uses primary color
+   ======================================== */
+
+.loading-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-content {
+  text-align: center;
+  padding: 40px;
+}
+
+/* SPINNER - Uses primary color */
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--ps-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-indicator p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* LOADING DOTS - Uses primary color */
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.loading-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--ps-primary);
+  animation: loading-dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loading-dots {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Skeleton loader */
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 20px;
+  margin: 10px 0;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ========================================
+   METRIC CARDS - Uses primary color
+   ======================================== */
+
+.metric-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 2px solid #e9ecef;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* METRIC VALUE - Uses primary color */
+.metric-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ps-primary);
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.metric-label {
+  font-size: 14px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   CSV EXPORT BUTTONS
+   ======================================== */
+
+.export-csv-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20883a 100%);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.export-csv-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1a6e2e 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.export-csv-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+/* ========================================
+   GLOBAL EXPORT MENU - Uses primary color
+   ======================================== */
+
+.global-export-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 0;
+  margin-bottom: 10px;
+}
+
+.export-menu-dropdown hr {
+  margin: 5px 0;
+  border: none;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Section header adjustments for export buttons */
+.content-section .section-header,
+.content-section h2,
+.content-section h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ========================================
+   RESPONSIVE - TABLET & MOBILE
+   ======================================== */
+
+@media (max-width: 992px) {
   .page_statistics .container {
     flex-direction: column;
   }
@@ -307,14 +643,16 @@ body {
     white-space: nowrap;
   }
 
+  /* ACTIVE MENU MOBILE - Uses primary color */
   .menu-link.active {
-    background-color: #8b2635;
+    background-color: var(--ps-primary);
     color: white;
-    border-color: #8b2635;
+    border-color: var(--ps-primary);
   }
 
   .main-content {
     padding: 15px;
+    margin: 0;
   }
 
   .content-title {
@@ -327,6 +665,11 @@ body {
 
   .year-selector-container {
     padding: 12px;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    gap: 15px;
   }
 
   .stats-table {
@@ -348,6 +691,98 @@ body {
 
   .card-body {
     padding: 15px;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+  }
+
+  .loading-indicator p {
+    font-size: 14px;
+  }
+
+  /* Export buttons mobile */
+  .export-csv-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* Global export menu - mobile fixes */
+  .global-export-container {
+    padding: 10px 15px;
+    justify-content: center;
+  }
+
+  .export-menu {
+    position: static;
+    width: 100%;
+  }
+
+  .export-menu-toggle {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+
+  .export-menu-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 16px 16px 0 0;
+    max-height: 60vh;
+    min-width: unset;
+    max-width: unset;
+    margin-top: 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .export-menu-dropdown button {
+    padding: 14px 20px;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .export-menu-dropdown button:hover {
+    padding-left: 20px;
+  }
+
+  /* Overlay when dropdown is open on mobile */
+  .export-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 }
 
@@ -387,163 +822,57 @@ body {
     width: 10px;
     height: 10px;
   }
-}
 
-.year-selector-container {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.year-selector-container label {
-  font-weight: 600;
-  margin-right: 10px;
-}
-
-#yearSelector {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.stats-table th:nth-child(3),
-.stats-table th:nth-child(4),
-.stats-table th:nth-child(5) {
-  text-align: center;
-  width: 120px;
-}
-
-.stats-table td:nth-child(3),
-.stats-table td:nth-child(4),
-.stats-table td:nth-child(5) {
-  text-align: center;
-}
-
-.stats-table td:nth-child(6) {
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-}
-.year-selector-container {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.year-selector-container label {
-  font-weight: 600;
-  margin-right: 10px;
-}
-
-#yearSelector {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.stats-table th:nth-child(3),
-.stats-table th:nth-child(4),
-.stats-table th:nth-child(5) {
-  text-align: center;
-  width: 120px;
-}
-
-.stats-table td:nth-child(3),
-.stats-table td:nth-child(4),
-.stats-table td:nth-child(5) {
-  text-align: center;
-}
-
-.stats-table td:nth-child(6) {
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-}
-
-.table-color-indicator {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.table-color-indicator {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.reset-zoom-btn {
-  padding: 6px 12px;
-  background-color: #8b2635;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
-}
-
-.reset-zoom-btn:hover {
-  background-color: #6b1e2a;
-}
-
-.card-header {
-  padding: 20px;
-  border-bottom: 1px solid #e5e5e5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fafbfc;
-}
-
-/* Loading Indicator */
-.loading-indicator {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.loading-indicator p {
-  color: white;
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.loading-spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #8b2635;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+  .export-menu-dropdown button {
+    padding: 16px 20px;
   }
-  100% {
-    transform: rotate(360deg);
+}
+
+/* Print styles - hide export buttons */
+@media print {
+
+  .export-csv-btn,
+  .export-menu,
+  .global-export-container {
+    display: none !important;
   }
+}
+
+/* Iconos de sección del menú lateral */
+.section-icon {
+  margin-right: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+  width: 18px;
+  text-align: center;
+}
+
+/* Section toggle icon (flecha) */
+.section-toggle {
+  margin-left: auto;
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.section-toggle i {
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate icon when section is collapsed */
+.section-collapsed .section-toggle i {
+  transform: rotate(-90deg);
+  
+}
+
+/* CSV export button icon */
+.export-csv-btn i {
+  margin-right: 5px;
+  font-size: 0.9em;
+}
+
+/* Reset zoom button icon */
+.reset-zoom-btn i {
+  margin-right: 4px;
 }
