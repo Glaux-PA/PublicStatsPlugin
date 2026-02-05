@@ -3,39 +3,39 @@ msgstr ""
 "Project-Id-Version: publicStats\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
-"Language-Team: Catalan\n"
+"Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-01-14T12:00:00+00:00\n"
 "PO-Revision-Date: 2025-01-14T12:00:00+00:00\n"
-"Language: ca_ES"
+"Language: es_ES"
 
 # Plugin metadata
 msgid "plugins.generic.publicStats.displayName"
-msgstr "Estadístiques públiques"
+msgstr "Estadísticas públicas"
 
 msgid "plugins.generic.publicStats.description"
-msgstr "Plugin per mostrar estadístiques públiques de la revista."
+msgstr "Plugin para mostrar estadísticas públicas de la revista."
 
 msgid "manager.navigationMenus.statistics.description"
-msgstr "Enllaç a la pàgina d'estadístiques públiques de la revista."
+msgstr "Enlace a la página de estadísticas públicas de la revista."
 
 msgid "manager.navigationMenus.statistics.conditionalWarning"
-msgstr "Aquest enllaç només apareixerà si el plugin d'estadístiques públiques està habilitat."
+msgstr "Este enlace solo aparecerá si el plugin de estadísticas públicas está habilitado."
 
 # Settings
 msgid "plugins.generic.publicStats.settings.description"
 msgstr "Configure los ajustes del plugin de estadísticas públicas."
 
 msgid "plugins.generic.publicStats.settings.openAlexEmail"
-msgstr "Correu de contacte d'OpenAlex"
+msgstr "Correo de contacto de OpenAlex"
 
 msgid "plugins.generic.publicStats.settings.openAlexEmailDescription"
 msgstr "Dirección de correo electrónico que se usará para contactar con la API de OpenAlex. Es necesario para el uso correcto de la API."
 
 msgid "plugins.generic.publicStats.settings.openAlexEmailRequired"
-msgstr "El correu d'OpenAlex és obligatori."
+msgstr "El correo de OpenAlex es obligatorio."
 
 msgid "plugins.generic.publicStats.settings.primaryColor"
 msgstr "Color principal"
@@ -44,7 +44,7 @@ msgid "plugins.generic.publicStats.settings.primaryColorDescription"
 msgstr "Seleccione el color de acento principal para la interfaz de estadísticas. Este color se aplicará a los elementos de menú activos, botones, indicadores de carga y otros elementos de la interfaz."
 
 msgid "plugins.generic.publicStats.settings.resetColor"
-msgstr "Restablir"
+msgstr "Restablecer"
 
 msgid "plugins.generic.publicStats.settings.resetToDefault"
 msgstr "Restablecer al color por defecto"
@@ -56,46 +56,46 @@ msgid "plugins.generic.publicStats.settings.colorAffectedElements"
 msgstr "Este color afecta a: elementos de menú activos, indicador de carga, botón de restablecer zoom, valores de métricas, enlaces de tablas y botones de exportación."
 
 msgid "plugins.generic.publicStats.settings.colorVariants"
-msgstr "Variants generades"
+msgstr "Variantes generadas"
 
 
 # Page titles
 msgid "plugins.publicStats.title.key"
-msgstr "Estadístiques públiques"
+msgstr "Estadísticas públicas"
 
 msgid "plugins.publicStats.page.title"
-msgstr "Estadístiques de la revista"
+msgstr "Estadísticas de la revista"
 
 msgid "plugins.publicStats.page.description"
 msgstr "Consulte las estadísticas públicas y métricas de uso de la revista."
 
 msgid "plugins.generic.publicStats.statistics"
-msgstr "Estadístiques"
+msgstr "Estadísticas"
 
 # General UI
 msgid "plugins.generic.publicStats.selectYear"
-msgstr "Seleccioneu any:"
+msgstr "Seleccione año:"
 
 msgid "plugins.generic.publicStats.allTime"
-msgstr "Tot el temps"
+msgstr "Todo el tiempo"
 
 msgid "plugins.generic.publicStats.all"
-msgstr "Tots"
+msgstr "Todos"
 
 msgid "plugins.generic.publicStats.loadingStats"
-msgstr "Carregant estadístiques..."
+msgstr "Cargando estadísticas..."
 
 msgid "plugins.generic.publicStats.resetZoom"
-msgstr "Restablir zoom"
+msgstr "Restablecer zoom"
 
 msgid "plugins.generic.publicStats.showTop"
-msgstr "Mostra top:"
+msgstr "Mostrar top:"
 
 msgid "plugins.generic.publicStats.overview"
-msgstr "Resum"
+msgstr "Resumen"
 
 msgid "plugins.generic.publicStats.summary"
-msgstr "Resum"
+msgstr "Resumen"
 
 # Export options
 msgid "plugins.generic.publicStats.export"
@@ -146,7 +146,7 @@ msgstr "Análisis de impacto"
 
 # Trends and timelines
 msgid "plugins.generic.publicStats.monthlyTrends"
-msgstr "Tendències mensuals"
+msgstr "Tendencias mensuales"
 
 msgid "plugins.generic.publicStats.annualTrends"
 msgstr "Tendencias anuales"
@@ -170,7 +170,7 @@ msgid "plugins.generic.publicStats.annualContributions"
 msgstr "Contribuciones anuales"
 
 msgid "plugins.generic.publicStats.downloadsViewsOverYear"
-msgstr "Descàrregues i visualitzacions al llarg de l'any"
+msgstr "Descargas y visualizaciones a lo largo del año"
 
 msgid "plugins.generic.publicStats.yearlyDownloadsViews"
 msgstr "Descargas y vistas anuales desde el inicio de la revista"
@@ -183,19 +183,19 @@ msgstr "Contribuciones (vistas)"
 
 # Metrics
 msgid "plugins.generic.publicStats.downloads"
-msgstr "Descàrregues"
+msgstr "Descargas"
 
 msgid "plugins.generic.publicStats.views"
-msgstr "Visualitzacions"
+msgstr "Visualizaciones"
 
 msgid "plugins.generic.publicStats.total"
 msgstr "Total"
 
 msgid "plugins.generic.publicStats.totalDownloads"
-msgstr "Total de descàrregues"
+msgstr "Total de descargas"
 
 msgid "plugins.generic.publicStats.totalViews"
-msgstr "Total de visualitzacions"
+msgstr "Total de visualizaciones"
 
 msgid "plugins.generic.publicStats.totalAccesses"
 msgstr "Total de accesos"
@@ -214,16 +214,16 @@ msgid "plugins.generic.publicStats.totalArticles"
 msgstr "Total de artículos"
 
 msgid "plugins.generic.publicStats.articleTitle"
-msgstr "Títol de l'article"
+msgstr "Título del artículo"
 
 msgid "plugins.generic.publicStats.articleCount"
-msgstr "Nombre d'articles"
+msgstr "Número de artículos"
 
 msgid "plugins.generic.publicStats.mostDownloadedArticles"
-msgstr "Articles més descarregats"
+msgstr "Artículos más descargados"
 
 msgid "plugins.generic.publicStats.mostViewedArticles"
-msgstr "Articles més vistos"
+msgstr "Artículos más vistos"
 
 msgid "plugins.generic.publicStats.mostDownloaded60Days"
 msgstr "Más descargados (60 días)"
@@ -258,429 +258,325 @@ msgstr "Clasificación de artículos por descargas en los últimos 60 días"
 msgid "plugins.generic.publicStats.rankingByRecentViews"
 msgstr "Clasificación de artículos por vistas en los últimos 60 días"
 
-msgid "plugins.generic.publicStats.authorArticles"
-msgstr "Artículos del autor"
+msgid "plugins.generic.publicStats.articlesBy"
+msgstr "Artículos por"
+
+msgid "plugins.generic.publicStats.publicationsBy"
+msgstr "Publicaciones por"
 
 # Issues and sections
 msgid "plugins.generic.publicStats.issues"
 msgstr "Números"
 
-msgid "plugins.generic.publicStats.issue"
-msgstr "Número"
+msgid "plugins.generic.publicStats.totalIssues"
+msgstr "Total de números"
+
+msgid "plugins.generic.publicStats.publishedIssues"
+msgstr "Números publicados"
+
+msgid "plugins.generic.publicStats.articlesPerIssue"
+msgstr "Artículos por número"
+
+msgid "plugins.generic.publicStats.avgArticlesPerIssue"
+msgstr "Promedio de artículos por número"
 
 msgid "plugins.generic.publicStats.sections"
 msgstr "Secciones"
 
-msgid "plugins.generic.publicStats.section"
-msgstr "Secció"
+msgid "plugins.generic.publicStats.totalSections"
+msgstr "Total de secciones"
 
-msgid "plugins.generic.publicStats.downloadsByIssue"
-msgstr "Descàrregues per número"
-
-msgid "plugins.generic.publicStats.downloadsBySection"
-msgstr "Descàrregues per secció"
-
-msgid "plugins.generic.publicStats.issueDistribution"
-msgstr "Distribución por números"
+msgid "plugins.generic.publicStats.sectionName"
+msgstr "Sección"
 
 msgid "plugins.generic.publicStats.sectionDistribution"
-msgstr "Distribución por secciones"
+msgstr "Distribución por sección"
 
-msgid "plugins.generic.publicStats.distributionAcrossIssues"
-msgstr "Distribución de descargas por números de la revista"
+msgid "plugins.generic.publicStats.articlesBySections"
+msgstr "Artículos por secciones"
 
-msgid "plugins.generic.publicStats.distributionAcrossSections"
-msgstr "Distribución de descargas por secciones de la revista"
-
-msgid "plugins.generic.publicStats.statsByIssue"
-msgstr "Estadísticas por número"
-
-msgid "plugins.generic.publicStats.statsBySection"
-msgstr "Estadísticas por sección"
-
-# ============================================================
-# GEOGRAPHIC DISTRIBUTION (Distribución geográfica)
-# ============================================================
-msgid "plugins.generic.publicStats.geographicDistribution"
-msgstr "Distribución geográfica"
-
-msgid "plugins.generic.publicStats.geographicDistributionTitle"
-msgstr "Distribución geográfica del acceso a artículos"
-
-msgid "plugins.generic.publicStats.geographicDistributionDescription"
-msgstr "Mapa que muestra la distribución mundial de descargas y vistas por país de origen"
-
-msgid "plugins.generic.publicStats.worldwideDistribution"
-msgstr "Distribución mundial del acceso a artículos"
-
-msgid "plugins.generic.publicStats.worldAccessMap"
-msgstr "Mapa mundial de accesos"
-
-msgid "plugins.generic.publicStats.country"
-msgstr "País"
-
-msgid "plugins.generic.publicStats.topCountriesByAccess"
-msgstr "Principals països per accés"
-
-msgid "plugins.generic.publicStats.accessesFromCountry"
-msgstr "Accessos des d'aquest país"
-
-msgid "plugins.generic.publicStats.rank"
-msgstr "Posición"
-
-msgid "plugins.generic.publicStats.accesses"
-msgstr "Accesos"
-
-msgid "plugins.generic.publicStats.accessCount"
-msgstr "Número de accesos"
-
-msgid "plugins.generic.publicStats.countryCode"
-msgstr "Codi de país"
-
-msgid "plugins.generic.publicStats.countryName"
-msgstr "Nom del país"
+msgid "plugins.generic.publicStats.contributionsBySections"
+msgstr "Contribuciones por secciones"
 
 # Authors
 msgid "plugins.generic.publicStats.authors"
-msgstr "Autors"
+msgstr "Autores"
 
 msgid "plugins.generic.publicStats.totalAuthors"
 msgstr "Total de autores"
 
+msgid "plugins.generic.publicStats.author"
+msgstr "Autor"
+
+msgid "plugins.generic.publicStats.authorName"
+msgstr "Nombre del autor"
+
+msgid "plugins.generic.publicStats.coAuthors"
+msgstr "Coautores"
+
+msgid "plugins.generic.publicStats.topCoAuthors"
+msgstr "Principales coautores"
+
 msgid "plugins.generic.publicStats.authorsByCountry"
-msgstr "Autors per país"
+msgstr "Autores por país"
 
-msgid "plugins.generic.publicStats.authorsByCountryTitle"
-msgstr "Distribución de autores por país"
+msgid "plugins.generic.publicStats.topAuthorCountries"
+msgstr "Principales países de autores"
 
-msgid "plugins.generic.publicStats.authorsByCountryDescription"
-msgstr "Visualización geográfica del origen de los autores que publican en la revista"
+msgid "plugins.generic.publicStats.contributingAuthors"
+msgstr "Autores contribuyentes"
 
-msgid "plugins.generic.publicStats.authorsWorldMap"
-msgstr "Mapa mundial de autores"
+msgid "plugins.generic.publicStats.topContributingAuthors"
+msgstr "Principales autores contribuyentes"
 
-msgid "plugins.generic.publicStats.topCountriesByAuthors"
-msgstr "Principales países por autores"
+msgid "plugins.generic.publicStats.geographicDistributionAuthors"
+msgstr "Distribución geográfica de autores"
 
-msgid "plugins.generic.publicStats.numberOfAuthors"
-msgstr "Número de autores"
-
-# ============================================================
-# AUTHORS BY INSTITUTION (Distribución de autores por institución)
-# ============================================================
 msgid "plugins.generic.publicStats.authorsByInstitution"
-msgstr "Autors per institució"
-
-msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
-msgstr "Distribución de autores por institución"
-
-msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
-msgstr "Análisis de las afiliaciones institucionales de los autores que publican en la revista"
-
-msgid "plugins.generic.publicStats.institution"
-msgstr "Institució"
+msgstr "Autores por institución"
 
 msgid "plugins.generic.publicStats.institutionDistribution"
 msgstr "Distribución por institución"
 
-msgid "plugins.generic.publicStats.topInstitutions"
-msgstr "Principales instituciones"
-
-msgid "plugins.generic.publicStats.otherInstitutions"
-msgstr "Otras instituciones"
-
-msgid "plugins.generic.publicStats.affiliation"
-msgstr "Afiliación"
-
-msgid "plugins.generic.publicStats.institutionCount"
-msgstr "Número de autores"
-
-msgid "plugins.generic.publicStats.institutionRanking"
-msgstr "Clasificación de instituciones por número de autores"
-
-msgid "plugins.generic.publicStats.topInstitutionsByAuthors"
-msgstr "Principales instituciones por número de autores"
-
 msgid "plugins.generic.publicStats.authorsFromInstitution"
 msgstr "Autores de esta institución"
 
-msgid "plugins.generic.publicStats.authorIndividualStats"
-msgstr "Estadísticas por autor"
+msgid "plugins.generic.publicStats.authorsPerCountry"
+msgstr "Autores por país"
 
-msgid "plugins.generic.publicStats.authorIndividualStatsDescription"
-msgstr "Estadísticas detalladas de publicaciones, descargas y vistas por autor"
+msgid "plugins.generic.publicStats.topAuthorInstitutions"
+msgstr "Principales instituciones de autores"
 
-msgid "plugins.generic.publicStats.selectAuthor"
-msgstr "Seleccionar autor"
+msgid "plugins.generic.publicStats.topInstitutions"
+msgstr "Principales instituciones"
 
-msgid "plugins.generic.publicStats.selectAuthorPlaceholder"
-msgstr "Seleccione un autor..."
+msgid "plugins.generic.publicStats.institutionName"
+msgstr "Institución"
 
-msgid "plugins.generic.publicStats.authorInformation"
-msgstr "Información del autor"
+msgid "plugins.generic.publicStats.country"
+msgstr "País"
 
-msgid "plugins.generic.publicStats.coAuthorName"
-msgstr "Nombre del coautor"
+msgid "plugins.generic.publicStats.authorsCount"
+msgstr "Autores"
 
-msgid "plugins.generic.publicStats.collaborations"
-msgstr "Colaboraciones"
-
-msgid "plugins.generic.publicStats.frequentCoAuthors"
-msgstr "Coautores frecuentes"
-
-msgid "plugins.generic.publicStats.allTimeSummary"
-msgstr "Resumen histórico"
+msgid "plugins.generic.publicStats.articlesFromInstitution"
+msgstr "Artículos de esta institución"
 
 # Reviewers
+msgid "plugins.generic.publicStats.reviewers"
+msgstr "Revisores"
+
 msgid "plugins.generic.publicStats.totalReviewers"
 msgstr "Total de revisores"
 
-msgid "plugins.generic.publicStats.numberOfReviewers"
-msgstr "Número de revisores"
+msgid "plugins.generic.publicStats.reviewerName"
+msgstr "Nombre del revisor"
+
+msgid "plugins.generic.publicStats.topReviewers"
+msgstr "Principales revisores"
+
+msgid "plugins.generic.publicStats.topContributingReviewers"
+msgstr "Principales revisores contribuyentes"
+
+msgid "plugins.generic.publicStats.topReviewerCountries"
+msgstr "Principales países de revisores"
 
 msgid "plugins.generic.publicStats.reviewersByCountry"
-msgstr "Revisors per país"
+msgstr "Revisores por país"
 
-msgid "plugins.generic.publicStats.reviewersByCountryTitle"
-msgstr "Distribución de revisores por país"
+msgid "plugins.generic.publicStats.geographicDistributionReviewers"
+msgstr "Distribución geográfica de revisores"
 
-msgid "plugins.generic.publicStats.reviewersByCountryDescription"
-msgstr "Visualización geográfica del origen de los revisores"
+msgid "plugins.generic.publicStats.contributingReviewers"
+msgstr "Revisores contribuyentes"
 
-msgid "plugins.generic.publicStats.reviewersWorldMap"
-msgstr "Mapa mundial de revisores"
+msgid "plugins.generic.publicStats.reviewsCompleted"
+msgstr "Revisiones completadas"
 
-msgid "plugins.generic.publicStats.topCountriesByReviewers"
-msgstr "Principales países por revisores"
+msgid "plugins.generic.publicStats.reviewsByCountry"
+msgstr "Revisiones por país"
 
 msgid "plugins.generic.publicStats.reviewersByInstitution"
-msgstr "Revisors per institució"
-
-msgid "plugins.generic.publicStats.reviewersByInstitutionTitle"
-msgstr "Distribución de revisores por institución"
-
-msgid "plugins.generic.publicStats.reviewersByInstitutionDescription"
-msgstr "Análisis de las afiliaciones institucionales de los revisores"
-
-msgid "plugins.generic.publicStats.reviewerInstitutionDistribution"
-msgstr "Distribución por institución (revisores)"
+msgstr "Revisores por institución"
 
 msgid "plugins.generic.publicStats.topReviewerInstitutions"
-msgstr "Principales instituciones por revisores"
+msgstr "Principales instituciones de revisores"
 
-# Editorial workflow
-msgid "plugins.generic.publicStats.submissionsOverview"
-msgstr "Resumen de envíos"
+msgid "plugins.generic.publicStats.reviewersFromInstitution"
+msgstr "Revisores de esta institución"
 
-msgid "plugins.generic.publicStats.submissionActivity"
-msgstr "Actividad de envíos"
+# Editors
+msgid "plugins.generic.publicStats.editors"
+msgstr "Editores"
 
-msgid "plugins.generic.publicStats.monthlySubmissionsTracking"
-msgstr "Seguimiento mensual de envíos"
+msgid "plugins.generic.publicStats.totalEditors"
+msgstr "Total de editores"
 
-msgid "plugins.generic.publicStats.annualSubmissionsOverview"
-msgstr "Resumen anual de envíos"
+msgid "plugins.generic.publicStats.editorName"
+msgstr "Nombre del editor"
 
-msgid "plugins.generic.publicStats.annualSubmissionActivity"
-msgstr "Actividad anual de envíos"
+msgid "plugins.generic.publicStats.editorsInvolved"
+msgstr "Editores involucrados"
 
-msgid "plugins.generic.publicStats.yearlySubmissionsTracking"
-msgstr "Seguimiento anual de envíos"
+# Submissions and workflow
+msgid "plugins.generic.publicStats.submissions"
+msgstr "Envíos"
 
-msgid "plugins.generic.publicStats.received"
-msgstr "Recibidos"
+msgid "plugins.generic.publicStats.totalSubmissions"
+msgstr "Total de envíos"
 
-msgid "plugins.generic.publicStats.totalReceived"
-msgstr "Total recibidos"
+msgid "plugins.generic.publicStats.receivedSubmissions"
+msgstr "Envíos recibidos"
 
-msgid "plugins.generic.publicStats.published"
-msgstr "Publicados"
+msgid "plugins.generic.publicStats.submissionsReceived"
+msgstr "Envíos recibidos"
 
-msgid "plugins.generic.publicStats.declined"
-msgstr "Rechazados"
+msgid "plugins.generic.publicStats.submissionsByYear"
+msgstr "Envíos por año"
 
-msgid "plugins.generic.publicStats.inProcess"
-msgstr "En proceso"
+msgid "plugins.generic.publicStats.submissionsPerYear"
+msgstr "Envíos por año"
 
-msgid "plugins.generic.publicStats.submissionId"
-msgstr "ID"
+msgid "plugins.generic.publicStats.submissionsTimeline"
+msgstr "Cronología de envíos"
 
-msgid "plugins.generic.publicStats.dateSubmitted"
-msgstr "Fecha de envío"
+msgid "plugins.generic.publicStats.publishedSubmissions"
+msgstr "Envíos publicados"
 
-msgid "plugins.generic.publicStats.datePublished"
-msgstr "Fecha de publicación"
+msgid "plugins.generic.publicStats.publications"
+msgstr "Publicaciones"
 
-msgid "plugins.generic.publicStats.dateDecided"
-msgstr "Fecha de decisión"
+msgid "plugins.generic.publicStats.totalPublications"
+msgstr "Total de publicaciones"
 
-msgid "plugins.generic.publicStats.recommendation"
-msgstr "Recomendación"
+msgid "plugins.generic.publicStats.publicationsByYear"
+msgstr "Publicaciones por año"
 
-# ============================================================
-# FIRST DECISION (Tiempo desde la primera decisión)
-# ============================================================
-msgid "plugins.generic.publicStats.firstDecisionStats"
-msgstr "Estadísticas de primera decisión"
+msgid "plugins.generic.publicStats.publicationTimeline"
+msgstr "Cronología de publicaciones"
 
-msgid "plugins.generic.publicStats.firstDecisionDays"
-msgstr "Días hasta la primera decisión"
+msgid "plugins.generic.publicStats.averageDaysToPublication"
+msgstr "Promedio de días hasta publicación"
 
-msgid "plugins.generic.publicStats.firstDecisionDaysTitle"
-msgstr "Tiempo hasta la primera decisión"
+msgid "plugins.generic.publicStats.averageReviewTime"
+msgstr "Tiempo promedio de revisión"
 
-msgid "plugins.generic.publicStats.firstDecisionDaysDescription"
-msgstr "Análisis del tiempo transcurrido entre el envío y la primera decisión editorial"
+msgid "plugins.generic.publicStats.averageEditorialTime"
+msgstr "Tiempo editorial promedio"
 
-msgid "plugins.generic.publicStats.daysFirstDecision"
-msgstr "Días hasta la primera decisión"
+msgid "plugins.generic.publicStats.averageProductionTime"
+msgstr "Tiempo promedio de producción"
 
-msgid "plugins.generic.publicStats.recentDecisions"
-msgstr "Decisiones recientes"
-
-msgid "plugins.generic.publicStats.decisionType"
-msgstr "Tipo de decisión"
-
-msgid "plugins.generic.publicStats.hadReview"
-msgstr "Tuvo revisión"
-
-msgid "plugins.generic.publicStats.yes"
-msgstr "Sí"
-
-msgid "plugins.generic.publicStats.no"
-msgstr "No"
-
-msgid "plugins.generic.publicStats.averageFirstDecisionDays"
-msgstr "Días promedio hasta la primera decisión"
-
-msgid "plugins.generic.publicStats.firstDecisionSummary"
-msgstr "Resumen de tiempos de primera decisión"
-
-msgid "plugins.generic.publicStats.decisionsWithReview"
-msgstr "Decisiones tras revisión"
-
-msgid "plugins.generic.publicStats.decisionsWithoutReview"
-msgstr "Decisiones sin revisión"
-
-msgid "plugins.generic.publicStats.firstDecisionDistribution"
-msgstr "Distribución de tiempos de primera decisión"
-
-msgid "plugins.generic.publicStats.submissionsAnalyzed"
-msgstr "envíos analizados"
-
-# Tipos de decisión
-msgid "plugins.generic.publicStats.decision.accepted"
-msgstr "Aceptado"
-
-msgid "plugins.generic.publicStats.decision.declined"
-msgstr "Rebutjat"
-
-msgid "plugins.generic.publicStats.decision.revisions"
-msgstr "Revisiones solicitadas"
-
-msgid "plugins.generic.publicStats.decision.sentToReview"
-msgstr "Enviado a revisión"
-
-msgid "plugins.generic.publicStats.decision.sentToProduction"
-msgstr "Enviado a producción"
-
-msgid "plugins.generic.publicStats.decision.other"
-msgstr "Otro"
-
-# Acceptance to publication
-msgid "plugins.generic.publicStats.acceptancePublicationStats"
-msgstr "Estadísticas de aceptación a publicación"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDays"
-msgstr "Días desde la aceptación hasta la publicación"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDaysTitle"
-msgstr "Tiempo desde la aceptación hasta la publicación"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDaysDescription"
-msgstr "Análisis del tiempo transcurrido entre la aceptación y la publicación final"
+msgid "plugins.generic.publicStats.daysToDecision"
+msgstr "Días hasta la decisión"
 
 msgid "plugins.generic.publicStats.daysToPublication"
 msgstr "Días hasta la publicación"
 
-msgid "plugins.generic.publicStats.averageDaysReviewed"
-msgstr "Días promedio (con revisión)"
+msgid "plugins.generic.publicStats.timeToDecision"
+msgstr "Tiempo hasta la decisión"
 
-msgid "plugins.generic.publicStats.averageDaysAll"
-msgstr "Días promedio (todos)"
+msgid "plugins.generic.publicStats.timeToPublication"
+msgstr "Tiempo hasta la publicación"
 
-msgid "plugins.generic.publicStats.avgDaysReviewedPublications"
-msgstr "Promedio para publicaciones revisadas"
+# Editorial decisions
+msgid "plugins.generic.publicStats.editorialDecisions"
+msgstr "Decisiones editoriales"
 
-msgid "plugins.generic.publicStats.avgDaysAllPublications"
-msgstr "Promedio para todas las publicaciones"
+msgid "plugins.generic.publicStats.acceptanceRate"
+msgstr "Tasa de aceptación"
 
-msgid "plugins.generic.publicStats.recentPublications"
-msgstr "Publicaciones recientes"
+msgid "plugins.generic.publicStats.rejectionRate"
+msgstr "Tasa de rechazo"
 
-msgid "plugins.generic.publicStats.daysAverage"
-msgstr "días de promedio"
+msgid "plugins.generic.publicStats.decisionDistribution"
+msgstr "Distribución de decisiones"
 
-msgid "plugins.generic.publicStats.days"
-msgstr "dies"
+msgid "plugins.generic.publicStats.decisionType"
+msgstr "Tipo de decisión"
 
-msgid "plugins.generic.publicStats.publicationsReviewed"
-msgstr "publicaciones revisadas"
+msgid "plugins.generic.publicStats.accepted"
+msgstr "Aceptados"
 
-msgid "plugins.generic.publicStats.totalPublications"
-msgstr "publicaciones totales"
+msgid "plugins.generic.publicStats.declined"
+msgstr "Rechazados"
 
-msgid "plugins.generic.publicStats.publications"
-msgstr "publicaciones"
+msgid "plugins.generic.publicStats.declinedSubmissions"
+msgstr "Envíos rechazados"
 
-msgid "plugins.generic.publicStats.totalSubmissions"
-msgstr "envíos totales"
+msgid "plugins.generic.publicStats.sendBackToAuthor"
+msgstr "Devuelto al autor"
 
-msgid "plugins.generic.publicStats.submissionsReviewed"
-msgstr "envíos revisados"
+msgid "plugins.generic.publicStats.revisions"
+msgstr "Revisiones"
 
-msgid "plugins.generic.publicStats.name"
-msgstr "Nombre"
+msgid "plugins.generic.publicStats.revisionsRequested"
+msgstr "Revisiones solicitadas"
 
-# Citations and impact
+msgid "plugins.generic.publicStats.activeSubmissions"
+msgstr "Envíos activos"
+
+msgid "plugins.generic.publicStats.decisionsCount"
+msgstr "Número de decisiones"
+
+# Geographic
+msgid "plugins.generic.publicStats.geographicDistribution"
+msgstr "Distribución geográfica"
+
+msgid "plugins.generic.publicStats.countryDistribution"
+msgstr "Distribución por país"
+
+msgid "plugins.generic.publicStats.topCountries"
+msgstr "Principales países"
+
+msgid "plugins.generic.publicStats.topCountriesByDownloads"
+msgstr "Principales países por descargas"
+
+msgid "plugins.generic.publicStats.topCountriesByViews"
+msgstr "Principales países por vistas"
+
+msgid "plugins.generic.publicStats.downloadsPerCountry"
+msgstr "Descargas por país"
+
+msgid "plugins.generic.publicStats.viewsPerCountry"
+msgstr "Vistas por país"
+
+msgid "plugins.generic.publicStats.accessesByCountry"
+msgstr "Accesos por país"
+
+msgid "plugins.generic.publicStats.accessesFrom"
+msgstr "Accesos desde"
+
+msgid "plugins.generic.publicStats.topAccessCountries"
+msgstr "Principales países de acceso"
+
+msgid "plugins.generic.publicStats.audienceReachByCountry"
+msgstr "Alcance de audiencia por país"
+
+msgid "plugins.generic.publicStats.countries"
+msgstr "países"
+
+# Citations
 msgid "plugins.generic.publicStats.citations"
-msgstr "Cites"
+msgstr "Citas"
 
-msgid "plugins.generic.publicStats.topCitedArticles"
-msgstr "Articles més citats"
+msgid "plugins.generic.publicStats.totalCitations"
+msgstr "Total de citas"
+
+msgid "plugins.generic.publicStats.mostCitedArticles"
+msgstr "Artículos más citados"
+
+msgid "plugins.generic.publicStats.topArticlesByCitations"
+msgstr "Top de artículos por citas"
 
 msgid "plugins.generic.publicStats.rankingByCitations"
-msgstr "Clasificación por número de citas externas"
+msgstr "Clasificación de artículos por número de citas"
 
-msgid "plugins.generic.publicStats.citationEvolution"
-msgstr "Evolució de cites"
+msgid "plugins.generic.publicStats.citationsByYear"
+msgstr "Citas por año"
 
-msgid "plugins.generic.publicStats.externalCitations"
-msgstr "Cites externes"
-
-msgid "plugins.generic.publicStats.year"
-msgstr "Any"
-
-msgid "plugins.generic.publicStats.totalCitationsReceived"
-msgstr "Total de cites rebudes"
-
-msgid "plugins.generic.publicStats.citationsPerYear"
-msgstr "Cites per any"
-
-# ============================================================
-# CITATIONS BY COUNTRY (Citas por país)
-# ============================================================
 msgid "plugins.generic.publicStats.citationsByCountry"
-msgstr "Cites per país"
-
-msgid "plugins.generic.publicStats.citationsByCountryTitle"
-msgstr "Distribución geográfica de citas"
-
-msgid "plugins.generic.publicStats.citationsByCountryDesc"
-msgstr "Distribución geográfica de citas recibidas desde fuentes externas (OpenAlex)"
-
-msgid "plugins.generic.publicStats.citationsMapTitle"
-msgstr "Mapa global de citas"
+msgstr "Citas por país"
 
 msgid "plugins.generic.publicStats.topCitingCountries"
 msgstr "Principales países citantes"
@@ -688,14 +584,14 @@ msgstr "Principales países citantes"
 msgid "plugins.generic.publicStats.citationsFromCountry"
 msgstr "Citas desde este país"
 
-msgid "plugins.generic.publicStats.citationsCount"
-msgstr "Número de citas"
+msgid "plugins.generic.publicStats.citingWorksPerCountry"
+msgstr "Trabajos citantes por país"
 
-msgid "plugins.generic.publicStats.citingCountryRanking"
-msgstr "Clasificación de países por número de citas"
+msgid "plugins.generic.publicStats.geographicDistributionCitations"
+msgstr "Distribución geográfica de citas"
 
-msgid "plugins.generic.publicStats.citationsWorldMap"
-msgstr "Mapa mundial de citas"
+msgid "plugins.generic.publicStats.citationsTimeline"
+msgstr "Cronología de citas"
 
 msgid "plugins.generic.publicStats.citationsReceived"
 msgstr "Citas recibidas"
@@ -711,7 +607,7 @@ msgid "plugins.generic.publicStats.openAccess"
 msgstr "Acceso abierto"
 
 msgid "plugins.generic.publicStats.openAccessStats"
-msgstr "Estadístiques d'accés obert"
+msgstr "Estadísticas de acceso abierto"
 
 msgid "plugins.generic.publicStats.oaPercentage"
 msgstr "Porcentaje de acceso abierto"
@@ -735,17 +631,17 @@ msgid "plugins.generic.publicStats.oaBronze"
 msgstr "Bronze (lectura gratuita)"
 
 msgid "plugins.generic.publicStats.oaClosed"
-msgstr "Tancat"
+msgstr "Cerrado"
 
 msgid "plugins.generic.publicStats.oaUnknown"
-msgstr "Desconegut"
+msgstr "Desconocido"
 
 msgid "plugins.generic.publicStats.articlesAnalyzed"
 msgstr "artículos analizados"
 
 # Thematic profile
 msgid "plugins.generic.publicStats.thematicProfile"
-msgstr "Perfil temàtic"
+msgstr "Perfil temático"
 
 msgid "plugins.generic.publicStats.researchAreas"
 msgstr "Áreas de investigación"
@@ -761,16 +657,16 @@ msgstr "Distribución por área temática"
 
 # Citing journals
 msgid "plugins.generic.publicStats.citingJournals"
-msgstr "Revistes citants"
+msgstr "Revistas citantes"
 
 msgid "plugins.generic.publicStats.citingJournalsDesc"
-msgstr "Revistes que citen articles d'aquesta revista"
+msgstr "Revistas que citan artículos de esta revista"
 
 msgid "plugins.generic.publicStats.topCitingJournals"
-msgstr "Principals revistes citants"
+msgstr "Principales revistas citantes"
 
 msgid "plugins.generic.publicStats.allCitingJournals"
-msgstr "Totes les revistes citants"
+msgstr "Todas las revistas citantes"
 
 msgid "plugins.generic.publicStats.journalName"
 msgstr "Revista"
@@ -779,29 +675,29 @@ msgid "plugins.generic.publicStats.issn"
 msgstr "ISSN"
 
 msgid "plugins.generic.publicStats.citationsFromJournal"
-msgstr "Cites des d'aquesta revista"
+msgstr "Citas desde esta revista"
 
 msgid "plugins.generic.publicStats.citedArticlesFromJournal"
-msgstr "Articles citats per aquesta revista"
+msgstr "Artículos citados por esta revista"
 
 msgid "plugins.generic.publicStats.timesCited"
-msgstr "Vegades citat"
+msgstr "Veces citado"
 
 msgid "plugins.generic.publicStats.citationYear"
-msgstr "Any de la cita"
+msgstr "Año de la cita"
 
 msgid "plugins.generic.publicStats.allYears"
-msgstr "Tots els anys"
+msgstr "Todos los años"
 
 # Map legends - Geographic distribution
 msgid "plugins.generic.publicStats.legend.veryHighAccess"
-msgstr "≥1.000 accessos"
+msgstr "≥1.000 accesos"
 
 msgid "plugins.generic.publicStats.legend.highAccess"
-msgstr "500-999 accessos"
+msgstr "500-999 accesos"
 
 msgid "plugins.generic.publicStats.legend.mediumAccess"
-msgstr "100-499 accessos"
+msgstr "100-499 accesos"
 
 msgid "plugins.generic.publicStats.legend.lowAccess"
 msgstr "<100 accesos"
@@ -877,7 +773,7 @@ msgstr "Bajo (<25%)"
 
 # Error and no data messages
 msgid "plugins.generic.publicStats.noAffiliation"
-msgstr "Sense afiliació"
+msgstr "Sin afiliación"
 
 msgid "plugins.generic.publicStats.errorLoading"
 msgstr "Error al cargar las estadísticas. Por favor, inténtelo de nuevo."
@@ -901,10 +797,10 @@ msgid "plugins.generic.publicStats.noAnnualData"
 msgstr "No hay datos anuales disponibles"
 
 msgid "plugins.generic.publicStats.noAuthorsData"
-msgstr "No hi ha dades d'autors disponibles"
+msgstr "No hay datos de autores disponibles"
 
 msgid "plugins.generic.publicStats.noReviewersData"
-msgstr "No hi ha dades de revisors disponibles"
+msgstr "No hay datos de revisores disponibles"
 
 msgid "plugins.generic.publicStats.noInstitutionData"
 msgstr "No hay datos de instituciones disponibles"
@@ -943,16 +839,16 @@ msgid "plugins.generic.publicStats.noSectionData"
 msgstr "No hay datos de secciones disponibles"
 
 msgid "plugins.generic.publicStats.noCitationData"
-msgstr "No hi ha dades de cites disponibles"
+msgstr "No hay datos de citas disponibles"
 
 msgid "plugins.generic.publicStats.noCitationMapData"
 msgstr "Aún no hay datos de citas disponibles. Las citas se obtienen de OpenAlex."
 
 msgid "plugins.generic.publicStats.noOaData"
-msgstr "No hi ha dades d'accés obert disponibles"
+msgstr "No hay datos de acceso abierto disponibles"
 
 msgid "plugins.generic.publicStats.noThematicData"
-msgstr "No hi ha dades temàtiques disponibles"
+msgstr "No hay datos temáticos disponibles"
 
 msgid "plugins.generic.publicStats.noCitingJournalsData"
-msgstr "No hi ha dades de revistes citants disponibles"
+msgstr "No hay datos de revistas citantes disponibles"
