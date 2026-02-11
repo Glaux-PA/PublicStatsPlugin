@@ -60,7 +60,24 @@ class OpenAlexService
             return 'noreply@example.com';
         }
     }
-    
+
+    /**
+     * Sanitize a DOI for safe use in API URLs.
+     *
+     * Strips control characters (line breaks, null bytes, etc.) that could
+     * enable HTTP header injection, then URL-encodes the result for safe
+     * concatenation into API request URLs.
+     *
+     * @param string $doi Raw DOI string
+     * @return string Sanitized and URL-encoded DOI
+     */
+    private function sanitizeDoi(string $doi): string
+    {
+        $doi = trim($doi);
+        $doi = preg_replace('/[\r\n\x00-\x1f]/', '', $doi);
+
+        return urlencode($doi);
+    }
     /**
      * Get OpenAlex work by DOI
      */
@@ -72,7 +89,7 @@ class OpenAlexService
             try {
                 usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
                 
-                $url = self::API_BASE . '/works/doi:' . $doi;
+                $url = self::API_BASE . '/works/doi:' . $this->sanitizeDoi($doi);
                 
                 $response = Http::timeout(10)
                     ->withHeaders(['mailto' => $this->contactEmail])

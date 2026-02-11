@@ -19,6 +19,7 @@ namespace APP\plugins\generic\publicStats\controllers\traits;
 
 use PKP\core\PKPRequest;
 use APP\plugins\generic\publicStats\classes\InputValidator;
+use Illuminate\Support\Facades\Cache;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 
 trait CsvExportTrait
@@ -57,7 +58,15 @@ trait CsvExportTrait
     }
 
     /**
-     * Validate context for export
+     * Validate the journal context and apply rate limiting for CSV exports.
+     *
+     * In addition to verifying a valid context (journal) exists, enforces
+     * a per-IP rate limit of 10 export requests per minute. This prevents
+     * automated scraping of export endpoints, which generate CSV files
+     * on-the-fly without caching and execute database queries on each request.
+     *
+     * @param PKPRequest $request Current HTTP request
+     * @return int|null Context ID, or null if invalid or rate limit exceeded
      */
     private function validateContextForExport(PKPRequest $request): ?int
     {
@@ -66,6 +75,19 @@ trait CsvExportTrait
             $this->outputError('Context not found', 404);
             return null;
         }
+
+        // Rate limiting: max 10 CSV exports per minute per IP
+        $ip = $request->getRemoteAddr();
+        $cacheKey = 'csv_rate_limit_' . md5($ip);
+        $count = Cache::get($cacheKey, 0);
+
+        if ($count >= 10) {
+            $this->outputError('Too many export requests. Please try again later.', 429);
+            return null;
+        }
+
+        Cache::put($cacheKey, $count + 1, 60);
+
         return $context->getId();
     }
 
