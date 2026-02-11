@@ -168,6 +168,7 @@ class AuthorStatsService extends BaseStatsService
             }
         }
         
+        $authorMap = $this->mergeByOrcid($authorMap);
         $authorMap = $this->mergeSimilarAuthorsWithoutEmail($authorMap);
         
         $result = [];
@@ -203,7 +204,7 @@ class AuthorStatsService extends BaseStatsService
     {
         $orcid = $author->getOrcid();
         if (!empty($orcid)) {
-            return 'orcid:' . strtolower(trim($orcid));
+            return 'orcid:' . $this->normalizeOrcid($orcid);
         }
         
         $name = $this->normalizeString($author->getFullName());
@@ -230,6 +231,78 @@ class AuthorStatsService extends BaseStatsService
         $nameKey = implode('_', $nameWords);
         
         return 'name_only:' . $nameKey;
+    }
+
+    /**
+     * Merge author entries that share the same ORCID but were keyed differently.
+     *
+     * This handles the case where the same author appears with ORCID in one
+     * submission and without ORCID in another, producing different map keys
+     * (e.g. 'orcid:0000-...' vs 'name_only:john_doe').
+     */
+    private function mergeByOrcid(array $authorMap): array
+    {
+        // Group entries by normalized ORCID
+        $orcidGroups = []; // normalized_orcid => [key1, key2, ...]
+        
+        foreach ($authorMap as $key => $data) {
+            $orcid = $data['orcid'] ?? '';
+            if (empty($orcid)) continue;
+            
+            $normalizedOrcid = $this->normalizeOrcid($orcid);
+            if (empty($normalizedOrcid)) continue;
+            
+            $orcidGroups[$normalizedOrcid][] = $key;
+        }
+        
+        // Merge groups with more than one entry
+        foreach ($orcidGroups as $normalizedOrcid => $keys) {
+            if (count($keys) <= 1) continue;
+            
+            // Use the orcid-prefixed key if it exists, otherwise the first key
+            $primaryKey = null;
+            foreach ($keys as $k) {
+                if (str_starts_with($k, 'orcid:')) {
+                    $primaryKey = $k;
+                    break;
+                }
+            }
+            if ($primaryKey === null) {
+                $primaryKey = $keys[0];
+            }
+            
+            foreach ($keys as $k) {
+                if ($k === $primaryKey) continue;
+                
+                $secondary = $authorMap[$k];
+                
+                // Merge IDs and submission IDs
+                $authorMap[$primaryKey]['ids'] = array_unique(
+                    array_merge($authorMap[$primaryKey]['ids'], $secondary['ids'])
+                );
+                $authorMap[$primaryKey]['submissionIds'] = array_unique(
+                    array_merge($authorMap[$primaryKey]['submissionIds'], $secondary['submissionIds'])
+                );
+                
+                // Keep the most complete info
+                if (strlen($secondary['name']) > strlen($authorMap[$primaryKey]['name'])) {
+                    $authorMap[$primaryKey]['name'] = $secondary['name'];
+                }
+                if (empty($authorMap[$primaryKey]['email']) && !empty($secondary['email'])) {
+                    $authorMap[$primaryKey]['email'] = $secondary['email'];
+                }
+                if (empty($authorMap[$primaryKey]['affiliation']) && !empty($secondary['affiliation'])) {
+                    $authorMap[$primaryKey]['affiliation'] = $secondary['affiliation'];
+                }
+                if (empty($authorMap[$primaryKey]['orcid']) && !empty($secondary['orcid'])) {
+                    $authorMap[$primaryKey]['orcid'] = $secondary['orcid'];
+                }
+                
+                unset($authorMap[$k]);
+            }
+        }
+        
+        return $authorMap;
     }
     
     /**
@@ -334,6 +407,20 @@ class AuthorStatsService extends BaseStatsService
         $text = preg_replace('/\s+/', ' ', $text);
         
         return trim($text);
+    }
+
+
+    /**
+     * Normalize ORCID to bare ID format (e.g. 0000-0002-1234-5678)
+     * Handles full URLs, http/https variants, and bare IDs.
+     */
+    private function normalizeOrcid(string $orcid): string
+    {
+        $orcid = strtolower(trim($orcid));
+        // Strip URL prefix: https://orcid.org/, http://orcid.org/, orcid.org/
+        $orcid = preg_replace('#^https?://orcid\.org/#', '', $orcid);
+        $orcid = preg_replace('#^orcid\.org/#', '', $orcid);
+        return trim($orcid, '/');
     }
     
     /**
