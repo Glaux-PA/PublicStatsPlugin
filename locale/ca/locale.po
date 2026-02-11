@@ -12,21 +12,967 @@ msgstr ""
 "Language: ca_ES"
 
 # Plugin metadata
-msgid "plugins.generic.publicStats.displayName"
-msgstr "Estadístiques públiques"
-
-msgid "plugins.generic.publicStats.description"
-msgstr "Plugin per mostrar estadístiques públiques de la revista."
+msgid "manager.navigationMenus.statistics.conditionalWarning"
+msgstr "Aquest enllaç només apareixerà si el plugin d'estadístiques públiques està habilitat."
 
 msgid "manager.navigationMenus.statistics.description"
 msgstr "Enllaç a la pàgina d'estadístiques públiques de la revista."
 
-msgid "manager.navigationMenus.statistics.conditionalWarning"
-msgstr "Aquest enllaç només apareixerà si el plugin d'estadístiques públiques està habilitat."
+msgid "plugins.generic.publicStats.acceptancePublicationDays"
+msgstr "Dies des de l'acceptació fins a la publicació"
+
+msgid "plugins.generic.publicStats.acceptancePublicationDaysDescription"
+msgstr "Anàlisi del temps transcorregut entre l'acceptació i la publicació final"
+
+msgid "plugins.generic.publicStats.acceptancePublicationDaysTitle"
+msgstr "Temps des de l'acceptació fins a la publicació"
+
+# Acceptance to publication
+msgid "plugins.generic.publicStats.acceptancePublicationStats"
+msgstr "Estadístiques d'acceptació a publicació"
+
+msgid "plugins.generic.publicStats.acceptanceRate"
+msgstr "Taxa d'acceptació"
+
+msgid "plugins.generic.publicStats.accepted"
+msgstr "Acceptats"
+
+msgid "plugins.generic.publicStats.accessCount"
+msgstr "Nombre d'accessos"
+
+msgid "plugins.generic.publicStats.accesses"
+msgstr "Accessos"
+
+msgid "plugins.generic.publicStats.accessesByCountry"
+msgstr "Accessos per país"
+
+msgid "plugins.generic.publicStats.accessesFrom"
+msgstr "Accessos des de"
+
+msgid "plugins.generic.publicStats.accessesFromCountry"
+msgstr "Accessos des d'aquest país"
+
+msgid "plugins.generic.publicStats.activeSubmissions"
+msgstr "Enviaments actius"
+
+msgid "plugins.generic.publicStats.activity"
+msgstr "Activitat"
+
+msgid "plugins.generic.publicStats.affiliation"
+msgstr "Afiliació"
+
+msgid "plugins.generic.publicStats.all"
+msgstr "Tots"
+
+msgid "plugins.generic.publicStats.allCitingInstitutions"
+msgstr "Totes les institucions citants"
+
+msgid "plugins.generic.publicStats.allCitingJournals"
+msgstr "Totes les revistes citants"
+
+msgid "plugins.generic.publicStats.allTime"
+msgstr "Tot el temps"
+
+msgid "plugins.generic.publicStats.allTimeSummary"
+msgstr "Resum històric"
+
+msgid "plugins.generic.publicStats.allYears"
+msgstr "Tots els anys"
+
+msgid "plugins.generic.publicStats.annualActivity"
+msgstr "Activitat anual"
+
+msgid "plugins.generic.publicStats.annualContributions"
+msgstr "Contribucions anuals"
+
+msgid "plugins.generic.publicStats.annualOverview"
+msgstr "Resum anual"
+
+msgid "plugins.generic.publicStats.annualStats"
+msgstr "Estadístiques anuals"
+
+msgid "plugins.generic.publicStats.annualSubmissionActivity"
+msgstr "Activitat anual de trameses"
+
+msgid "plugins.generic.publicStats.annualSubmissionsOverview"
+msgstr "Resum anual de trameses"
+
+msgid "plugins.generic.publicStats.annualTrends"
+msgstr "Tendències anuals"
+
+msgid "plugins.generic.publicStats.areaDistribution"
+msgstr "Distribució per àrea temàtica"
+
+msgid "plugins.generic.publicStats.articleCount"
+msgstr "Nombre d'articles"
+
+msgid "plugins.generic.publicStats.articleReach"
+msgstr "Abast dels articles"
+
+msgid "plugins.generic.publicStats.articleTitle"
+msgstr "Títol de l'article"
+
+# Articles
+msgid "plugins.generic.publicStats.articles"
+msgstr "Articles"
+
+msgid "plugins.generic.publicStats.articlesAnalyzed"
+msgstr "articles analitzats"
+
+msgid "plugins.generic.publicStats.articlesBy"
+msgstr "Articles per"
+
+msgid "plugins.generic.publicStats.articlesBySections"
+msgstr "Articles per seccions"
+
+msgid "plugins.generic.publicStats.articlesFromInstitution"
+msgstr "Articles d'aquesta institució"
+
+msgid "plugins.generic.publicStats.articlesInArea"
+msgstr "articles en aquesta àrea"
+
+msgid "plugins.generic.publicStats.articlesPerIssue"
+msgstr "Articles per número"
+
+msgid "plugins.generic.publicStats.audienceReachByCountry"
+msgstr "Abast d'audiència per país"
+
+msgid "plugins.generic.publicStats.author"
+msgstr "Autor"
+
+msgid "plugins.generic.publicStats.authorArticles"
+msgstr "Articles de l'autor"
+
+msgid "plugins.generic.publicStats.authorIndividualStats"
+msgstr "Estadístiques per autor"
+
+msgid "plugins.generic.publicStats.authorIndividualStatsDescription"
+msgstr "Estadístiques detallades de publicacions, descàrregues i visualitzacions per autor"
+
+msgid "plugins.generic.publicStats.authorInformation"
+msgstr "Informació de l'autor"
+
+msgid "plugins.generic.publicStats.authorName"
+msgstr "Nom de l'autor"
+
+# Authors
+msgid "plugins.generic.publicStats.authors"
+msgstr "Autors"
+
+msgid "plugins.generic.publicStats.authorsByCountry"
+msgstr "Autors per país"
+
+msgid "plugins.generic.publicStats.authorsByCountryDescription"
+msgstr "Visualització geogràfica de l'origen dels autors que publiquen a la revista"
+
+msgid "plugins.generic.publicStats.authorsByCountryTitle"
+msgstr "Distribució d'autors per país"
+
+# ============================================================
+# AUTHORS BY INSTITUTION (Distribució d'autors per institució)
+# ============================================================
+msgid "plugins.generic.publicStats.authorsByInstitution"
+msgstr "Autors per institució"
+
+msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
+msgstr "Anàlisi de les afiliacions institucionals dels autors que publiquen a la revista"
+
+msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
+msgstr "Distribució d'autors per institució"
+
+msgid "plugins.generic.publicStats.authorsCount"
+msgstr "Autors"
+
+msgid "plugins.generic.publicStats.authorsFromInstitution"
+msgstr "Autors d'aquesta institució"
+
+msgid "plugins.generic.publicStats.authorsPerCountry"
+msgstr "Autors per país"
+
+msgid "plugins.generic.publicStats.authorsWorldMap"
+msgstr "Mapa mundial d'autors"
+
+msgid "plugins.generic.publicStats.averageDaysAll"
+msgstr "Dies mitjans (tots)"
+
+msgid "plugins.generic.publicStats.averageDaysReviewed"
+msgstr "Dies mitjans (amb revisió)"
+
+msgid "plugins.generic.publicStats.averageDaysToPublication"
+msgstr "Mitjana de dies fins a publicació"
+
+msgid "plugins.generic.publicStats.averageEditorialTime"
+msgstr "Temps editorial mitjà"
+
+msgid "plugins.generic.publicStats.averageFirstDecisionDays"
+msgstr "Dies mitjans fins a la primera decisió"
+
+msgid "plugins.generic.publicStats.averageProductionTime"
+msgstr "Temps mitjà de producció"
+
+msgid "plugins.generic.publicStats.averageReviewTime"
+msgstr "Temps mitjà de revisió"
+
+msgid "plugins.generic.publicStats.avgArticlesPerIssue"
+msgstr "Mitjana d'articles per número"
+
+msgid "plugins.generic.publicStats.avgDaysAllPublications"
+msgstr "Mitjana per a totes les publicacions"
+
+msgid "plugins.generic.publicStats.avgDaysReviewedPublications"
+msgstr "Mitjana per a publicacions revisades"
+
+msgid "plugins.generic.publicStats.avgDownloadsPerArticle"
+msgstr "Mitjana de descàrregues per article"
+
+msgid "plugins.generic.publicStats.avgViewsPerArticle"
+msgstr "Mitjana de visualitzacions per article"
+
+msgid "plugins.generic.publicStats.citationEvolution"
+msgstr "Evolució de cites"
+
+msgid "plugins.generic.publicStats.citationYear"
+msgstr "Any de la cita"
+
+# Citations and impact
+msgid "plugins.generic.publicStats.citations"
+msgstr "Cites"
+
+# ============================================================
+# CITATIONS BY COUNTRY (Cites per país)
+# ============================================================
+msgid "plugins.generic.publicStats.citationsByCountry"
+msgstr "Cites per país"
+
+msgid "plugins.generic.publicStats.citationsByCountryDesc"
+msgstr "Distribució geogràfica de cites rebudes de fonts externes (OpenAlex)"
+
+msgid "plugins.generic.publicStats.citationsByCountryTitle"
+msgstr "Distribució geogràfica de cites"
+
+msgid "plugins.generic.publicStats.citationsByYear"
+msgstr "Cites per any"
+
+msgid "plugins.generic.publicStats.citationsCount"
+msgstr "Nombre de cites"
+
+msgid "plugins.generic.publicStats.citationsFromCountry"
+msgstr "Cites des d'aquest país"
+
+msgid "plugins.generic.publicStats.citationsFromInstitution"
+msgstr "Cites des d'aquesta institució"
+
+msgid "plugins.generic.publicStats.citationsFromJournal"
+msgstr "Cites des d'aquesta revista"
+
+msgid "plugins.generic.publicStats.citationsMapTitle"
+msgstr "Mapa global de cites"
+
+msgid "plugins.generic.publicStats.citationsPerYear"
+msgstr "Cites per any"
+
+msgid "plugins.generic.publicStats.citationsReceived"
+msgstr "Cites rebudes"
+
+msgid "plugins.generic.publicStats.citationsReceivedInYear"
+msgstr "Cites rebudes a "
+
+msgid "plugins.generic.publicStats.citationsTimeline"
+msgstr "Cronologia de cites"
+
+msgid "plugins.generic.publicStats.citationsWorldMap"
+msgstr "Mapa mundial de cites"
+
+msgid "plugins.generic.publicStats.citedArticlesFromJournal"
+msgstr "Articles citats per aquesta revista"
+
+msgid "plugins.generic.publicStats.citingCountryRanking"
+msgstr "Classificació de països per nombre de cites"
+
+# Citing institutions
+msgid "plugins.generic.publicStats.citingInstitutions"
+msgstr "Institucions citants"
+
+msgid "plugins.generic.publicStats.citingInstitutionsDesc"
+msgstr "Institucions que citen articles d'aquesta revista"
+
+msgid "plugins.generic.publicStats.citingJournals"
+msgstr "Revistes citants"
+
+msgid "plugins.generic.publicStats.citingJournalsDesc"
+msgstr "Revistes que citen articles d'aquesta revista"
+
+msgid "plugins.generic.publicStats.citingWorksPerCountry"
+msgstr "Treballs citants per país"
+
+msgid "plugins.generic.publicStats.coAuthorName"
+msgstr "Nom del coautor"
+
+msgid "plugins.generic.publicStats.coAuthors"
+msgstr "Coautors"
+
+msgid "plugins.generic.publicStats.collaborations"
+msgstr "Col·laboracions"
+
+msgid "plugins.generic.publicStats.contributingAuthors"
+msgstr "Autors contribuents"
+
+msgid "plugins.generic.publicStats.contributingReviewers"
+msgstr "Revisors contribuents"
+
+msgid "plugins.generic.publicStats.contributionsBySections"
+msgstr "Contribucions per seccions"
+
+msgid "plugins.generic.publicStats.contributionsDownloads"
+msgstr "Contribucions (descàrregues)"
+
+msgid "plugins.generic.publicStats.contributionsViews"
+msgstr "Contribucions (visualitzacions)"
+
+msgid "plugins.generic.publicStats.countries"
+msgstr "països"
+
+msgid "plugins.generic.publicStats.country"
+msgstr "País"
+
+msgid "plugins.generic.publicStats.countryCode"
+msgstr "Codi de país"
+
+msgid "plugins.generic.publicStats.countryDistribution"
+msgstr "Distribució per país"
+
+msgid "plugins.generic.publicStats.countryName"
+msgstr "Nom del país"
+
+msgid "plugins.generic.publicStats.countryStats"
+msgstr "Estadístiques per país"
+
+msgid "plugins.generic.publicStats.dataSourceOpenAlex"
+msgstr "Font de dades: OpenAlex"
+
+msgid "plugins.generic.publicStats.dateDecided"
+msgstr "Data de decisió"
+
+msgid "plugins.generic.publicStats.datePublished"
+msgstr "Data de publicació"
+
+msgid "plugins.generic.publicStats.dateSubmitted"
+msgstr "Data de tramesa"
+
+msgid "plugins.generic.publicStats.days"
+msgstr "dies"
+
+msgid "plugins.generic.publicStats.daysAverage"
+msgstr "dies de mitjana"
+
+msgid "plugins.generic.publicStats.daysFirstDecision"
+msgstr "Dies fins a la primera decisió"
+
+msgid "plugins.generic.publicStats.daysToDecision"
+msgstr "Dies fins a la decisió"
+
+msgid "plugins.generic.publicStats.daysToPublication"
+msgstr "Dies fins a la publicació"
+
+# Tipus de decisió
+msgid "plugins.generic.publicStats.decision.accepted"
+msgstr "Acceptat"
+
+msgid "plugins.generic.publicStats.decision.declined"
+msgstr "Rebutjat"
+
+msgid "plugins.generic.publicStats.decision.other"
+msgstr "Altre"
+
+msgid "plugins.generic.publicStats.decision.revisions"
+msgstr "Revisions sol·licitades"
+
+msgid "plugins.generic.publicStats.decision.sentToProduction"
+msgstr "Enviat a producció"
+
+msgid "plugins.generic.publicStats.decision.sentToReview"
+msgstr "Enviat a revisió"
+
+msgid "plugins.generic.publicStats.decisionDistribution"
+msgstr "Distribució de decisions"
+
+msgid "plugins.generic.publicStats.decisionType"
+msgstr "Tipus de decisió"
+
+msgid "plugins.generic.publicStats.decisionsCount"
+msgstr "Nombre de decisions"
+
+msgid "plugins.generic.publicStats.decisionsWithReview"
+msgstr "Decisions després de revisió"
+
+msgid "plugins.generic.publicStats.decisionsWithoutReview"
+msgstr "Decisions sense revisió"
+
+msgid "plugins.generic.publicStats.declined"
+msgstr "Rebutjats"
+
+msgid "plugins.generic.publicStats.declinedSubmissions"
+msgstr "Enviaments rebutjats"
+
+msgid "plugins.generic.publicStats.description"
+msgstr "Plugin per mostrar estadístiques públiques de la revista."
+
+# Plugin metadata
+msgid "plugins.generic.publicStats.displayName"
+msgstr "Estadístiques públiques"
+
+msgid "plugins.generic.publicStats.distributionAcrossIssues"
+msgstr "Distribució de descàrregues per números de la revista"
+
+msgid "plugins.generic.publicStats.distributionAcrossSections"
+msgstr "Distribució de descàrregues per seccions de la revista"
+
+# Metrics
+msgid "plugins.generic.publicStats.downloads"
+msgstr "Descàrregues"
+
+msgid "plugins.generic.publicStats.downloadsByIssue"
+msgstr "Descàrregues per número"
+
+msgid "plugins.generic.publicStats.downloadsBySection"
+msgstr "Descàrregues per secció"
+
+msgid "plugins.generic.publicStats.downloadsPerCountry"
+msgstr "Descàrregues per país"
+
+msgid "plugins.generic.publicStats.downloadsViewsOverYear"
+msgstr "Descàrregues i visualitzacions al llarg de l'any"
+
+msgid "plugins.generic.publicStats.editorName"
+msgstr "Nom de l'editor"
+
+msgid "plugins.generic.publicStats.editorialDecisions"
+msgstr "Decisions editorials"
+
+msgid "plugins.generic.publicStats.editorialStatistics"
+msgstr "Estadístiques editorials"
+
+msgid "plugins.generic.publicStats.editorialStats"
+msgstr "Estadístiques editorials"
+
+msgid "plugins.generic.publicStats.editors"
+msgstr "Editors"
+
+msgid "plugins.generic.publicStats.editorsInvolved"
+msgstr "Editors involucrats"
+
+# Error and no data messages
+msgid "plugins.generic.publicStats.errorLoading"
+msgstr "Error en carregar les estadístiques. Si us plau, torneu-ho a provar."
+
+# Export options
+msgid "plugins.generic.publicStats.export"
+msgstr "Exportar"
+
+msgid "plugins.generic.publicStats.exportCsv"
+msgstr "Exportar CSV"
+
+msgid "plugins.generic.publicStats.exportOptions"
+msgstr "Opcions d'exportació"
+
+msgid "plugins.generic.publicStats.externalCitations"
+msgstr "Cites externes"
+
+msgid "plugins.generic.publicStats.firstDecisionDays"
+msgstr "Dies fins a la primera decisió"
+
+msgid "plugins.generic.publicStats.firstDecisionDaysDescription"
+msgstr "Anàlisi del temps transcorregut entre la tramesa i la primera decisió editorial"
+
+msgid "plugins.generic.publicStats.firstDecisionDaysTitle"
+msgstr "Temps fins a la primera decisió"
+
+msgid "plugins.generic.publicStats.firstDecisionDistribution"
+msgstr "Distribució de temps de primera decisió"
+
+# ============================================================
+# FIRST DECISION (Temps des de la primera decisió)
+# ============================================================
+msgid "plugins.generic.publicStats.firstDecisionStats"
+msgstr "Estadístiques de primera decisió"
+
+msgid "plugins.generic.publicStats.firstDecisionSummary"
+msgstr "Resum de temps de primera decisió"
+
+msgid "plugins.generic.publicStats.frequentCoAuthors"
+msgstr "Coautors freqüents"
+
+msgid "plugins.generic.publicStats.fullReport"
+msgstr "Informe complet"
+
+# Main sections
+msgid "plugins.generic.publicStats.generalStatistics"
+msgstr "Estadístiques generals"
+
+# ============================================================
+# GEOGRAPHIC DISTRIBUTION (Distribució geogràfica)
+# ============================================================
+msgid "plugins.generic.publicStats.geographicDistribution"
+msgstr "Distribució geogràfica"
+
+msgid "plugins.generic.publicStats.geographicDistributionAuthors"
+msgstr "Distribució geogràfica d'autors"
+
+msgid "plugins.generic.publicStats.geographicDistributionCitations"
+msgstr "Distribució geogràfica de cites"
+
+msgid "plugins.generic.publicStats.geographicDistributionDescription"
+msgstr "Mapa que mostra la distribució mundial de descàrregues i visualitzacions per país d'origen"
+
+msgid "plugins.generic.publicStats.geographicDistributionReviewers"
+msgstr "Distribució geogràfica de revisors"
+
+msgid "plugins.generic.publicStats.geographicDistributionTitle"
+msgstr "Distribució geogràfica de l'accés als articles"
+
+msgid "plugins.generic.publicStats.hadReview"
+msgstr "Va tenir revisió"
+
+msgid "plugins.generic.publicStats.impactAnalysis"
+msgstr "Anàlisi d'impacte"
+
+msgid "plugins.generic.publicStats.inProcess"
+msgstr "En procés"
+
+msgid "plugins.generic.publicStats.institution"
+msgstr "Institució"
+
+msgid "plugins.generic.publicStats.institutionCount"
+msgstr "Nombre d'autors"
+
+msgid "plugins.generic.publicStats.institutionDistribution"
+msgstr "Distribució per institució"
+
+msgid "plugins.generic.publicStats.institutionName"
+msgstr "Institució"
+
+msgid "plugins.generic.publicStats.institutionRanking"
+msgstr "Classificació d'institucions per nombre d'autors"
+
+msgid "plugins.generic.publicStats.institutionType"
+msgstr "Tipus"
+
+msgid "plugins.generic.publicStats.issn"
+msgstr "ISSN"
+
+msgid "plugins.generic.publicStats.issue"
+msgstr "Número"
+
+msgid "plugins.generic.publicStats.issueDistribution"
+msgstr "Distribució per números"
+
+# Issues and sections
+msgid "plugins.generic.publicStats.issues"
+msgstr "Números"
+
+msgid "plugins.generic.publicStats.journalName"
+msgstr "Revista"
+
+msgid "plugins.generic.publicStats.last60Days"
+msgstr "(últims 60 dies)"
+
+# Map legends - Authors by institution
+msgid "plugins.generic.publicStats.legend.authors100plus"
+msgstr "≥100 autors"
+
+msgid "plugins.generic.publicStats.legend.authors10to19"
+msgstr "10-19 autors"
+
+msgid "plugins.generic.publicStats.legend.authors20to49"
+msgstr "20-49 autors"
+
+msgid "plugins.generic.publicStats.legend.authors50to99"
+msgstr "50-99 autors"
+
+msgid "plugins.generic.publicStats.legend.authorsLessThan10"
+msgstr "<10 autors"
+
+msgid "plugins.generic.publicStats.legend.between100and500"
+msgstr "100-500"
+
+msgid "plugins.generic.publicStats.legend.between500and1000"
+msgstr "500-1.000"
+
+msgid "plugins.generic.publicStats.legend.bottomQuartile"
+msgstr "Últim 25%"
+
+msgid "plugins.generic.publicStats.legend.citationsHigh"
+msgstr "Alt (50-75%)"
+
+msgid "plugins.generic.publicStats.legend.citationsLow"
+msgstr "Baix (<25%)"
+
+msgid "plugins.generic.publicStats.legend.citationsMedium"
+msgstr "Mitjà (25-50%)"
+
+msgid "plugins.generic.publicStats.legend.citationsVeryHigh"
+msgstr "Molt alt (Top 25%)"
+
+msgid "plugins.generic.publicStats.legend.highAccess"
+msgstr "500-999 accessos"
+
+msgid "plugins.generic.publicStats.legend.lessThan100"
+msgstr "Menys de 100"
+
+msgid "plugins.generic.publicStats.legend.lowAccess"
+msgstr "<100 accessos"
+
+msgid "plugins.generic.publicStats.legend.mediumAccess"
+msgstr "100-499 accessos"
+
+msgid "plugins.generic.publicStats.legend.moreThan1000"
+msgstr "Més de 1.000"
+
+# Map legends - Reviewers
+msgid "plugins.generic.publicStats.legend.reviewers100plus"
+msgstr "≥100 revisors"
+
+msgid "plugins.generic.publicStats.legend.reviewers10to19"
+msgstr "10-19 revisors"
+
+msgid "plugins.generic.publicStats.legend.reviewers20to49"
+msgstr "20-49 revisors"
+
+msgid "plugins.generic.publicStats.legend.reviewers50to99"
+msgstr "50-99 revisors"
+
+msgid "plugins.generic.publicStats.legend.reviewersLessThan10"
+msgstr "<10 revisors"
+
+msgid "plugins.generic.publicStats.legend.secondQuartile"
+msgstr "50-75%"
+
+msgid "plugins.generic.publicStats.legend.thirdQuartile"
+msgstr "25-50%"
+
+# Map legends - Citations by country (quartiles)
+msgid "plugins.generic.publicStats.legend.topQuartile"
+msgstr "Top 25%"
+
+# Map legends - Geographic distribution
+msgid "plugins.generic.publicStats.legend.veryHighAccess"
+msgstr "≥1.000 accessos"
+
+msgid "plugins.generic.publicStats.loadingStats"
+msgstr "Carregant estadístiques..."
+
+msgid "plugins.generic.publicStats.monthlyContributions"
+msgstr "Contribucions mensuals"
+
+msgid "plugins.generic.publicStats.monthlyOverview"
+msgstr "Resum mensual"
+
+msgid "plugins.generic.publicStats.monthlyStats"
+msgstr "Estadístiques mensuals"
+
+msgid "plugins.generic.publicStats.monthlySubmissionsTracking"
+msgstr "Seguiment mensual de trameses"
+
+# Trends and timelines
+msgid "plugins.generic.publicStats.monthlyTrends"
+msgstr "Tendències mensuals"
+
+msgid "plugins.generic.publicStats.mostCitedArticles"
+msgstr "Articles més citats"
+
+msgid "plugins.generic.publicStats.mostDownloaded60Days"
+msgstr "Més descarregats (60 dies)"
+
+msgid "plugins.generic.publicStats.mostDownloadedArticles"
+msgstr "Articles més descarregats"
+
+msgid "plugins.generic.publicStats.mostViewed60Days"
+msgstr "Més vistos (60 dies)"
+
+msgid "plugins.generic.publicStats.mostViewedArticles"
+msgstr "Articles més vistos"
+
+msgid "plugins.generic.publicStats.name"
+msgstr "Nom"
+
+msgid "plugins.generic.publicStats.no"
+msgstr "No"
+
+msgid "plugins.generic.publicStats.noAffiliation"
+msgstr "Sense afiliació"
+
+msgid "plugins.generic.publicStats.noAnnualData"
+msgstr "No hi ha dades anuals disponibles"
+
+msgid "plugins.generic.publicStats.noArticles"
+msgstr "No hi ha articles per mostrar"
+
+msgid "plugins.generic.publicStats.noAuthorsData"
+msgstr "No hi ha dades d'autors disponibles"
+
+msgid "plugins.generic.publicStats.noCitationData"
+msgstr "No hi ha dades de cites disponibles"
+
+msgid "plugins.generic.publicStats.noCitationMapData"
+msgstr "Encara no hi ha dades de cites disponibles. Les cites s'obtenen d'OpenAlex."
+
+msgid "plugins.generic.publicStats.noCitingInstitutionsData"
+msgstr "No hi ha dades d'institucions citants disponibles"
+
+msgid "plugins.generic.publicStats.noCitingJournalsData"
+msgstr "No hi ha dades de revistes citants disponibles"
+
+msgid "plugins.generic.publicStats.noCoAuthors"
+msgstr "No hi ha coautors per mostrar"
+
+msgid "plugins.generic.publicStats.noDataAvailable"
+msgstr "No hi ha dades disponibles"
+
+msgid "plugins.generic.publicStats.noDataMessage"
+msgstr "No hi ha dades disponibles per al període seleccionat"
+
+msgid "plugins.generic.publicStats.noDecisionData"
+msgstr "No hi ha dades de decisions disponibles"
+
+msgid "plugins.generic.publicStats.noDownloadsData"
+msgstr "No hi ha dades de descàrregues per a aquest període"
+
+msgid "plugins.generic.publicStats.noEditorialAnnualData"
+msgstr "No hi ha dades editorials anuals disponibles"
+
+msgid "plugins.generic.publicStats.noEditorialData"
+msgstr "No hi ha dades editorials disponibles"
+
+msgid "plugins.generic.publicStats.noGeographicData"
+msgstr "No hi ha dades de distribució geogràfica disponibles"
+
+msgid "plugins.generic.publicStats.noInstitutionData"
+msgstr "No hi ha dades d'institucions disponibles"
+
+msgid "plugins.generic.publicStats.noIssueData"
+msgstr "No hi ha dades de números disponibles"
+
+msgid "plugins.generic.publicStats.noMonthlyData"
+msgstr "No hi ha dades mensuals disponibles"
+
+msgid "plugins.generic.publicStats.noOaData"
+msgstr "No hi ha dades d'accés obert disponibles"
+
+msgid "plugins.generic.publicStats.noPublicationData"
+msgstr "No hi ha dades de publicació disponibles"
+
+msgid "plugins.generic.publicStats.noRecentDownloadsData"
+msgstr "No hi ha descàrregues recents en els últims 60 dies"
+
+msgid "plugins.generic.publicStats.noRecentViewsData"
+msgstr "No hi ha visualitzacions recents en els últims 60 dies"
+
+msgid "plugins.generic.publicStats.noReviewersData"
+msgstr "No hi ha dades de revisors disponibles"
+
+msgid "plugins.generic.publicStats.noSectionData"
+msgstr "No hi ha dades de seccions disponibles"
+
+msgid "plugins.generic.publicStats.noThematicData"
+msgstr "No hi ha dades temàtiques disponibles"
+
+msgid "plugins.generic.publicStats.noViewsData"
+msgstr "No hi ha dades de visualitzacions per a aquest període"
+
+msgid "plugins.generic.publicStats.numberOfAuthors"
+msgstr "Nombre d'autors"
+
+msgid "plugins.generic.publicStats.numberOfReviewers"
+msgstr "Nombre de revisors"
+
+msgid "plugins.generic.publicStats.oaBronze"
+msgstr "Bronze (lectura gratuïta)"
+
+msgid "plugins.generic.publicStats.oaClosed"
+msgstr "Tancat"
+
+msgid "plugins.generic.publicStats.oaDiamond"
+msgstr "Diamond (sense taxes)"
+
+msgid "plugins.generic.publicStats.oaDistribution"
+msgstr "Distribució per tipus d'accés"
+
+msgid "plugins.generic.publicStats.oaGold"
+msgstr "Gold (revista oberta)"
+
+msgid "plugins.generic.publicStats.oaGreen"
+msgstr "Green (repositori)"
+
+msgid "plugins.generic.publicStats.oaHybrid"
+msgstr "Hybrid (opció de pagament)"
+
+msgid "plugins.generic.publicStats.oaPercentage"
+msgstr "Percentatge d'accés obert"
+
+msgid "plugins.generic.publicStats.oaUnknown"
+msgstr "Desconegut"
+
+# Open access
+msgid "plugins.generic.publicStats.openAccess"
+msgstr "Accés obert"
+
+msgid "plugins.generic.publicStats.openAccessStats"
+msgstr "Estadístiques d'accés obert"
+
+msgid "plugins.generic.publicStats.otherInstitutions"
+msgstr "Altres institucions"
+
+msgid "plugins.generic.publicStats.overview"
+msgstr "Resum"
+
+msgid "plugins.generic.publicStats.publicationTimeline"
+msgstr "Cronologia de publicacions"
+
+msgid "plugins.generic.publicStats.publications"
+msgstr "publicacions"
+
+msgid "plugins.generic.publicStats.publicationsBy"
+msgstr "Publicacions per"
+
+msgid "plugins.generic.publicStats.publicationsByYear"
+msgstr "Publicacions per any"
+
+msgid "plugins.generic.publicStats.publicationsReviewed"
+msgstr "publicacions revisades"
+
+msgid "plugins.generic.publicStats.published"
+msgstr "Publicats"
+
+msgid "plugins.generic.publicStats.publishedIssues"
+msgstr "Números publicats"
+
+msgid "plugins.generic.publicStats.publishedSubmissions"
+msgstr "Enviaments publicats"
+
+msgid "plugins.generic.publicStats.rank"
+msgstr "Posició"
+
+msgid "plugins.generic.publicStats.rankingByCitations"
+msgstr "Classificació per nombre de cites externes"
+
+msgid "plugins.generic.publicStats.rankingByDownloads"
+msgstr "Classificació d'articles per nombre de descàrregues"
+
+msgid "plugins.generic.publicStats.rankingByRecentDownloads"
+msgstr "Classificació d'articles per descàrregues en els últims 60 dies"
+
+msgid "plugins.generic.publicStats.rankingByRecentViews"
+msgstr "Classificació d'articles per visualitzacions en els últims 60 dies"
+
+msgid "plugins.generic.publicStats.rankingByViews"
+msgstr "Classificació d'articles per nombre de visualitzacions"
+
+msgid "plugins.generic.publicStats.received"
+msgstr "Rebuts"
+
+msgid "plugins.generic.publicStats.receivedSubmissions"
+msgstr "Enviaments rebuts"
+
+msgid "plugins.generic.publicStats.recentDecisions"
+msgstr "Decisions recents"
+
+msgid "plugins.generic.publicStats.recentPublications"
+msgstr "Publicacions recents"
+
+msgid "plugins.generic.publicStats.recommendation"
+msgstr "Recomanació"
+
+msgid "plugins.generic.publicStats.rejectionRate"
+msgstr "Taxa de rebuig"
+
+msgid "plugins.generic.publicStats.researchAreas"
+msgstr "Àrees de recerca"
+
+msgid "plugins.generic.publicStats.resetZoom"
+msgstr "Restablir zoom"
+
+msgid "plugins.generic.publicStats.reviewerInstitutionDistribution"
+msgstr "Distribució per institució (revisors)"
+
+msgid "plugins.generic.publicStats.reviewerName"
+msgstr "Nom del revisor"
+
+msgid "plugins.generic.publicStats.reviewers"
+msgstr "Revisors"
+
+msgid "plugins.generic.publicStats.reviewersByCountry"
+msgstr "Revisors per país"
+
+msgid "plugins.generic.publicStats.reviewersByCountryDescription"
+msgstr "Visualització geogràfica de l'origen dels revisors"
+
+msgid "plugins.generic.publicStats.reviewersByCountryTitle"
+msgstr "Distribució de revisors per país"
+
+msgid "plugins.generic.publicStats.reviewersByInstitution"
+msgstr "Revisors per institució"
+
+msgid "plugins.generic.publicStats.reviewersByInstitutionDescription"
+msgstr "Anàlisi de les afiliacions institucionals dels revisors"
+
+msgid "plugins.generic.publicStats.reviewersByInstitutionTitle"
+msgstr "Distribució de revisors per institució"
+
+msgid "plugins.generic.publicStats.reviewersFromInstitution"
+msgstr "Revisors d'aquesta institució"
+
+msgid "plugins.generic.publicStats.reviewersWorldMap"
+msgstr "Mapa mundial de revisors"
+
+msgid "plugins.generic.publicStats.reviewsByCountry"
+msgstr "Revisions per país"
+
+msgid "plugins.generic.publicStats.reviewsCompleted"
+msgstr "Revisions completades"
+
+msgid "plugins.generic.publicStats.revisions"
+msgstr "Revisions"
+
+msgid "plugins.generic.publicStats.revisionsRequested"
+msgstr "Revisions sol·licitades"
+
+msgid "plugins.generic.publicStats.section"
+msgstr "Secció"
+
+msgid "plugins.generic.publicStats.sectionDistribution"
+msgstr "Distribució per seccions"
+
+msgid "plugins.generic.publicStats.sectionName"
+msgstr "Secció"
+
+msgid "plugins.generic.publicStats.sections"
+msgstr "Seccions"
+
+msgid "plugins.generic.publicStats.selectAuthor"
+msgstr "Seleccionar autor"
+
+msgid "plugins.generic.publicStats.selectAuthorPlaceholder"
+msgstr "Seleccioneu un autor..."
+
+# General UI
+msgid "plugins.generic.publicStats.selectYear"
+msgstr "Seleccionar any:"
+
+msgid "plugins.generic.publicStats.sendBackToAuthor"
+msgstr "Retornat a l'autor"
+
+msgid "plugins.generic.publicStats.settings.colorAffectedElements"
+msgstr "Aquest color afecta: elements de menú actius, indicador de càrrega, botó de restablir zoom, valors de mètriques, enllaços de taules i botons d'exportació."
+
+msgid "plugins.generic.publicStats.settings.colorVariants"
+msgstr "Variants generades"
 
 # Settings
 msgid "plugins.generic.publicStats.settings.description"
 msgstr "Configureu els paràmetres del plugin d'estadístiques públiques."
+
+msgid "plugins.generic.publicStats.settings.invalidColorFormat"
+msgstr "Format de color no vàlid. Si us plau, utilitzeu un color hexadecimal vàlid (p. ex.: #8b2635)."
 
 msgid "plugins.generic.publicStats.settings.openAlexEmail"
 msgstr "Correu de contacte d'OpenAlex"
@@ -49,248 +995,11 @@ msgstr "Restablir"
 msgid "plugins.generic.publicStats.settings.resetToDefault"
 msgstr "Restablir al color per defecte"
 
-msgid "plugins.generic.publicStats.settings.invalidColorFormat"
-msgstr "Format de color no vàlid. Si us plau, utilitzeu un color hexadecimal vàlid (p. ex.: #8b2635)."
-
-msgid "plugins.generic.publicStats.settings.colorAffectedElements"
-msgstr "Aquest color afecta: elements de menú actius, indicador de càrrega, botó de restablir zoom, valors de mètriques, enllaços de taules i botons d'exportació."
-
-msgid "plugins.generic.publicStats.settings.colorVariants"
-msgstr "Variants generades"
-
-
-# Page titles
-msgid "plugins.publicStats.title.key"
-msgstr "Estadístiques públiques"
-
-msgid "plugins.publicStats.page.title"
-msgstr "Estadístiques de la revista"
-
-msgid "plugins.publicStats.page.description"
-msgstr "Consulteu les estadístiques públiques i mètriques d'ús de la revista."
-
-msgid "plugins.generic.publicStats.statistics"
-msgstr "Estadístiques"
-
-# General UI
-msgid "plugins.generic.publicStats.selectYear"
-msgstr "Seleccionar any:"
-
-msgid "plugins.generic.publicStats.allTime"
-msgstr "Tot el temps"
-
-msgid "plugins.generic.publicStats.all"
-msgstr "Tots"
-
-msgid "plugins.generic.publicStats.loadingStats"
-msgstr "Carregant estadístiques..."
-
-msgid "plugins.generic.publicStats.resetZoom"
-msgstr "Restablir zoom"
-
 msgid "plugins.generic.publicStats.showTop"
 msgstr "Mostrar top:"
 
-msgid "plugins.generic.publicStats.overview"
-msgstr "Resum"
-
-msgid "plugins.generic.publicStats.summary"
-msgstr "Resum"
-
-# Export options
-msgid "plugins.generic.publicStats.export"
-msgstr "Exportar"
-
-msgid "plugins.generic.publicStats.exportCsv"
-msgstr "Exportar CSV"
-
-msgid "plugins.generic.publicStats.exportOptions"
-msgstr "Opcions d'exportació"
-
-msgid "plugins.generic.publicStats.fullReport"
-msgstr "Informe complet"
-
-msgid "plugins.generic.publicStats.monthlyStats"
-msgstr "Estadístiques mensuals"
-
-msgid "plugins.generic.publicStats.annualStats"
-msgstr "Estadístiques anuals"
-
-msgid "plugins.generic.publicStats.countryStats"
-msgstr "Estadístiques per país"
-
-msgid "plugins.generic.publicStats.topDownloaded"
-msgstr "Més descarregats"
-
-msgid "plugins.generic.publicStats.topViewed"
-msgstr "Més vistos"
-
-msgid "plugins.generic.publicStats.topCited"
-msgstr "Més citats"
-
-msgid "plugins.generic.publicStats.editorialStats"
-msgstr "Estadístiques editorials"
-
-# Main sections
-msgid "plugins.generic.publicStats.generalStatistics"
-msgstr "Estadístiques generals"
-
-msgid "plugins.generic.publicStats.editorialStatistics"
-msgstr "Estadístiques editorials"
-
-msgid "plugins.generic.publicStats.articleReach"
-msgstr "Abast dels articles"
-
-msgid "plugins.generic.publicStats.impactAnalysis"
-msgstr "Anàlisi d'impacte"
-
-# Trends and timelines
-msgid "plugins.generic.publicStats.monthlyTrends"
-msgstr "Tendències mensuals"
-
-msgid "plugins.generic.publicStats.annualTrends"
-msgstr "Tendències anuals"
-
-msgid "plugins.generic.publicStats.activity"
-msgstr "Activitat"
-
-msgid "plugins.generic.publicStats.annualActivity"
-msgstr "Activitat anual"
-
-msgid "plugins.generic.publicStats.monthlyOverview"
-msgstr "Resum mensual"
-
-msgid "plugins.generic.publicStats.annualOverview"
-msgstr "Resum anual"
-
-msgid "plugins.generic.publicStats.monthlyContributions"
-msgstr "Contribucions mensuals"
-
-msgid "plugins.generic.publicStats.annualContributions"
-msgstr "Contribucions anuals"
-
-msgid "plugins.generic.publicStats.downloadsViewsOverYear"
-msgstr "Descàrregues i visualitzacions al llarg de l'any"
-
-msgid "plugins.generic.publicStats.yearlyDownloadsViews"
-msgstr "Descàrregues i visualitzacions anuals des de l'inici de la revista"
-
-msgid "plugins.generic.publicStats.contributionsDownloads"
-msgstr "Contribucions (descàrregues)"
-
-msgid "plugins.generic.publicStats.contributionsViews"
-msgstr "Contribucions (visualitzacions)"
-
-# Metrics
-msgid "plugins.generic.publicStats.downloads"
-msgstr "Descàrregues"
-
-msgid "plugins.generic.publicStats.views"
-msgstr "Visualitzacions"
-
-msgid "plugins.generic.publicStats.total"
-msgstr "Total"
-
-msgid "plugins.generic.publicStats.totalDownloads"
-msgstr "Total de descàrregues"
-
-msgid "plugins.generic.publicStats.totalViews"
-msgstr "Total de visualitzacions"
-
-msgid "plugins.generic.publicStats.totalAccesses"
-msgstr "Total d'accessos"
-
-msgid "plugins.generic.publicStats.avgDownloadsPerArticle"
-msgstr "Mitjana de descàrregues per article"
-
-msgid "plugins.generic.publicStats.avgViewsPerArticle"
-msgstr "Mitjana de visualitzacions per article"
-
-# Articles
-msgid "plugins.generic.publicStats.articles"
-msgstr "Articles"
-
-msgid "plugins.generic.publicStats.totalArticles"
-msgstr "Total d'articles"
-
-msgid "plugins.generic.publicStats.articleTitle"
-msgstr "Títol de l'article"
-
-msgid "plugins.generic.publicStats.articleCount"
-msgstr "Nombre d'articles"
-
-msgid "plugins.generic.publicStats.mostDownloadedArticles"
-msgstr "Articles més descarregats"
-
-msgid "plugins.generic.publicStats.mostViewedArticles"
-msgstr "Articles més vistos"
-
-msgid "plugins.generic.publicStats.mostDownloaded60Days"
-msgstr "Més descarregats (60 dies)"
-
-msgid "plugins.generic.publicStats.mostViewed60Days"
-msgstr "Més vistos (60 dies)"
-
-msgid "plugins.generic.publicStats.last60Days"
-msgstr "(últims 60 dies)"
-
-msgid "plugins.generic.publicStats.topArticlesByDownloads"
-msgstr "Top d'articles per descàrregues"
-
-msgid "plugins.generic.publicStats.topArticlesByViews"
-msgstr "Top d'articles per visualitzacions"
-
-msgid "plugins.generic.publicStats.topArticlesByRecentDownloads"
-msgstr "Top d'articles per descàrregues recents"
-
-msgid "plugins.generic.publicStats.topArticlesByRecentViews"
-msgstr "Top d'articles per visualitzacions recents"
-
-msgid "plugins.generic.publicStats.rankingByDownloads"
-msgstr "Classificació d'articles per nombre de descàrregues"
-
-msgid "plugins.generic.publicStats.rankingByViews"
-msgstr "Classificació d'articles per nombre de visualitzacions"
-
-msgid "plugins.generic.publicStats.rankingByRecentDownloads"
-msgstr "Classificació d'articles per descàrregues en els últims 60 dies"
-
-msgid "plugins.generic.publicStats.rankingByRecentViews"
-msgstr "Classificació d'articles per visualitzacions en els últims 60 dies"
-
-msgid "plugins.generic.publicStats.authorArticles"
-msgstr "Articles de l'autor"
-
-# Issues and sections
-msgid "plugins.generic.publicStats.issues"
-msgstr "Números"
-
-msgid "plugins.generic.publicStats.issue"
-msgstr "Número"
-
-msgid "plugins.generic.publicStats.sections"
-msgstr "Seccions"
-
-msgid "plugins.generic.publicStats.section"
-msgstr "Secció"
-
-msgid "plugins.generic.publicStats.downloadsByIssue"
-msgstr "Descàrregues per número"
-
-msgid "plugins.generic.publicStats.downloadsBySection"
-msgstr "Descàrregues per secció"
-
-msgid "plugins.generic.publicStats.issueDistribution"
-msgstr "Distribució per números"
-
-msgid "plugins.generic.publicStats.sectionDistribution"
-msgstr "Distribució per seccions"
-
-msgid "plugins.generic.publicStats.distributionAcrossIssues"
-msgstr "Distribució de descàrregues per números de la revista"
-
-msgid "plugins.generic.publicStats.distributionAcrossSections"
-msgstr "Distribució de descàrregues per seccions de la revista"
+msgid "plugins.generic.publicStats.statistics"
+msgstr "Estadístiques"
 
 msgid "plugins.generic.publicStats.statsByIssue"
 msgstr "Estadístiques per número"
@@ -298,649 +1007,220 @@ msgstr "Estadístiques per número"
 msgid "plugins.generic.publicStats.statsBySection"
 msgstr "Estadístiques per secció"
 
-# ============================================================
-# GEOGRAPHIC DISTRIBUTION (Distribució geogràfica)
-# ============================================================
-msgid "plugins.generic.publicStats.geographicDistribution"
-msgstr "Distribució geogràfica"
+msgid "plugins.generic.publicStats.submissionActivity"
+msgstr "Activitat de trameses"
 
-msgid "plugins.generic.publicStats.geographicDistributionTitle"
-msgstr "Distribució geogràfica de l'accés als articles"
+msgid "plugins.generic.publicStats.submissionId"
+msgstr "ID"
 
-msgid "plugins.generic.publicStats.geographicDistributionDescription"
-msgstr "Mapa que mostra la distribució mundial de descàrregues i visualitzacions per país d'origen"
+msgid "plugins.generic.publicStats.submissions"
+msgstr "Enviaments"
 
-msgid "plugins.generic.publicStats.worldwideDistribution"
-msgstr "Distribució mundial de l'accés als articles"
+msgid "plugins.generic.publicStats.submissionsAnalyzed"
+msgstr "trameses analitzades"
 
-msgid "plugins.generic.publicStats.worldAccessMap"
-msgstr "Mapa mundial d'accessos"
-
-msgid "plugins.generic.publicStats.country"
-msgstr "País"
-
-msgid "plugins.generic.publicStats.topCountriesByAccess"
-msgstr "Principals països per accés"
-
-msgid "plugins.generic.publicStats.accessesFromCountry"
-msgstr "Accessos des d'aquest país"
-
-msgid "plugins.generic.publicStats.rank"
-msgstr "Posició"
-
-msgid "plugins.generic.publicStats.accesses"
-msgstr "Accessos"
-
-msgid "plugins.generic.publicStats.accessCount"
-msgstr "Nombre d'accessos"
-
-msgid "plugins.generic.publicStats.countryCode"
-msgstr "Codi de país"
-
-msgid "plugins.generic.publicStats.countryName"
-msgstr "Nom del país"
-
-# Authors
-msgid "plugins.generic.publicStats.authors"
-msgstr "Autors"
-
-msgid "plugins.generic.publicStats.totalAuthors"
-msgstr "Total d'autors"
-
-msgid "plugins.generic.publicStats.authorsByCountry"
-msgstr "Autors per país"
-
-msgid "plugins.generic.publicStats.authorsByCountryTitle"
-msgstr "Distribució d'autors per país"
-
-msgid "plugins.generic.publicStats.authorsByCountryDescription"
-msgstr "Visualització geogràfica de l'origen dels autors que publiquen a la revista"
-
-msgid "plugins.generic.publicStats.authorsWorldMap"
-msgstr "Mapa mundial d'autors"
-
-msgid "plugins.generic.publicStats.topCountriesByAuthors"
-msgstr "Principals països per autors"
-
-msgid "plugins.generic.publicStats.numberOfAuthors"
-msgstr "Nombre d'autors"
-
-# ============================================================
-# AUTHORS BY INSTITUTION (Distribució d'autors per institució)
-# ============================================================
-msgid "plugins.generic.publicStats.authorsByInstitution"
-msgstr "Autors per institució"
-
-msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
-msgstr "Distribució d'autors per institució"
-
-msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
-msgstr "Anàlisi de les afiliacions institucionals dels autors que publiquen a la revista"
-
-msgid "plugins.generic.publicStats.institution"
-msgstr "Institució"
-
-msgid "plugins.generic.publicStats.institutionDistribution"
-msgstr "Distribució per institució"
-
-msgid "plugins.generic.publicStats.topInstitutions"
-msgstr "Principals institucions"
-
-msgid "plugins.generic.publicStats.otherInstitutions"
-msgstr "Altres institucions"
-
-msgid "plugins.generic.publicStats.affiliation"
-msgstr "Afiliació"
-
-msgid "plugins.generic.publicStats.institutionCount"
-msgstr "Nombre d'autors"
-
-msgid "plugins.generic.publicStats.institutionRanking"
-msgstr "Classificació d'institucions per nombre d'autors"
-
-msgid "plugins.generic.publicStats.topInstitutionsByAuthors"
-msgstr "Principals institucions per nombre d'autors"
-
-msgid "plugins.generic.publicStats.authorsFromInstitution"
-msgstr "Autors d'aquesta institució"
-
-msgid "plugins.generic.publicStats.authorIndividualStats"
-msgstr "Estadístiques per autor"
-
-msgid "plugins.generic.publicStats.authorIndividualStatsDescription"
-msgstr "Estadístiques detallades de publicacions, descàrregues i visualitzacions per autor"
-
-msgid "plugins.generic.publicStats.selectAuthor"
-msgstr "Seleccionar autor"
-
-msgid "plugins.generic.publicStats.selectAuthorPlaceholder"
-msgstr "Seleccioneu un autor..."
-
-msgid "plugins.generic.publicStats.authorInformation"
-msgstr "Informació de l'autor"
-
-msgid "plugins.generic.publicStats.coAuthorName"
-msgstr "Nom del coautor"
-
-msgid "plugins.generic.publicStats.collaborations"
-msgstr "Col·laboracions"
-
-msgid "plugins.generic.publicStats.frequentCoAuthors"
-msgstr "Coautors freqüents"
-
-msgid "plugins.generic.publicStats.allTimeSummary"
-msgstr "Resum històric"
-
-# Reviewers
-msgid "plugins.generic.publicStats.totalReviewers"
-msgstr "Total de revisors"
-
-msgid "plugins.generic.publicStats.numberOfReviewers"
-msgstr "Nombre de revisors"
-
-msgid "plugins.generic.publicStats.reviewersByCountry"
-msgstr "Revisors per país"
-
-msgid "plugins.generic.publicStats.reviewersByCountryTitle"
-msgstr "Distribució de revisors per país"
-
-msgid "plugins.generic.publicStats.reviewersByCountryDescription"
-msgstr "Visualització geogràfica de l'origen dels revisors"
-
-msgid "plugins.generic.publicStats.reviewersWorldMap"
-msgstr "Mapa mundial de revisors"
-
-msgid "plugins.generic.publicStats.topCountriesByReviewers"
-msgstr "Principals països per revisors"
-
-msgid "plugins.generic.publicStats.reviewersByInstitution"
-msgstr "Revisors per institució"
-
-msgid "plugins.generic.publicStats.reviewersByInstitutionTitle"
-msgstr "Distribució de revisors per institució"
-
-msgid "plugins.generic.publicStats.reviewersByInstitutionDescription"
-msgstr "Anàlisi de les afiliacions institucionals dels revisors"
-
-msgid "plugins.generic.publicStats.reviewerInstitutionDistribution"
-msgstr "Distribució per institució (revisors)"
-
-msgid "plugins.generic.publicStats.topReviewerInstitutions"
-msgstr "Principals institucions per revisors"
+msgid "plugins.generic.publicStats.submissionsByYear"
+msgstr "Enviaments per any"
 
 # Editorial workflow
 msgid "plugins.generic.publicStats.submissionsOverview"
 msgstr "Resum de trameses"
 
-msgid "plugins.generic.publicStats.submissionActivity"
-msgstr "Activitat de trameses"
+msgid "plugins.generic.publicStats.submissionsPerYear"
+msgstr "Enviaments per any"
 
-msgid "plugins.generic.publicStats.monthlySubmissionsTracking"
-msgstr "Seguiment mensual de trameses"
-
-msgid "plugins.generic.publicStats.annualSubmissionsOverview"
-msgstr "Resum anual de trameses"
-
-msgid "plugins.generic.publicStats.annualSubmissionActivity"
-msgstr "Activitat anual de trameses"
-
-msgid "plugins.generic.publicStats.yearlySubmissionsTracking"
-msgstr "Seguiment anual de trameses"
-
-msgid "plugins.generic.publicStats.received"
-msgstr "Rebuts"
-
-msgid "plugins.generic.publicStats.totalReceived"
-msgstr "Total rebuts"
-
-msgid "plugins.generic.publicStats.published"
-msgstr "Publicats"
-
-msgid "plugins.generic.publicStats.declined"
-msgstr "Rebutjats"
-
-msgid "plugins.generic.publicStats.inProcess"
-msgstr "En procés"
-
-msgid "plugins.generic.publicStats.submissionId"
-msgstr "ID"
-
-msgid "plugins.generic.publicStats.dateSubmitted"
-msgstr "Data de tramesa"
-
-msgid "plugins.generic.publicStats.datePublished"
-msgstr "Data de publicació"
-
-msgid "plugins.generic.publicStats.dateDecided"
-msgstr "Data de decisió"
-
-msgid "plugins.generic.publicStats.recommendation"
-msgstr "Recomanació"
-
-# ============================================================
-# FIRST DECISION (Temps des de la primera decisió)
-# ============================================================
-msgid "plugins.generic.publicStats.firstDecisionStats"
-msgstr "Estadístiques de primera decisió"
-
-msgid "plugins.generic.publicStats.firstDecisionDays"
-msgstr "Dies fins a la primera decisió"
-
-msgid "plugins.generic.publicStats.firstDecisionDaysTitle"
-msgstr "Temps fins a la primera decisió"
-
-msgid "plugins.generic.publicStats.firstDecisionDaysDescription"
-msgstr "Anàlisi del temps transcorregut entre la tramesa i la primera decisió editorial"
-
-msgid "plugins.generic.publicStats.daysFirstDecision"
-msgstr "Dies fins a la primera decisió"
-
-msgid "plugins.generic.publicStats.recentDecisions"
-msgstr "Decisions recents"
-
-msgid "plugins.generic.publicStats.decisionType"
-msgstr "Tipus de decisió"
-
-msgid "plugins.generic.publicStats.hadReview"
-msgstr "Va tenir revisió"
-
-msgid "plugins.generic.publicStats.yes"
-msgstr "Sí"
-
-msgid "plugins.generic.publicStats.no"
-msgstr "No"
-
-msgid "plugins.generic.publicStats.averageFirstDecisionDays"
-msgstr "Dies mitjans fins a la primera decisió"
-
-msgid "plugins.generic.publicStats.firstDecisionSummary"
-msgstr "Resum de temps de primera decisió"
-
-msgid "plugins.generic.publicStats.decisionsWithReview"
-msgstr "Decisions després de revisió"
-
-msgid "plugins.generic.publicStats.decisionsWithoutReview"
-msgstr "Decisions sense revisió"
-
-msgid "plugins.generic.publicStats.firstDecisionDistribution"
-msgstr "Distribució de temps de primera decisió"
-
-msgid "plugins.generic.publicStats.submissionsAnalyzed"
-msgstr "trameses analitzades"
-
-# Tipus de decisió
-msgid "plugins.generic.publicStats.decision.accepted"
-msgstr "Acceptat"
-
-msgid "plugins.generic.publicStats.decision.declined"
-msgstr "Rebutjat"
-
-msgid "plugins.generic.publicStats.decision.revisions"
-msgstr "Revisions sol·licitades"
-
-msgid "plugins.generic.publicStats.decision.sentToReview"
-msgstr "Enviat a revisió"
-
-msgid "plugins.generic.publicStats.decision.sentToProduction"
-msgstr "Enviat a producció"
-
-msgid "plugins.generic.publicStats.decision.other"
-msgstr "Altre"
-
-# Acceptance to publication
-msgid "plugins.generic.publicStats.acceptancePublicationStats"
-msgstr "Estadístiques d'acceptació a publicació"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDays"
-msgstr "Dies des de l'acceptació fins a la publicació"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDaysTitle"
-msgstr "Temps des de l'acceptació fins a la publicació"
-
-msgid "plugins.generic.publicStats.acceptancePublicationDaysDescription"
-msgstr "Anàlisi del temps transcorregut entre l'acceptació i la publicació final"
-
-msgid "plugins.generic.publicStats.daysToPublication"
-msgstr "Dies fins a la publicació"
-
-msgid "plugins.generic.publicStats.averageDaysReviewed"
-msgstr "Dies mitjans (amb revisió)"
-
-msgid "plugins.generic.publicStats.averageDaysAll"
-msgstr "Dies mitjans (tots)"
-
-msgid "plugins.generic.publicStats.avgDaysReviewedPublications"
-msgstr "Mitjana per a publicacions revisades"
-
-msgid "plugins.generic.publicStats.avgDaysAllPublications"
-msgstr "Mitjana per a totes les publicacions"
-
-msgid "plugins.generic.publicStats.recentPublications"
-msgstr "Publicacions recents"
-
-msgid "plugins.generic.publicStats.daysAverage"
-msgstr "dies de mitjana"
-
-msgid "plugins.generic.publicStats.days"
-msgstr "dies"
-
-msgid "plugins.generic.publicStats.publicationsReviewed"
-msgstr "publicacions revisades"
-
-msgid "plugins.generic.publicStats.totalPublications"
-msgstr "publicacions totals"
-
-msgid "plugins.generic.publicStats.publications"
-msgstr "publicacions"
-
-msgid "plugins.generic.publicStats.totalSubmissions"
-msgstr "trameses totals"
+msgid "plugins.generic.publicStats.submissionsReceived"
+msgstr "Enviaments rebuts"
 
 msgid "plugins.generic.publicStats.submissionsReviewed"
 msgstr "trameses revisades"
 
-msgid "plugins.generic.publicStats.name"
-msgstr "Nom"
+msgid "plugins.generic.publicStats.submissionsTimeline"
+msgstr "Cronologia d'enviaments"
 
-# Citations and impact
-msgid "plugins.generic.publicStats.citations"
-msgstr "Cites"
-
-msgid "plugins.generic.publicStats.topCitedArticles"
-msgstr "Articles més citats"
-
-msgid "plugins.generic.publicStats.rankingByCitations"
-msgstr "Classificació per nombre de cites externes"
-
-msgid "plugins.generic.publicStats.citationEvolution"
-msgstr "Evolució de cites"
-
-msgid "plugins.generic.publicStats.externalCitations"
-msgstr "Cites externes"
-
-msgid "plugins.generic.publicStats.year"
-msgstr "Any"
-
-msgid "plugins.generic.publicStats.totalCitationsReceived"
-msgstr "Total de cites rebudes"
-
-msgid "plugins.generic.publicStats.citationsPerYear"
-msgstr "Cites per any"
-
-# ============================================================
-# CITATIONS BY COUNTRY (Cites per país)
-# ============================================================
-msgid "plugins.generic.publicStats.citationsByCountry"
-msgstr "Cites per país"
-
-msgid "plugins.generic.publicStats.citationsByCountryTitle"
-msgstr "Distribució geogràfica de cites"
-
-msgid "plugins.generic.publicStats.citationsByCountryDesc"
-msgstr "Distribució geogràfica de cites rebudes de fonts externes (OpenAlex)"
-
-msgid "plugins.generic.publicStats.citationsMapTitle"
-msgstr "Mapa global de cites"
-
-msgid "plugins.generic.publicStats.topCitingCountries"
-msgstr "Principals països citants"
-
-msgid "plugins.generic.publicStats.citationsFromCountry"
-msgstr "Cites des d'aquest país"
-
-msgid "plugins.generic.publicStats.citationsCount"
-msgstr "Nombre de cites"
-
-msgid "plugins.generic.publicStats.citingCountryRanking"
-msgstr "Classificació de països per nombre de cites"
-
-msgid "plugins.generic.publicStats.citationsWorldMap"
-msgstr "Mapa mundial de cites"
-
-msgid "plugins.generic.publicStats.citationsReceived"
-msgstr "Cites rebudes"
-
-msgid "plugins.generic.publicStats.citationsReceivedInYear"
-msgstr "Cites rebudes a "
-
-msgid "plugins.generic.publicStats.dataSourceOpenAlex"
-msgstr "Font de dades: OpenAlex"
-
-# Open access
-msgid "plugins.generic.publicStats.openAccess"
-msgstr "Accés obert"
-
-msgid "plugins.generic.publicStats.openAccessStats"
-msgstr "Estadístiques d'accés obert"
-
-msgid "plugins.generic.publicStats.oaPercentage"
-msgstr "Percentatge d'accés obert"
-
-msgid "plugins.generic.publicStats.oaDistribution"
-msgstr "Distribució per tipus d'accés"
-
-msgid "plugins.generic.publicStats.oaDiamond"
-msgstr "Diamond (sense taxes)"
-
-msgid "plugins.generic.publicStats.oaGold"
-msgstr "Gold (revista oberta)"
-
-msgid "plugins.generic.publicStats.oaHybrid"
-msgstr "Hybrid (opció de pagament)"
-
-msgid "plugins.generic.publicStats.oaGreen"
-msgstr "Green (repositori)"
-
-msgid "plugins.generic.publicStats.oaBronze"
-msgstr "Bronze (lectura gratuïta)"
-
-"plugins.generic.publicStats.oaUnknown"
-msgstr "Desconegut"
-
-msgid "plugins.generic.publicStats.oaClosed"
-msgstr "Tancat"
-
-msgid "plugins.generic.publicStats.articlesAnalyzed"
-msgstr "articles analitzats"
+msgid "plugins.generic.publicStats.summary"
+msgstr "Resum"
 
 # Thematic profile
 msgid "plugins.generic.publicStats.thematicProfile"
 msgstr "Perfil temàtic"
 
-msgid "plugins.generic.publicStats.researchAreas"
-msgstr "Àrees de recerca"
+msgid "plugins.generic.publicStats.timeToDecision"
+msgstr "Temps fins a la decisió"
 
-msgid "plugins.generic.publicStats.topResearchAreas"
-msgstr "Principals àrees de recerca"
+msgid "plugins.generic.publicStats.timeToPublication"
+msgstr "Temps fins a la publicació"
 
-msgid "plugins.generic.publicStats.articlesInArea"
-msgstr "articles en aquesta àrea"
+msgid "plugins.generic.publicStats.timesCited"
+msgstr "Vegades citat"
 
-msgid "plugins.generic.publicStats.areaDistribution"
-msgstr "Distribució per àrea temàtica"
+msgid "plugins.generic.publicStats.topAccessCountries"
+msgstr "Principals països d'accés"
 
-# Citing institutions
-msgid "plugins.generic.publicStats.citingInstitutions"
-msgstr "Institucions citants"
+msgid "plugins.generic.publicStats.topArticlesByCitations"
+msgstr "Top d'articles per cites"
 
-msgid "plugins.generic.publicStats.citingInstitutionsDesc"
-msgstr "Institucions que citen articles d'aquesta revista"
+msgid "plugins.generic.publicStats.topArticlesByDownloads"
+msgstr "Top d'articles per descàrregues"
+
+msgid "plugins.generic.publicStats.topArticlesByRecentDownloads"
+msgstr "Top d'articles per descàrregues recents"
+
+msgid "plugins.generic.publicStats.topArticlesByRecentViews"
+msgstr "Top d'articles per visualitzacions recents"
+
+msgid "plugins.generic.publicStats.topArticlesByViews"
+msgstr "Top d'articles per visualitzacions"
+
+msgid "plugins.generic.publicStats.topAuthorCountries"
+msgstr "Principals països d'autors"
+
+msgid "plugins.generic.publicStats.topAuthorInstitutions"
+msgstr "Principals institucions d'autors"
+
+msgid "plugins.generic.publicStats.topCited"
+msgstr "Més citats"
+
+msgid "plugins.generic.publicStats.topCitedArticles"
+msgstr "Articles més citats"
+
+msgid "plugins.generic.publicStats.topCitingCountries"
+msgstr "Principals països citants"
 
 msgid "plugins.generic.publicStats.topCitingInstitutions"
 msgstr "Principals institucions citants"
 
-msgid "plugins.generic.publicStats.allCitingInstitutions"
-msgstr "Totes les institucions citants"
+msgid "plugins.generic.publicStats.topCitingJournals"
+msgstr "Principals revistes citants"
 
-msgid "plugins.generic.publicStats.institutionName"
-msgstr "Institució"
+msgid "plugins.generic.publicStats.topCoAuthors"
+msgstr "Principals coautors"
 
-msgid "plugins.generic.publicStats.institutionType"
-msgstr "Tipus"
+msgid "plugins.generic.publicStats.topContributingAuthors"
+msgstr "Principals autors contribuents"
 
-msgid "plugins.generic.publicStats.citationsFromInstitution"
-msgstr "Cites des d'aquesta institució"
+msgid "plugins.generic.publicStats.topContributingReviewers"
+msgstr "Principals revisors contribuents"
 
-# Map legends - Geographic distribution
-msgid "plugins.generic.publicStats.legend.veryHighAccess"
-msgstr "≥1.000 accessos"
+msgid "plugins.generic.publicStats.topCountries"
+msgstr "Principals països"
 
-msgid "plugins.generic.publicStats.legend.highAccess"
-msgstr "500-999 accessos"
+msgid "plugins.generic.publicStats.topCountriesByAccess"
+msgstr "Principals països per accés"
 
-msgid "plugins.generic.publicStats.legend.mediumAccess"
-msgstr "100-499 accessos"
+msgid "plugins.generic.publicStats.topCountriesByAuthors"
+msgstr "Principals països per autors"
 
-msgid "plugins.generic.publicStats.legend.lowAccess"
-msgstr "<100 accessos"
+msgid "plugins.generic.publicStats.topCountriesByDownloads"
+msgstr "Principals països per descàrregues"
 
-msgid "plugins.generic.publicStats.legend.moreThan1000"
-msgstr "Més de 1.000"
+msgid "plugins.generic.publicStats.topCountriesByReviewers"
+msgstr "Principals països per revisors"
 
-msgid "plugins.generic.publicStats.legend.between500and1000"
-msgstr "500-1.000"
+msgid "plugins.generic.publicStats.topCountriesByViews"
+msgstr "Principals països per visualitzacions"
 
-msgid "plugins.generic.publicStats.legend.between100and500"
-msgstr "100-500"
+msgid "plugins.generic.publicStats.topDownloaded"
+msgstr "Més descarregats"
 
-msgid "plugins.generic.publicStats.legend.lessThan100"
-msgstr "Menys de 100"
+msgid "plugins.generic.publicStats.topInstitutions"
+msgstr "Principals institucions"
 
-# Map legends - Authors by institution
-msgid "plugins.generic.publicStats.legend.authors100plus"
-msgstr "≥100 autors"
+msgid "plugins.generic.publicStats.topInstitutionsByAuthors"
+msgstr "Principals institucions per nombre d'autors"
 
-msgid "plugins.generic.publicStats.legend.authors50to99"
-msgstr "50-99 autors"
+msgid "plugins.generic.publicStats.topResearchAreas"
+msgstr "Principals àrees de recerca"
 
-msgid "plugins.generic.publicStats.legend.authors20to49"
-msgstr "20-49 autors"
+msgid "plugins.generic.publicStats.topReviewerCountries"
+msgstr "Principals països de revisors"
 
-msgid "plugins.generic.publicStats.legend.authors10to19"
-msgstr "10-19 autors"
+msgid "plugins.generic.publicStats.topReviewerInstitutions"
+msgstr "Principals institucions per revisors"
 
-msgid "plugins.generic.publicStats.legend.authorsLessThan10"
-msgstr "<10 autors"
+msgid "plugins.generic.publicStats.topReviewers"
+msgstr "Principals revisors"
 
-# Map legends - Reviewers
-msgid "plugins.generic.publicStats.legend.reviewers100plus"
-msgstr "≥100 revisors"
+msgid "plugins.generic.publicStats.topViewed"
+msgstr "Més vistos"
 
-msgid "plugins.generic.publicStats.legend.reviewers50to99"
-msgstr "50-99 revisors"
+msgid "plugins.generic.publicStats.total"
+msgstr "Total"
 
-msgid "plugins.generic.publicStats.legend.reviewers20to49"
-msgstr "20-49 revisors"
+msgid "plugins.generic.publicStats.totalAccesses"
+msgstr "Total d'accessos"
 
-msgid "plugins.generic.publicStats.legend.reviewers10to19"
-msgstr "10-19 revisors"
+msgid "plugins.generic.publicStats.totalArticles"
+msgstr "Total d'articles"
 
-msgid "plugins.generic.publicStats.legend.reviewersLessThan10"
-msgstr "<10 revisors"
+msgid "plugins.generic.publicStats.totalAuthors"
+msgstr "Total d'autors"
 
-# Map legends - Citations by country (quartiles)
-msgid "plugins.generic.publicStats.legend.topQuartile"
-msgstr "Top 25%"
+msgid "plugins.generic.publicStats.totalCitations"
+msgstr "Total de cites"
 
-msgid "plugins.generic.publicStats.legend.thirdQuartile"
-msgstr "25-50%"
+msgid "plugins.generic.publicStats.totalCitationsReceived"
+msgstr "Total de cites rebudes"
 
-msgid "plugins.generic.publicStats.legend.secondQuartile"
-msgstr "50-75%"
+msgid "plugins.generic.publicStats.totalDownloads"
+msgstr "Total de descàrregues"
 
-msgid "plugins.generic.publicStats.legend.bottomQuartile"
-msgstr "Últim 25%"
+msgid "plugins.generic.publicStats.totalEditors"
+msgstr "Total d'editors"
 
-msgid "plugins.generic.publicStats.legend.citationsVeryHigh"
-msgstr "Molt alt (Top 25%)"
+msgid "plugins.generic.publicStats.totalIssues"
+msgstr "Total de números"
 
-msgid "plugins.generic.publicStats.legend.citationsHigh"
-msgstr "Alt (50-75%)"
+msgid "plugins.generic.publicStats.totalPublications"
+msgstr "publicacions totals"
 
-msgid "plugins.generic.publicStats.legend.citationsMedium"
-msgstr "Mitjà (25-50%)"
+msgid "plugins.generic.publicStats.totalReceived"
+msgstr "Total rebuts"
 
-msgid "plugins.generic.publicStats.legend.citationsLow"
-msgstr "Baix (<25%)"
+# Reviewers
+msgid "plugins.generic.publicStats.totalReviewers"
+msgstr "Total de revisors"
 
-# Error and no data messages
-msgid "plugins.generic.publicStats.errorLoading"
-msgstr "Error en carregar les estadístiques. Si us plau, torneu-ho a provar."
+msgid "plugins.generic.publicStats.totalSections"
+msgstr "Total de seccions"
 
-msgid "plugins.generic.publicStats.noAffiliation"
-msgstr "Sense afiliació"
+msgid "plugins.generic.publicStats.totalSubmissions"
+msgstr "trameses totals"
 
-msgid "plugins.generic.publicStats.noArticles"
-msgstr "No hi ha articles per mostrar"
+msgid "plugins.generic.publicStats.totalViews"
+msgstr "Total de visualitzacions"
 
-msgid "plugins.generic.publicStats.noCoAuthors"
-msgstr "No hi ha coautors per mostrar"
+msgid "plugins.generic.publicStats.views"
+msgstr "Visualitzacions"
 
-msgid "plugins.generic.publicStats.noDataAvailable"
-msgstr "No hi ha dades disponibles"
+msgid "plugins.generic.publicStats.viewsPerCountry"
+msgstr "Visualitzacions per país"
 
-msgid "plugins.generic.publicStats.noDataMessage"
-msgstr "No hi ha dades disponibles per al període seleccionat"
+msgid "plugins.generic.publicStats.worldAccessMap"
+msgstr "Mapa mundial d'accessos"
 
-msgid "plugins.generic.publicStats.noMonthlyData"
-msgstr "No hi ha dades mensuals disponibles"
+msgid "plugins.generic.publicStats.worldwideDistribution"
+msgstr "Distribució mundial de l'accés als articles"
 
-msgid "plugins.generic.publicStats.noAnnualData"
-msgstr "No hi ha dades anuals disponibles"
+msgid "plugins.generic.publicStats.year"
+msgstr "Any"
 
-msgid "plugins.generic.publicStats.noAuthorsData"
-msgstr "No hi ha dades d'autors disponibles"
+msgid "plugins.generic.publicStats.yearlyDownloadsViews"
+msgstr "Descàrregues i visualitzacions anuals des de l'inici de la revista"
 
-msgid "plugins.generic.publicStats.noReviewersData"
-msgstr "No hi ha dades de revisors disponibles"
+msgid "plugins.generic.publicStats.yearlySubmissionsTracking"
+msgstr "Seguiment anual de trameses"
 
-msgid "plugins.generic.publicStats.noInstitutionData"
-msgstr "No hi ha dades d'institucions disponibles"
+msgid "plugins.generic.publicStats.yes"
+msgstr "Sí"
 
-msgid "plugins.generic.publicStats.noEditorialData"
-msgstr "No hi ha dades editorials disponibles"
+msgid "plugins.publicStats.page.description"
+msgstr "Consulteu les estadístiques públiques i mètriques d'ús de la revista."
 
-msgid "plugins.generic.publicStats.noEditorialAnnualData"
-msgstr "No hi ha dades editorials anuals disponibles"
+msgid "plugins.publicStats.page.title"
+msgstr "Estadístiques de la revista"
 
-msgid "plugins.generic.publicStats.noDownloadsData"
-msgstr "No hi ha dades de descàrregues per a aquest període"
+# Page titles
+msgid "plugins.publicStats.title.key"
+msgstr "Estadístiques públiques"
 
-msgid "plugins.generic.publicStats.noViewsData"
-msgstr "No hi ha dades de visualitzacions per a aquest període"
-
-msgid "plugins.generic.publicStats.noGeographicData"
-msgstr "No hi ha dades de distribució geogràfica disponibles"
-
-msgid "plugins.generic.publicStats.noRecentDownloadsData"
-msgstr "No hi ha descàrregues recents en els últims 60 dies"
-
-msgid "plugins.generic.publicStats.noRecentViewsData"
-msgstr "No hi ha visualitzacions recents en els últims 60 dies"
-
-msgid "plugins.generic.publicStats.noDecisionData"
-msgstr "No hi ha dades de decisions disponibles"
-
-msgid "plugins.generic.publicStats.noPublicationData"
-msgstr "No hi ha dades de publicació disponibles"
-
-msgid "plugins.generic.publicStats.noIssueData"
-msgstr "No hi ha dades de números disponibles"
-
-msgid "plugins.generic.publicStats.noSectionData"
-msgstr "No hi ha dades de seccions disponibles"
-
-msgid "plugins.generic.publicStats.noCitationData"
-msgstr "No hi ha dades de cites disponibles"
-
-msgid "plugins.generic.publicStats.noCitationMapData"
-msgstr "Encara no hi ha dades de cites disponibles. Les cites s'obtenen d'OpenAlex."
-
-msgid "plugins.generic.publicStats.noOaData"
-msgstr "No hi ha dades d'accés obert disponibles"
-
-msgid "plugins.generic.publicStats.noThematicData"
-msgstr "No hi ha dades temàtiques disponibles"
-
-msgid "plugins.generic.publicStats.noCitingInstitutionsData"
-msgstr "No hi ha dades d'institucions citants disponibles"
