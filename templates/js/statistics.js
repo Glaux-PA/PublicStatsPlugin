@@ -1015,6 +1015,10 @@
           "general-downloads": async () => {
             await Tables.renderTopDownloadedArticles();
           },
+          "recent-downloads": async () => {
+              await API.getRecentDownloaded();
+              Tables.renderRecentTopDownloaded();
+          },
           "recent-views": async () => {
             await API.getRecentViewed();
             Tables.renderRecentTopViewed();
