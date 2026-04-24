@@ -231,10 +231,14 @@ class InputValidator
     /**
      * Validate author key format.
      *
-     * Author keys use prefixes to indicate the identification method:
-     * - orcid:0000-0002-1234-5678 (ORCID identifier)
-     * - name_email:john_doe__johndoe@email (name + email combination)
-     * - name_only:john_doe (name only, less reliable)
+     * Author keys use prefixes to indicate the identification method.
+     * Each prefix has its own whitelist of allowed characters (built from the
+     * output of AuthorStatsService::createAuthorKey), so anything that doesn't
+     * match an expected shape is rejected outright.
+     *
+     *   - orcid:0000-0002-1234-5678 (digits + optional trailing X)
+     *   - name_email:word1_word2__emailstripped (unicode letters/digits + underscore)
+     *   - name_only:word1_word2 (unicode letters/digits + underscore)
      *
      * @param string|null $authorKey User-provided author key
      * @return string|null Validated author key or null if invalid
@@ -247,29 +251,26 @@ class InputValidator
 
         $authorKey = trim($authorKey);
 
-        if (empty($authorKey)) {
-            return null;
-        }
-
         // Prevent abuse with overly long keys
-        if (strlen($authorKey) > 500) {
+        if ($authorKey === '' || strlen($authorKey) > 500) {
             return null;
         }
 
-        // Must start with a valid prefix
-        if (!preg_match('/^(orcid:|name_email:|name_only:)/', $authorKey)) {
-            return null;
+        // Strict per-prefix whitelist patterns. Unicode-aware to preserve
+        // non-ASCII names, but never allows control chars, quotes, slashes, etc.
+        $patterns = [
+            '/^orcid:\d{4}-\d{4}-\d{4}-\d{3}[\dXx]$/',
+            '/^name_email:[\p{L}\p{N}_]+__[\p{L}\p{N}]+$/u',
+            '/^name_only:[\p{L}\p{N}_]+$/u',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $authorKey)) {
+                return $authorKey;
+            }
         }
 
-        // Remove dangerous characters while preserving Unicode for international names
-        $sanitized = preg_replace('/[<>"\'\\\;]/', '', $authorKey);
-
-        // Verify prefix survives sanitization
-        if (!preg_match('/^(orcid:|name_email:|name_only:)/', $sanitized)) {
-            return null;
-        }
-
-        return $sanitized;
+        return null;
     }
 
     /**

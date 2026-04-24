@@ -16,6 +16,7 @@ namespace APP\plugins\generic\publicStats;
 use PKP\form\Form;
 use PKP\form\validation\FormValidatorPost;
 use PKP\form\validation\FormValidatorCSRF;
+use APP\core\Application;
 use APP\template\TemplateManager;
 
 class PublicStatsSettingsForm extends Form
@@ -43,7 +44,7 @@ class PublicStatsSettingsForm extends Form
      */
     public function initData()
     {
-        $contextId = \Application::get()->getRequest()->getContext()->getId();
+        $contextId = Application::get()->getRequest()->getContext()->getId();
 
         $this->setData('openAlexEmail', $this->plugin->getSetting($contextId, 'openAlexEmail'));
         
@@ -64,7 +65,7 @@ class PublicStatsSettingsForm extends Form
      */
     public function execute(...$functionArgs)
     {
-        $contextId = \Application::get()->getRequest()->getContext()->getId();
+        $contextId = Application::get()->getRequest()->getContext()->getId();
 
         // Save OpenAlex email
         $this->plugin->updateSetting($contextId, 'openAlexEmail', trim($this->getData('openAlexEmail')));

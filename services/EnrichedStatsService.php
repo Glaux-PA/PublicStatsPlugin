@@ -36,10 +36,12 @@ class EnrichedStatsService extends BaseStatsService
     private OpenAlexService $openAlexService;
     private ArticleStatsService $articleStatsService;
 
-    public function __construct()
-    {
-        $this->openAlexService = new OpenAlexService();
-        $this->articleStatsService = new ArticleStatsService();
+    public function __construct(
+        OpenAlexService $openAlexService,
+        ArticleStatsService $articleStatsService
+    ) {
+        $this->openAlexService = $openAlexService;
+        $this->articleStatsService = $articleStatsService;
     }
 
     /**

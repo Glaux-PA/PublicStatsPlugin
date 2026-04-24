@@ -16,7 +16,8 @@ use APP\template\TemplateManager;
 use PKP\core\PKPRequest;
 use PKP\plugins\PluginRegistry;
 
-// Plugin classes
+// Plugin
+use APP\plugins\generic\publicStats\PublicStatsPlugin;
 use APP\plugins\generic\publicStats\classes\InputValidator;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\classes\ColorHelper;
@@ -30,6 +31,7 @@ use APP\plugins\generic\publicStats\services\AuthorReviewerStatsService;
 use APP\plugins\generic\publicStats\services\IssueStatsService;
 use APP\plugins\generic\publicStats\services\SectionStatsService;
 use APP\plugins\generic\publicStats\services\AuthorStatsService;
+use APP\plugins\generic\publicStats\services\CsvExporter;
 use APP\plugins\generic\publicStats\services\OpenAlexService;
 use APP\plugins\generic\publicStats\services\EnrichedStatsService;
 
@@ -58,7 +60,7 @@ class PublicStatisticsHandler extends Handler
     // Properties
     // ========================================
     
-    private ?object $plugin = null;
+    private PublicStatsPlugin $plugin;
     private StatisticsService $statsService;
     private ArticleStatsService $articleService;
     private EditorialStatsService $editorialService;
@@ -69,6 +71,7 @@ class PublicStatisticsHandler extends Handler
     private AuthorStatsService $authorStatsService;
     private OpenAlexService $openalexService;
     private EnrichedStatsService $enrichedService;
+    private CsvExporter $csvExporter;
 
     // ========================================
     // Constructor
@@ -80,9 +83,13 @@ class PublicStatisticsHandler extends Handler
     public function __construct()
     {
         parent::__construct();
-        
-        $this->plugin = PluginRegistry::getPlugin('generic', 'publicstatsplugin');
-        
+
+        $plugin = PluginRegistry::getPlugin('generic', 'publicstatsplugin');
+        if (!$plugin instanceof PublicStatsPlugin) {
+            throw new \RuntimeException('publicStats plugin is not registered or disabled.');
+        }
+        $this->plugin = $plugin;
+
         // Initialize all services
         $this->statsService = app(StatisticsService::class);
         $this->articleService = app(ArticleStatsService::class);
@@ -93,7 +100,8 @@ class PublicStatisticsHandler extends Handler
         $this->sectionService = app(SectionStatsService::class);
         $this->authorStatsService = app(AuthorStatsService::class);
         $this->openalexService = app(OpenAlexService::class);
-        $this->enrichedService = new EnrichedStatsService();
+        $this->enrichedService = app(EnrichedStatsService::class);
+        $this->csvExporter = app(CsvExporter::class);
     }
 
     // ========================================
@@ -325,10 +333,10 @@ class PublicStatisticsHandler extends Handler
      */
     protected function outputJson(mixed $data): void
     {
+        // Let OJS finish naturally so shutdown hooks (queue runner, cache flush) run.
         header('Content-Type: application/json; charset=UTF-8');
         header('X-Content-Type-Options: nosniff');
         echo json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-        exit;
     }
 
     /**
@@ -358,6 +366,14 @@ class PublicStatisticsHandler extends Handler
     private function setupAssets(TemplateManager $templateMgr, PKPRequest $request): void
     {
         $baseUrl = $request->getBaseUrl() . '/' . $this->plugin->getPluginPath();
+
+        // Helpers must load first: statistics.js destructures window.PublicStatsHelpers
+        // at the top of its IIFE.
+        $templateMgr->addJavaScript(
+            'publicStatsHelpers',
+            $baseUrl . '/templates/js/statistics-helpers.js',
+            ['contexts' => 'frontend', 'priority' => TemplateManager::STYLE_SEQUENCE_CORE]
+        );
 
         $templateMgr->addJavaScript(
             'publicStatsScript',
