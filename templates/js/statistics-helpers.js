@@ -60,6 +60,7 @@
     sdgChart: null,
     fundingChart: null,
     citingJournals: null,
+    language: null,
   };
 
   /**

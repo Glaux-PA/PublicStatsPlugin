@@ -24,6 +24,7 @@ namespace APP\plugins\generic\publicStats\services;
 use APP\core\Services;
 use APP\statistics\StatisticsHelper;
 use APP\core\Application;
+use APP\plugins\generic\publicStats\classes\Logger;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use Sokil\IsoCodes\IsoCodesFactory;
 
@@ -234,7 +235,7 @@ class StatisticsService extends BaseStatsService
             return $this->formatCountryData($countriesData);
 
         } catch (\Exception $e) {
-            error_log("Error retrieving geographic data: " . $e->getMessage());
+            Logger::error("Error retrieving geographic data", $e);
             return [];
         }
     }

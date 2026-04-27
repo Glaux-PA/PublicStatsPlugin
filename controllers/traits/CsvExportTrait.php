@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace APP\plugins\generic\publicStats\controllers\traits;
 
 use APP\plugins\generic\publicStats\classes\InputValidator;
+use APP\plugins\generic\publicStats\classes\Logger;
 use Illuminate\Support\Facades\Cache;
 use PKP\core\PKPRequest;
 
@@ -103,7 +104,7 @@ trait CsvExportTrait
             $payload = $build($contextId);
             $this->outputCsv($payload['filename'], $payload['headers'], $payload['rows']);
         } catch (\Exception $e) {
-            error_log("Error exporting {$errorLabel}: " . $e->getMessage());
+            Logger::error("Error exporting {$errorLabel}", $e);
             $this->outputError('Error exporting data', 500);
         }
     }

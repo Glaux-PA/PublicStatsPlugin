@@ -995,6 +995,27 @@ msgstr "Restablir"
 msgid "plugins.generic.publicStats.settings.resetToDefault"
 msgstr "Restablir al color per defecte"
 
+msgid "plugins.generic.publicStats.settings.enabledSections"
+msgstr "Seccions d'estadístiques actives"
+
+msgid "plugins.generic.publicStats.settings.toggleSubsections"
+msgstr "Expandir/contraure subseccions"
+
+msgid "plugins.generic.publicStats.settings.enabledSectionsDescription"
+msgstr "Seleccioneu quines seccions seran visibles als visitants. Desactiveu les que no siguin rellevants per a la vostra revista."
+
+msgid "plugins.generic.publicStats.settings.section.general"
+msgstr "Estadístiques generals (accessos, tendències, distribució geogràfica)"
+
+msgid "plugins.generic.publicStats.settings.section.editorial"
+msgstr "Estadístiques editorials (enviaments, autors, revisors, temps de decisió)"
+
+msgid "plugins.generic.publicStats.settings.section.reach"
+msgstr "Abast d'articles (més descarregats/vistos en els darrers 60 dies)"
+
+msgid "plugins.generic.publicStats.settings.section.impact"
+msgstr "Anàlisi d'impacte (cites, accés obert, perfil temàtic) — requereix OpenAlex"
+
 msgid "plugins.generic.publicStats.showTop"
 msgstr "Mostrar top:"
 
@@ -1223,4 +1244,31 @@ msgstr "Estadístiques de la revista"
 # Page titles
 msgid "plugins.publicStats.title.key"
 msgstr "Estadístiques públiques"
+
+# ============================================================
+# LANGUAGE DISTRIBUTION
+# ============================================================
+msgid "plugins.generic.publicStats.languageDistribution"
+msgstr "Distribució per idioma"
+
+msgid "plugins.generic.publicStats.languageDistributionDesc"
+msgstr "Articles publicats agrupats per idioma"
+
+msgid "plugins.generic.publicStats.articleLanguages"
+msgstr "Idiomes dels articles"
+
+msgid "plugins.generic.publicStats.articlesByLanguage"
+msgstr "Articles per idioma"
+
+msgid "plugins.generic.publicStats.language"
+msgstr "Idioma"
+
+msgid "plugins.generic.publicStats.noLanguageData"
+msgstr "No hi ha dades d'idiomes disponibles"
+
+msgid "plugins.generic.publicStats.allIssues"
+msgstr "Tots els números"
+
+msgid "plugins.generic.publicStats.filterByIssue"
+msgstr "Filtra per número"
 

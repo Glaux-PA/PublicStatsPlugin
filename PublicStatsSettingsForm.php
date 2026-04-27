@@ -18,6 +18,7 @@ use PKP\form\validation\FormValidatorPost;
 use PKP\form\validation\FormValidatorCSRF;
 use APP\core\Application;
 use APP\template\TemplateManager;
+use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 
 class PublicStatsSettingsForm extends Form
 {
@@ -47,9 +48,13 @@ class PublicStatsSettingsForm extends Form
         $contextId = Application::get()->getRequest()->getContext()->getId();
 
         $this->setData('openAlexEmail', $this->plugin->getSetting($contextId, 'openAlexEmail'));
-        
+
         $primaryColor = $this->plugin->getSetting($contextId, 'primaryColor');
         $this->setData('primaryColor', $primaryColor ?: self::DEFAULT_PRIMARY_COLOR);
+
+        $allSubsections = array_merge(...array_values(array_map('array_keys', PublicStatsConstants::SUBSECTIONS)));
+        $saved = $this->plugin->getSetting($contextId, 'enabledSubsections');
+        $this->setData('enabledSubsections', is_array($saved) ? $saved : $allSubsections);
     }
 
     /**
@@ -57,7 +62,7 @@ class PublicStatsSettingsForm extends Form
      */
     public function readInputData()
     {
-        $this->readUserVars(['openAlexEmail', 'primaryColor']);
+        $this->readUserVars(['openAlexEmail', 'primaryColor', 'enabledSubsections']);
     }
 
     /**
@@ -77,6 +82,17 @@ class PublicStatsSettingsForm extends Form
         }
         $this->plugin->updateSetting($contextId, 'primaryColor', $primaryColor);
 
+        // Save enabled subsections — whitelist against all known subsection ids.
+        // Also snapshot the set of subsections known to the form, so the reader
+        // can distinguish "user unchecked" from "added in code after last save".
+        $allSubsections = array_merge(...array_values(array_map('array_keys', PublicStatsConstants::SUBSECTIONS)));
+        $submitted = $this->getData('enabledSubsections');
+        $enabledSubsections = is_array($submitted)
+            ? array_values(array_intersect($submitted, $allSubsections))
+            : $allSubsections;
+        $this->plugin->updateSetting($contextId, 'enabledSubsections', $enabledSubsections);
+        $this->plugin->updateSetting($contextId, 'knownSubsections', $allSubsections);
+
         parent::execute(...$functionArgs);
         
         return true;
@@ -90,10 +106,13 @@ class PublicStatsSettingsForm extends Form
         $templateMgr = TemplateManager::getManager($request);
         
         $templateMgr->assign([
-            'pluginName' => $this->plugin->getName(),
+            'pluginName'       => $this->plugin->getName(),
             'defaultPrimaryColor' => self::DEFAULT_PRIMARY_COLOR,
-            'openAlexEmail' => $this->getData('openAlexEmail'),
-            'primaryColor' => $this->getData('primaryColor') ?: self::DEFAULT_PRIMARY_COLOR,
+            'openAlexEmail'    => $this->getData('openAlexEmail'),
+            'primaryColor'     => $this->getData('primaryColor') ?: self::DEFAULT_PRIMARY_COLOR,
+            'enabledSubsections' => $this->getData('enabledSubsections'),
+            'sectionGroups'      => PublicStatsConstants::SECTION_GROUPS,
+            'subsections'        => PublicStatsConstants::SUBSECTIONS,
         ]);
 
         return parent::fetch($request, $template, $display);

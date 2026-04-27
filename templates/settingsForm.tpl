@@ -4,7 +4,6 @@
 
     var colorPicker = document.getElementById('colorPicker');
     var colorText = document.getElementById('primaryColor');
-    var colorPreview = document.getElementById('colorPreview');
     var colorVariants = document.getElementById('colorVariants');
     var resetBtn = document.getElementById('resetColorBtn');
     var defaultColor = '{$defaultPrimaryColor|escape:"javascript"}';
@@ -40,24 +39,14 @@
     {rdelim}
 
     function updatePreview(color) {ldelim}
-    if (colorPreview) {ldelim}
-    colorPreview.style.backgroundColor = color;
-    {rdelim}
-
-    if (colorVariants) {ldelim}
-    var variants = generateVariants(color);
-    if (variants) {ldelim}
-    colorVariants.innerHTML =
-        '<div class="color-swatch" style="background-color: ' + variants.light + ';" title="Light: ' + variants.light +
-        '"></div>' +
-        '<div class="color-swatch primary" style="background-color: ' + variants.primary + ';" title="Primary: ' +
-        variants.primary + '"></div>' +
-        '<div class="color-swatch" style="background-color: ' + variants.dark + ';" title="Dark: ' + variants.dark +
-        '"></div>' +
-        '<div class="color-swatch" style="background-color: ' + variants.darker + ';" title="Darker: ' + variants
-        .darker + '"></div>';
-    {rdelim}
-    {rdelim}
+        if (!colorVariants) return;
+        var variants = generateVariants(color);
+        if (!variants) return;
+        colorVariants.innerHTML =
+            '<span class="ps-color-swatch" style="background-color: ' + variants.light + ';" title="Light: ' + variants.light + '"></span>' +
+            '<span class="ps-color-swatch primary" style="background-color: ' + variants.primary + ';" title="Primary: ' + variants.primary + '"></span>' +
+            '<span class="ps-color-swatch" style="background-color: ' + variants.dark + ';" title="Dark: ' + variants.dark + '"></span>' +
+            '<span class="ps-color-swatch" style="background-color: ' + variants.darker + ';" title="Darker: ' + variants.darker + '"></span>';
     {rdelim}
 
     if (colorPicker && colorText) {ldelim}
@@ -84,106 +73,142 @@
     updatePreview(defaultColor);
     {rdelim});
     {rdelim}
+
+    // ---- Section accordion ----
+    function updateGroupCheck(groupId) {ldelim}
+    var subs = document.querySelectorAll('.ps-sub-check[data-group="' + groupId + '"]');
+    var checked = Array.from(subs).filter(function(s) {ldelim} return s.checked; {rdelim}).length;
+    var cb = document.querySelector('.ps-group-check[data-group="' + groupId + '"]');
+    if (!cb) return;
+    cb.indeterminate = false;
+    if (checked === 0) {ldelim} cb.checked = false; {rdelim}
+    else if (checked === subs.length) {ldelim} cb.checked = true; {rdelim}
+    else {ldelim} cb.indeterminate = true; {rdelim}
+    {rdelim}
+
+    document.querySelectorAll('.ps-group-check').forEach(function(cb) {ldelim}
+    var g = cb.dataset.group;
+    updateGroupCheck(g);
+    cb.addEventListener('click', function() {ldelim}
+    document.querySelectorAll('.ps-sub-check[data-group="' + g + '"]')
+    .forEach(function(s) {ldelim} s.checked = cb.checked; {rdelim});
+    {rdelim});
+    {rdelim});
+
+    document.querySelectorAll('.ps-sub-check').forEach(function(sub) {ldelim}
+    sub.addEventListener('change', function() {ldelim} updateGroupCheck(sub.dataset.group); {rdelim});
+    {rdelim});
+
+    document.querySelectorAll('.ps-toggle-btn').forEach(function(btn) {ldelim}
+    btn.addEventListener('click', function() {ldelim}
+    var grid = document.getElementById('ps-subs-' + btn.dataset.group);
+    var open = btn.getAttribute('aria-expanded') === 'true';
+    grid.style.display = open ? 'none' : 'grid';
+    btn.setAttribute('aria-expanded', !open);
+    btn.textContent = open ? '›' : '▾';
+    {rdelim});
+    {rdelim});
     {rdelim});
 </script>
 
 <style>
-    .color-picker-container {ldelim}
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 8px;
+    /* ---- Color picker ---- */
+    .ps-color-picker {ldelim}
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+    {rdelim}
+    .ps-color-picker input[type="color"] {ldelim}
+        width: 40px;
+        height: 32px;
+        padding: 0;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    {rdelim}
+    .ps-color-picker input[type="text"] {ldelim}
+        width: 92px;
+        font-family: monospace;
+    {rdelim}
+    .ps-color-variants {ldelim}
+        display: inline-flex;
+        gap: 3px;
+        align-items: center;
+    {rdelim}
+    .ps-color-swatch {ldelim}
+        width: 22px;
+        height: 22px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    {rdelim}
+    .ps-color-swatch.primary {ldelim} outline: 1px solid #555; {rdelim}
+
+    /* ---- Section accordion (PKP-flat) ---- */
+    .ps-sections-editor {ldelim}
+        display: flex;
+        flex-direction: column;
+        margin-top: 6px;
+        border-top: 1px solid #e7e7e7;
+    {rdelim}
+    .ps-group-block {ldelim}
+        border-bottom: 1px solid #e7e7e7;
+    {rdelim}
+    .ps-group-bar {ldelim}
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 2px;
+    {rdelim}
+    .ps-group-check {ldelim}
+        flex-shrink: 0;
+        margin: 0;
+    {rdelim}
+    .ps-group-title {ldelim}
+        flex: 1;
+        font-size: 13px;
+        color: #333;
+    {rdelim}
+    .ps-toggle-btn {ldelim}
+        background: none;
+        border: none;
+        padding: 0 6px;
+        cursor: pointer;
+        color: #888;
+        font-size: 16px;
+        line-height: 1;
+    {rdelim}
+    .ps-toggle-btn:hover {ldelim} color: #333; {rdelim}
+    .ps-subs-grid {ldelim}
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 4px 16px;
+        padding: 4px 0 10px 22px;
+    {rdelim}
+    .ps-sub-label {ldelim}
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        color: #555 !important;
+        font-weight: normal !important;
+        cursor: pointer;
+        text-transform: none !important;
+    {rdelim}
+    .ps-sub-label span {ldelim}
+        font-size: 12px !important;
+        font-weight: normal !important;
+        color: #555 !important;
+        text-transform: none !important;
+    {rdelim}
+    .ps-sub-label input[type="checkbox"] {ldelim}
+        flex-shrink: 0;
+        margin: 0;
     {rdelim}
 
-    #colorPicker {ldelim}
-    width: 50px;
-    height: 40px;
-    padding: 0;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    {rdelim}
-
-    #colorPicker:hover {ldelim}
-    border-color: #999;
-    {rdelim}
-
-    #primaryColor {ldelim}
-    width: 90px;
-    font-family: monospace;
-    font-size: 14px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    {rdelim}
-
-    #colorPreview {ldelim}
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 2px solid #ccc;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    {rdelim}
-
-    #colorVariants {ldelim}
-    display: flex;
-    gap: 4px;
-    padding: 6px 10px;
-    background: #f5f5f5;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    {rdelim}
-
-    .color-swatch {ldelim}
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    cursor: help;
-    transition: transform 0.15s;
-    {rdelim}
-
-    .color-swatch:hover {ldelim}
-    transform: scale(1.1);
-    {rdelim}
-
-    .color-swatch.primary {ldelim}
-    border: 2px solid #333;
-    {rdelim}
-
-    #resetColorBtn {ldelim}
-    padding: 8px 14px;
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #555;
-    transition: all 0.2s;
-    {rdelim}
-
-    #resetColorBtn:hover {ldelim}
-    background: #e0e0e0;
-    color: #333;
-    {rdelim}
-
-    .color-info {ldelim}
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: #f9f9f9;
-    border-left: 3px solid #8b2635;
-    font-size: 13px;
-    color: #555;
-    border-radius: 0 4px 4px 0;
-    {rdelim}
-
-    .variants-label {ldelim}
-    font-size: 11px;
-    color: #888;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    /* ---- Intro paragraph spacing ---- */
+    .ps-form-intro {ldelim}
+        margin: 4px 0 14px 0;
     {rdelim}
 </style>
 
@@ -192,33 +217,55 @@
     {csrf}
     {include file="controllers/notification/inPlaceNotification.tpl" notificationId="publicStatsSettingsFormNotification"}
 
-    {fbvFormArea id="publicStatsSettingsFormArea"}
+    <p class="pkp_help ps-form-intro">{translate key="plugins.generic.publicStats.settings.description"}</p>
 
-    {fbvFormSection}
-    <p class="pkp_help">{translate key="plugins.generic.publicStats.settings.description"}</p>
-    {/fbvFormSection}
+    {fbvFormArea id="publicStatsSettingsFormArea"}
 
     {fbvFormSection title="plugins.generic.publicStats.settings.openAlexEmail" required=true}
     {fbvElement type="text" id="openAlexEmail" value=$openAlexEmail required=true}
     <p class="pkp_help">{translate key="plugins.generic.publicStats.settings.openAlexEmailDescription"}</p>
     {/fbvFormSection}
 
+    {fbvFormSection title="plugins.generic.publicStats.settings.enabledSections"}
+    <p class="pkp_help">{translate key="plugins.generic.publicStats.settings.enabledSectionsDescription"}</p>
+    <div class="ps-sections-editor">
+        {foreach from=$subsections key=groupId item=groupSections}
+            <div class="ps-group-block">
+                <div class="ps-group-bar">
+                    <input type="checkbox" class="ps-group-check" data-group="{$groupId|escape}"
+                        title="{translate key=$sectionGroups[$groupId]}" />
+                    <span class="ps-group-title">{translate key=$sectionGroups[$groupId]}</span>
+                    <button type="button" class="ps-toggle-btn" data-group="{$groupId|escape}" aria-expanded="false"
+                        title="{translate key='plugins.generic.publicStats.settings.toggleSubsections'}">›</button>
+                </div>
+                <div class="ps-subs-grid" id="ps-subs-{$groupId|escape}" style="display:none">
+                    {foreach from=$groupSections key=sectionId item=labelKey}
+                        <label class="ps-sub-label">
+                            <input type="checkbox" class="ps-sub-check" name="enabledSubsections[]" value="{$sectionId|escape}"
+                                data-group="{$groupId|escape}" {if in_array($sectionId, $enabledSubsections)}checked{/if} />
+                            <span>{translate key=$labelKey}</span>
+                        </label>
+                    {/foreach}
+                </div>
+            </div>
+        {/foreach}
+    </div>
+    {/fbvFormSection}
+
     {fbvFormSection title="plugins.generic.publicStats.settings.primaryColor"}
-    <div class="color-picker-container">
+    <div class="ps-color-picker">
         <input type="color" id="colorPicker" value="{$primaryColor|escape|default:'#8b2635'}" />
         <input type="text" id="primaryColor" name="primaryColor" value="{$primaryColor|escape|default:'#8b2635'}"
             maxlength="7" />
-        <div id="colorPreview" style="background-color: {$primaryColor|escape|default:'#8b2635'};"></div>
-        <div>
-            <div class="variants-label">{translate key="plugins.generic.publicStats.settings.colorVariants"}</div>
-            <div id="colorVariants"></div>
-        </div>
-        <button type="button" id="resetColorBtn">↺
-            {translate key="plugins.generic.publicStats.settings.resetColor"}</button>
+        <span class="ps-color-variants" id="colorVariants" aria-label="{translate key='plugins.generic.publicStats.settings.colorVariants'}"></span>
+        <button type="button" class="pkp_button" id="resetColorBtn">{translate key="plugins.generic.publicStats.settings.resetColor"}</button>
     </div>
     <p class="pkp_help">{translate key="plugins.generic.publicStats.settings.primaryColorDescription"}</p>
-    <div class="color-info">
-        {translate key="plugins.generic.publicStats.settings.colorAffectedElements"}
+    <div class="pkp_notification">
+        {include file="controllers/notification/inPlaceNotificationContent.tpl"
+            notificationId="publicStatsColorAffectedElements"
+            notificationStyleClass="notifyInfo"
+            notificationContents="plugins.generic.publicStats.settings.colorAffectedElements"|translate}
     </div>
     {/fbvFormSection}
 

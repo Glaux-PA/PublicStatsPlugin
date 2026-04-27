@@ -12,7 +12,7 @@
 <version>
 	<application>publicStats</application>
 	<type>plugins.generic</type>
-	<release>1.0.0.0</release>
-	<date>2025-06-10</date>
+	<release>1.1.0.0</release>
+	<date>2026-04-27</date>
 	<class>PublicStatsPlugin</class>
 </version>

@@ -996,6 +996,27 @@ msgstr "Reset"
 msgid "plugins.generic.publicStats.settings.resetToDefault"
 msgstr "Reset to default color"
 
+msgid "plugins.generic.publicStats.settings.enabledSections"
+msgstr "Enabled statistics sections"
+
+msgid "plugins.generic.publicStats.settings.toggleSubsections"
+msgstr "Toggle subsections"
+
+msgid "plugins.generic.publicStats.settings.enabledSectionsDescription"
+msgstr "Select which sections will be visible to visitors. Disable sections that are not relevant to your journal."
+
+msgid "plugins.generic.publicStats.settings.section.general"
+msgstr "General statistics (accesses, trends, geographic distribution)"
+
+msgid "plugins.generic.publicStats.settings.section.editorial"
+msgstr "Editorial statistics (submissions, authors, reviewers, decision times)"
+
+msgid "plugins.generic.publicStats.settings.section.reach"
+msgstr "Article reach (most downloaded/viewed in the last 60 days)"
+
+msgid "plugins.generic.publicStats.settings.section.impact"
+msgstr "Impact analysis (citations, open access, thematic profile) — requires OpenAlex"
+
 msgid "plugins.generic.publicStats.showTop"
 msgstr "Show top:"
 
@@ -1224,4 +1245,31 @@ msgstr "Journal statistics"
 # Page titles
 msgid "plugins.publicStats.title.key"
 msgstr "Public statistics"
+
+# ============================================================
+# LANGUAGE DISTRIBUTION
+# ============================================================
+msgid "plugins.generic.publicStats.languageDistribution"
+msgstr "Language distribution"
+
+msgid "plugins.generic.publicStats.languageDistributionDesc"
+msgstr "Published articles grouped by language"
+
+msgid "plugins.generic.publicStats.articleLanguages"
+msgstr "Article languages"
+
+msgid "plugins.generic.publicStats.articlesByLanguage"
+msgstr "Articles by language"
+
+msgid "plugins.generic.publicStats.language"
+msgstr "Language"
+
+msgid "plugins.generic.publicStats.noLanguageData"
+msgstr "No language data available"
+
+msgid "plugins.generic.publicStats.allIssues"
+msgstr "All issues"
+
+msgid "plugins.generic.publicStats.filterByIssue"
+msgstr "Filter by issue"
 

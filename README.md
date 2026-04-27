@@ -37,6 +37,7 @@ ojs/
             ├── controllers/
             ├── classes/
             ├── helpers/
+            ├── jobs/
             ├── services/
             ├── templates/
             ├── locale/
@@ -60,14 +61,15 @@ ojs/
 2. Click **Settings**
 3. Configure the following:
 
-| Setting            | Description                                                    |
-| ------------------ | -------------------------------------------------------------- |
-| **OpenAlex Email** | Contact email for OpenAlex API (see note below)                |
-| **Primary Color**  | Choose a color that matches your journal's branding (optional) |
+| Setting                        | Description                                                                                         |
+| ------------------------------ | --------------------------------------------------------------------------------------------------- |
+| **OpenAlex Email**             | Contact email for OpenAlex API (see note below)                                                     |
+| **Active statistics sections** | Show or hide each subsection independently — see [Enable/disable sections](#enabledisable-sections) |
+| **Primary Color**              | Choose a color that matches your journal's branding (optional)                                      |
 
 ![Plugin Settings](screenshots/settings.png)
 
-4. Click **Save**
+4. Click **Ok**
 
 #### About the OpenAlex Email
 
@@ -109,7 +111,7 @@ https://your-journal.com/publicStats/total
 
 You should see the statistics dashboard with your journal's data.
 
-> **Note**: Citation data from OpenAlex may take a few moments to load on first access as it is fetched and cached.
+> **Note**: On the first visit, OpenAlex-powered sections (citing journals, thematic profile, citations map) may show a loading state while the OJS queue processes them. See the [OpenAlex Integration](#openalex-integration) section for details.
 
 ## Configuration
 
@@ -127,14 +129,30 @@ Features powered by OpenAlex:
 
 Data is fetched automatically and cached for 24 hours to optimize performance.
 
+> **First-load notice**: building the citing-journals list and the OpenAlex enrichment for a whole journal can take several minutes on large catalogues. The plugin offloads these calculations to the OJS background-jobs queue, so the affected sections (citing journals, thematic profile, citations map) will show a loading state until the queue worker finishes. Make sure the `acron` plugin or a scheduled queue worker is running. Subsequent visits read from cache and are instant.
+
+### Enable/disable sections
+
+Every subsection listed in [Usage](#usage) can be turned on or off independently:
+
+1. Open **Settings → Website → Plugins → Public Statistics → Settings**
+2. Under **Active statistics sections**, expand any group
+3. Tick or untick each subsection (use the group checkbox to toggle all of its children at once)
+4. Click **Ok**
+
+Disabled subsections are hidden from both the sidebar and the page output, and their data is never queried — disabling features you don't use also reduces the load on your database. New subsections introduced in future plugin updates appear automatically the next time settings are opened.
+
 ### Customization
 
 You can customize the interface color theme in the plugin settings. The selected color will be applied to:
 
-- Navigation menu active states
-- Charts and graphs
-- Links and buttons
-- Metric highlights
+- Active sidebar menu items
+- Loading indicator
+- Reset-zoom buttons on charts
+- Metric values and table links
+- Export buttons
+
+The form shows a live preview of the four shades that will be derived from your chosen colour (light / primary / dark / darker).
 
 ## Usage
 
@@ -144,19 +162,42 @@ Once installed, the statistics page is accessible at:
 https://your-journal.com/publicStats/total
 ```
 
-The interface includes sections for:
+The dashboard groups statistics into four categories. Each subsection can be enabled or disabled individually from the plugin settings — see [Enable/disable sections](#enabledisable-sections) below.
 
-| Section               | Description                                      |
-| --------------------- | ------------------------------------------------ |
-| Monthly Trends        | Views and downloads over time                    |
-| Publication Stats     | Articles published and submission status         |
-| Article Statistics    | Top downloaded and viewed articles               |
-| Geographic Stats      | Reader distribution by country                   |
-| Issue & Section Stats | Metrics by journal issue and section             |
-| Authors & Reviewers   | Contributor statistics and affiliations          |
-| Editorial Metrics     | Processing times and decisions                   |
-| Impact Statistics     | Citations, citing journals, and thematic profile |
-| Open Access           | OA type distribution                             |
+### General
+
+- **Monthly trends** — views and downloads aggregated by month
+- **Annual trends** — same data aggregated by year
+- **Top downloads** — most-downloaded articles
+- **Top views** — most-viewed articles
+- **By section** — distribution across journal sections
+- **By issue** — metrics for each issue
+- **Language distribution** — published articles broken down by language (with per-issue filter)
+- **Geographic distribution** — readers by country (world map + table)
+
+### Editorial
+
+- **Author dashboard** — per-author publications, downloads and views
+- **Monthly submissions** — received / published / declined / in-process timeline
+- **Annual submissions** — same data aggregated by year
+- **Authors by country / institution** — contributor distribution
+- **Reviewers by country / institution** — reviewer distribution
+- **First-decision time** — average days from submission to first decision
+- **Acceptance-to-publication time** — average days from accepted to published
+
+### Reach
+
+- **Most downloaded (last 60 days)**
+- **Most viewed (last 60 days)**
+
+### Impact _(requires OpenAlex)_
+
+- **Top cited** — most-cited articles, all-time and per year
+- **Citation evolution** — citations received per year
+- **Open Access stats** — Diamond / Gold / Hybrid / Green / Bronze / Closed breakdown
+- **Thematic profile** — research areas inferred from OpenAlex topics
+- **Citations by country** — geographic origin of citations (map + table)
+- **Citing journals** — top journals citing your articles, with per-article drill-down
 
 ![Geographic Statistics](screenshots/geographic.png)
 
@@ -167,6 +208,48 @@ All sections support CSV export. Click the export button in any section to downl
 ## Support
 
 For issues or feature requests, please contact the plugin maintainer.
+
+## For developers
+
+The plugin follows the standard OJS 3.4 layout with a service-oriented backend and a modular frontend.
+
+### Backend
+
+- `controllers/PublicStatisticsHandler.php` — page handler. Each public method is a JSON or HTML endpoint registered on the `publicStats` page route.
+- `controllers/traits/*Trait.php` — endpoint groups (article rankings, editorial, author/reviewer, impact, CSV exports). Traits are thin HTTP wrappers; logic lives in services.
+- `services/*.php` — business logic, one service per domain (statistics, articles, editorial, language, OpenAlex, CSV export).
+- `jobs/*.php` — Laravel queue jobs for heavy OpenAlex aggregations. They run via the OJS queue worker (`acron` plugin or `php tools/jobs.php run`).
+- `classes/PublicStatsConstants.php` — central registry of subsection IDs and their group. Adding a subsection here is enough for it to appear in the settings form.
+- `classes/Logger.php` — wrapper over `error_log` that prefixes every line with `[publicStats]`. Use `Logger::error($msg, $exception)` and `Logger::warning($msg)`; never call `error_log` directly.
+
+### Frontend
+
+The dashboard JS is split across seven files in `templates/js/`:
+
+| File                    | Responsibility                                 |
+| ----------------------- | ---------------------------------------------- |
+| `statistics-helpers.js` | Shared utilities (escapeHtml, ChartConfig, …)  |
+| `statistics-api.js`     | API client + CSV export buttons                |
+| `statistics-charts.js`  | Chart.js renderers                             |
+| `statistics-tables.js`  | Table builders                                 |
+| `statistics-maps.js`    | Leaflet renderers                              |
+| `statistics-impact.js`  | Author dashboard + Impact (OpenAlex) renderers |
+| `statistics.js`         | Orchestrator: navigation, year changes, init   |
+
+Each module attaches itself to `window.PublicStats.*`; the orchestrator destructures it and wires section navigation. Load order is enforced from `PublicStatisticsHandler::setupAssets()`.
+
+### Adding a new section
+
+1. Add the subsection id to `PublicStatsConstants::SUBSECTIONS` under the right group.
+2. Implement the data layer in `services/`.
+3. Add an endpoint method on `PublicStatisticsHandler`.
+4. Register an `API.get<Foo>` wrapper in `statistics-api.js` and a renderer (chart, map or table) in the matching frontend module.
+5. Add the sidebar item and the content section to `templates/publicStats.tpl`, plus a handler entry in `Navigation.initializeSectionContent` (`statistics.js`).
+6. Add translation keys to `locale/<code>/locale.po`.
+
+### Adding a translation
+
+Copy `locale/en/locale.po` to `locale/<your-code>/locale.po` and translate the `msgstr` lines. The locale code must match an OJS-supported locale (e.g. `pt_BR`, `de`, `fr_CA`).
 
 ## License
 

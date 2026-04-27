@@ -24,6 +24,7 @@ namespace APP\plugins\generic\publicStats\services;
 
 use APP\core\Application;
 use APP\facades\Repo;
+use APP\plugins\generic\publicStats\classes\Logger;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\jobs\ComputeOpenAlexAggregateJob;
 use Illuminate\Support\Facades\Cache;
@@ -60,9 +61,74 @@ class OpenAlexService
 
             return $email ?: null;
         } catch (\Exception $e) {
-            error_log("OpenAlexService: Could not get contact email: " . $e->getMessage());
+            Logger::error('OpenAlex: could not resolve contact email', $e);
             return null;
         }
+    }
+
+    /**
+     * Perform a GET against the OpenAlex API with retries and exponential backoff.
+     *
+     * Retries on transient failures (network errors, 429, 5xx). Returns the
+     * decoded JSON body on success, or null when all attempts fail. Each
+     * non-final failure is logged as a warning so operators can see the
+     * cause without the request itself failing.
+     *
+     * @param string $url     Full request URL (without query params).
+     * @param array  $query   Query parameters to append.
+     * @param int    $timeout Per-attempt timeout, in seconds.
+     * @param string $context Short tag used in log lines (e.g. "DOI 10.x/y").
+     * @return array|null     Decoded JSON body, or null on permanent failure.
+     */
+    private function httpGetWithRetry(
+        string $url,
+        array $query = [],
+        int $timeout = 10,
+        string $context = ''
+    ): ?array {
+        $attempts = 3;
+        $backoffMs = [250, 1000, 2000]; // exponential-ish: 250ms, 1s, 2s
+
+        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+            try {
+                $response = Http::timeout($timeout)
+                    ->withHeaders($this->apiHeaders())
+                    ->get($url, $query);
+
+                $status = $response->status();
+
+                if ($response->successful()) {
+                    return $response->json();
+                }
+
+                // 4xx (other than 429) are permanent — don't retry.
+                $isTransient = $status === 429 || $status >= 500;
+                if (!$isTransient) {
+                    Logger::error("OpenAlex {$context}: non-retryable HTTP {$status}");
+                    return null;
+                }
+
+                if ($attempt < $attempts) {
+                    Logger::warning("OpenAlex {$context}: transient HTTP {$status}, retrying (attempt {$attempt}/{$attempts})");
+                    usleep($backoffMs[$attempt - 1] * 1000);
+                    continue;
+                }
+
+                Logger::error("OpenAlex {$context}: HTTP {$status} after {$attempts} attempts");
+                return null;
+            } catch (\Throwable $e) {
+                if ($attempt < $attempts) {
+                    Logger::warning("OpenAlex {$context}: network error, retrying (attempt {$attempt}/{$attempts})", $e);
+                    usleep($backoffMs[$attempt - 1] * 1000);
+                    continue;
+                }
+
+                Logger::error("OpenAlex {$context}: failed after {$attempts} attempts", $e);
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -161,27 +227,14 @@ class OpenAlexService
 
         $cacheKey = "openalex_work_" . md5($doi);
 
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function() use ($doi, $sanitizedDoi) {
-            try {
-                usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-
-                $url = self::API_BASE . '/works/doi:' . $sanitizedDoi;
-
-                $response = Http::timeout(10)
-                    ->withHeaders($this->apiHeaders())
-                    ->get($url);
-                
-                if (!$response->successful()) {
-                    error_log("OpenAlex API: Non-200 response for DOI {$doi}: " . $response->status());
-                    return null;
-                }
-                
-                return $response->json();
-                
-            } catch (\Exception $e) {
-                error_log("OpenAlex API error for DOI {$doi}: " . $e->getMessage());
-                return null;
-            }
+        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($doi, $sanitizedDoi) {
+            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
+            return $this->httpGetWithRetry(
+                self::API_BASE . '/works/doi:' . $sanitizedDoi,
+                [],
+                10,
+                "DOI {$doi}"
+            );
         });
     }
     
@@ -218,42 +271,33 @@ class OpenAlexService
     public function getAuthorMetrics(string $orcid): ?array
     {
         $cacheKey = "openalex_author_" . md5($orcid);
-        
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function() use ($orcid) {
-            try {
-                usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-                
-                $orcidUrl = strpos($orcid, 'https://orcid.org/') === 0 
-                    ? $orcid 
-                    : 'https://orcid.org/' . $orcid;
-                
-                $url = self::API_BASE . '/authors/' . $orcidUrl;
-                
-                $response = Http::timeout(10)
-                    ->withHeaders($this->apiHeaders())
-                    ->get($url);
 
-                if (!$response->successful()) {
-                    error_log("OpenAlex API: Failed for ORCID {$orcid}");
-                    return null;
-                }
+        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($orcid) {
+            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
 
-                $author = $response->json();
-                
-                return [
-                    'openalex_id' => $author['id'] ?? null,
-                    'works_count' => $author['works_count'] ?? 0,
-                    'cited_by_count' => $author['cited_by_count'] ?? 0,
-                    'h_index' => $author['summary_stats']['h_index'] ?? 0,
-                    'i10_index' => $author['summary_stats']['i10_index'] ?? 0,
-                    '2yr_mean_citedness' => $author['summary_stats']['2yr_mean_citedness'] ?? 0,
-                    'counts_by_year' => $author['counts_by_year'] ?? [],
-                ];
-                
-            } catch (\Exception $e) {
-                error_log("OpenAlex API error for ORCID {$orcid}: " . $e->getMessage());
+            $orcidUrl = strpos($orcid, 'https://orcid.org/') === 0
+                ? $orcid
+                : 'https://orcid.org/' . $orcid;
+
+            $author = $this->httpGetWithRetry(
+                self::API_BASE . '/authors/' . $orcidUrl,
+                [],
+                10,
+                "ORCID {$orcid}"
+            );
+            if ($author === null) {
                 return null;
             }
+
+            return [
+                'openalex_id' => $author['id'] ?? null,
+                'works_count' => $author['works_count'] ?? 0,
+                'cited_by_count' => $author['cited_by_count'] ?? 0,
+                'h_index' => $author['summary_stats']['h_index'] ?? 0,
+                'i10_index' => $author['summary_stats']['i10_index'] ?? 0,
+                '2yr_mean_citedness' => $author['summary_stats']['2yr_mean_citedness'] ?? 0,
+                'counts_by_year' => $author['counts_by_year'] ?? [],
+            ];
         });
     }
     
@@ -262,62 +306,37 @@ class OpenAlexService
      */
     public function syncJournalByISSN(string $issn, int $limit = 200): array
     {
-        try {
-            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-            
-            $url = self::API_BASE . '/works';
-            
-            $response = Http::timeout(15)
-                ->withHeaders($this->apiHeaders())
-                ->get($url, [
-                    'filter' => 'primary_location.source.issn:' . $issn,
-                    'per-page' => $limit
-                ]);
+        usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
 
-            if (!$response->successful()) {
-                error_log("OpenAlex API: Failed to sync ISSN {$issn}");
-                return [];
-            }
+        $body = $this->httpGetWithRetry(
+            self::API_BASE . '/works',
+            [
+                'filter' => 'primary_location.source.issn:' . $issn,
+                'per-page' => $limit,
+            ],
+            15,
+            "ISSN {$issn}"
+        );
 
-            return $response->json()['results'] ?? [];
-            
-        } catch (\Exception $e) {
-            error_log("OpenAlex sync error for ISSN {$issn}: " . $e->getMessage());
-            return [];
-        }
+        return $body['results'] ?? [];
     }
     
     /**
      * Get topics for text (title + abstract)
      */
-   public function getTopicsForText(string $title, ?string $abstract = null): ?array
+    public function getTopicsForText(string $title, ?string $abstract = null): ?array
     {
         $cacheKey = "openalex_topics_" . md5($title . ($abstract ?? ''));
-        
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function() use ($title, $abstract) {
-            try {
-                usleep(PublicStatsConstants::OPENALEX_TEXT_RATE_LIMIT_DELAY);
-                
-                $url = self::API_BASE . '/text';
-                
-                $response = Http::timeout(15)
-                    ->withHeaders($this->apiHeaders())
-                    ->get($url, [
-                        'title' => $title,
-                        'abstract' => $abstract
-                    ]);
 
-                if (!$response->successful()) {
-                    error_log("OpenAlex API: Failed to fetch topics for text");
-                    return null;
-                }
+        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($title, $abstract) {
+            usleep(PublicStatsConstants::OPENALEX_TEXT_RATE_LIMIT_DELAY);
 
-                return $response->json();
-                
-            } catch (\Exception $e) {
-                error_log("OpenAlex /text API error: " . $e->getMessage());
-                return null;
-            }
+            return $this->httpGetWithRetry(
+                self::API_BASE . '/text',
+                ['title' => $title, 'abstract' => $abstract],
+                15,
+                '/text endpoint'
+            );
         });
     }
     
@@ -327,31 +346,18 @@ class OpenAlexService
     public function getCitingWorks(string $openalexId, int $limit = 50): array
     {
         $cacheKey = "openalex_citing_" . md5($openalexId);
-        
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function() use ($openalexId, $limit) {
-            try {
-                usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-                
-                $url = self::API_BASE . '/works';
-                
-                $response = Http::timeout(10)
-                    ->withHeaders($this->apiHeaders())
-                    ->get($url, [
-                        'filter' => 'cites:' . $openalexId,
-                        'per-page' => $limit
-                    ]);
 
-                if (!$response->successful()) {
-                    error_log("OpenAlex API: Failed to fetch citing works for {$openalexId}");
-                    return [];
-                }
+        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($openalexId, $limit) {
+            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
 
-                return $response->json()['results'] ?? [];
-                
-            } catch (\Exception $e) {
-                error_log("OpenAlex citing works error: " . $e->getMessage());
-                return [];
-            }
+            $body = $this->httpGetWithRetry(
+                self::API_BASE . '/works',
+                ['filter' => 'cites:' . $openalexId, 'per-page' => $limit],
+                10,
+                "citing {$openalexId}"
+            );
+
+            return $body['results'] ?? [];
         });
     }
     
@@ -424,7 +430,7 @@ class OpenAlexService
             // Safety check: Stop if we've processed enough
             if ($processedCount >= $maxToProcess) {
                 $stats['is_partial'] = true;
-                error_log("OpenAlex enrichment: Stopped at {$maxToProcess} submissions for context {$contextId}");
+                Logger::warning("OpenAlex enrichment truncated at {$maxToProcess} submissions for context {$contextId}");
                 continue;
             }
             
@@ -506,7 +512,7 @@ class OpenAlexService
             
             foreach ($submissions as $submission) {
                 if ($processedCount >= $maxToProcess) {
-                    error_log("Citations by country: Stopped at {$maxToProcess} submissions");
+                    Logger::warning("Citations-by-country truncated at {$maxToProcess} submissions");
                     break;
                 }
                 
@@ -592,7 +598,7 @@ class OpenAlexService
 
         foreach ($submissions as $submission) {
             if ($processedCount >= $maxToProcess) {
-                error_log("Citing journals: Stopped at {$maxToProcess} submissions");
+                Logger::warning("Citing-journals truncated at {$maxToProcess} submissions");
                 break;
             }
                 
@@ -744,7 +750,7 @@ class OpenAlexService
 
         foreach ($submissions as $submission) {
             if ($processedCount >= $maxToProcess) {
-                error_log("Citing institutions: Stopped at {$maxToProcess} submissions");
+                Logger::warning("Citing-institutions truncated at {$maxToProcess} submissions");
                 break;
             }
                 

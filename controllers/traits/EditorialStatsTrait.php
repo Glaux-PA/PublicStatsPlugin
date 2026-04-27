@@ -19,6 +19,7 @@ namespace APP\plugins\generic\publicStats\controllers\traits;
 
 use PKP\core\PKPRequest;
 use APP\plugins\generic\publicStats\classes\InputValidator;
+use APP\plugins\generic\publicStats\classes\Logger;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use Illuminate\Support\Facades\Cache;
 
@@ -38,7 +39,7 @@ trait EditorialStatsTrait
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
-            $dateRanges = $this->getDateRanges($year, null);
+            $dateRanges = $this->getDateRanges($year);
             
             $cacheKey = sprintf(
                 "editorial_%d_%s_%s",
@@ -59,7 +60,7 @@ trait EditorialStatsTrait
             
             $this->outputJson($data);
         } catch (\Exception $e) {
-            error_log("Error in editorial: " . $e->getMessage());
+            Logger::error("Error in editorial", $e);
             $this->outputError('Error loading editorial statistics', 500);
         }
     }
@@ -87,7 +88,7 @@ trait EditorialStatsTrait
             
             $this->outputJson($data);
         } catch (\Exception $e) {
-            error_log("Error in editorialAnnual: " . $e->getMessage());
+            Logger::error("Error in editorialAnnual", $e);
             $this->outputError('Error loading annual editorial statistics', 500);
         }
     }
@@ -106,7 +107,7 @@ trait EditorialStatsTrait
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
-            $dateRanges = $this->getDateRanges($year, null);
+            $dateRanges = $this->getDateRanges($year);
             
             $cacheKey = sprintf(
                 "first_decision_%d_%s_%s",
@@ -127,7 +128,7 @@ trait EditorialStatsTrait
             
             $this->outputJson($data);
         } catch (\Exception $e) {
-            error_log("Error in firstDecision: " . $e->getMessage());
+            Logger::error("Error in firstDecision", $e);
             $this->outputError('Error loading first decision statistics', 500);
         }
     }
@@ -146,7 +147,7 @@ trait EditorialStatsTrait
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
-            $dateRanges = $this->getDateRanges($year, null);
+            $dateRanges = $this->getDateRanges($year);
             
             $cacheKey = sprintf(
                 "acceptance_publication_%d_%s_%s",
@@ -167,7 +168,7 @@ trait EditorialStatsTrait
             
             $this->outputJson($data);
         } catch (\Exception $e) {
-            error_log("Error in acceptancePublication: " . $e->getMessage());
+            Logger::error("Error in acceptancePublication", $e);
             $this->outputError('Error loading acceptance-publication statistics', 500);
         }
     }

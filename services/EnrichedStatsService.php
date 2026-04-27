@@ -26,6 +26,7 @@ use APP\core\Services;
 use APP\facades\Repo;
 use PKP\core\PKPRequest;
 use PKP\submission\PKPSubmission;
+use APP\plugins\generic\publicStats\classes\Logger;
 use APP\plugins\generic\publicStats\services\OpenAlexService;
 use APP\plugins\generic\publicStats\services\ArticleStatsService;
 use Illuminate\Support\Facades\Cache;
@@ -572,7 +573,7 @@ class EnrichedStatsService extends BaseStatsService
             return $formattedData;
             
         } catch (\Exception $e) {
-            error_log("Error getting citations by country: " . $e->getMessage());
+            Logger::error("Error getting citations by country", $e);
             return null;
         }
     }
@@ -642,7 +643,7 @@ class EnrichedStatsService extends BaseStatsService
             ];
             
         } catch (\Exception $e) {
-            error_log("Error getting citing journals: " . $e->getMessage());
+            Logger::error("Error getting citing journals", $e);
             return null;
         }
     }
@@ -730,7 +731,7 @@ class EnrichedStatsService extends BaseStatsService
             ];
             
         } catch (\Exception $e) {
-            error_log("Error getting citing institutions: " . $e->getMessage());
+            Logger::error("Error getting citing institutions", $e);
             return null;
         }
     }
