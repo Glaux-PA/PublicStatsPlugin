@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/EnrichedStatsTrait.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing OpenAlex-enriched statistics HTTP endpoints.
@@ -95,13 +94,10 @@ trait EnrichedStatsTrait
         try {
             $contextId = $context->getId();
             $limit = InputValidator::validateLimit($request->getUserVar('limit'), 20, 100);
-            $cacheKey = "top_cited_{$contextId}_{$limit}";
 
-            $data = Cache::remember(
-                $cacheKey,
-                PublicStatsConstants::CACHE_TTL_INTERNAL * 48,
-                fn() => $this->enrichedService->getTopCitedArticles($request, $contextId, $limit)
-            );
+            // The service caches via the chunked state itself; wrapping it in
+            // Cache::remember would freeze the "is_computing" placeholder.
+            $data = $this->enrichedService->getTopCitedArticles($request, $contextId, $limit);
 
             $this->outputJson($data);
         } catch (\Exception $e) {
@@ -122,15 +118,7 @@ trait EnrichedStatsTrait
         }
 
         try {
-            $contextId = $context->getId();
-            $cacheKey = "topics_distribution_{$contextId}";
-
-            $data = Cache::remember(
-                $cacheKey,
-                PublicStatsConstants::CACHE_TTL_INTERNAL * 48,
-                fn() => $this->enrichedService->getThematicProfile($contextId)
-            );
-
+            $data = $this->enrichedService->getThematicProfile($context->getId());
             $this->outputJson($data);
         } catch (\Exception $e) {
             Logger::error("Error in topicsDistribution", $e);

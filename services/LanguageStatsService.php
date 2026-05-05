@@ -3,12 +3,17 @@
 /**
  * @file plugins/generic/publicStats/services/LanguageStatsService.php
  *
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
+ *
  * @class LanguageStatsService
+ * @ingroup plugins_generic_publicStats
+ *
  * @brief Service for language distribution statistics of published articles.
  *
- * Counts published articles by language. Articles available in multiple
- * locales are counted once per language (normalized: es_ES and es_MX → es).
- * Language names are returned translated to the current UI locale.
+ * Counts published articles by language. An article available in multiple
+ * locales is counted once per language (normalised: es_ES and es_MX both
+ * collapse to es). Language names are returned in the current UI locale.
  */
 
 declare(strict_types=1);
@@ -17,6 +22,7 @@ namespace APP\plugins\generic\publicStats\services;
 
 use Illuminate\Support\Facades\DB;
 use PKP\facades\Locale;
+use PKP\submission\PKPSubmission;
 
 class LanguageStatsService
 {
@@ -45,9 +51,9 @@ class LanguageStatsService
             ->join('submissions as s', function ($join) use ($contextId) {
                 $join->on('s.submission_id', '=', 'p.submission_id')
                     ->where('s.context_id', '=', $contextId)
-                    ->where('s.status', '=', 3); // STATUS_PUBLISHED
+                    ->where('s.status', '=', PKPSubmission::STATUS_PUBLISHED);
             })
-            ->where('p.status', '=', 3)
+            ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
             ->select('ps.locale', DB::raw('COUNT(DISTINCT p.submission_id) as article_count'))
             ->groupBy('ps.locale');
 

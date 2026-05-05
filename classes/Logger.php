@@ -3,7 +3,12 @@
 /**
  * @file plugins/generic/publicStats/classes/Logger.php
  *
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
+ *
  * @class Logger
+ * @ingroup plugins_generic_publicStats
+ *
  * @brief Thin wrapper over error_log that prepends a consistent plugin prefix.
  *
  * Centralising this lets you grep server logs for "[publicStats]" to find

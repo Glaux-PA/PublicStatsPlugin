@@ -160,25 +160,25 @@ msgid "plugins.generic.publicStats.authors"
 msgstr "Authors"
 
 msgid "plugins.generic.publicStats.authorsByCountry"
-msgstr "Authors by country"
+msgstr "Authorships by country"
 
 msgid "plugins.generic.publicStats.authorsByCountryDescription"
-msgstr "Geographic visualization of the origin of authors publishing in the journal"
+msgstr "Geographic distribution of authorships by country of affiliation. One authorship = one author on one publication; an author with multiple publications counts once per publication."
 
 msgid "plugins.generic.publicStats.authorsByCountryTitle"
-msgstr "Distribution of authors by country"
+msgstr "Authorships by country"
 
 # ============================================================
-# AUTHORS BY INSTITUTION (Distribución de autores por institución)
+# AUTHORSHIPS BY INSTITUTION
 # ============================================================
 msgid "plugins.generic.publicStats.authorsByInstitution"
-msgstr "Authors by institution"
+msgstr "Authorships by institution"
 
 msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
-msgstr "Analysis of institutional affiliations of authors publishing in the journal"
+msgstr "Distribution of authorships by institution of affiliation. One authorship = one author on one publication; an author with multiple publications counts once per publication."
 
 msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
-msgstr "Distribution of authors by institution"
+msgstr "Authorships by institution"
 
 msgid "plugins.generic.publicStats.authorsCount"
 msgstr "Authors count"
@@ -710,6 +710,9 @@ msgstr "No articles to display"
 
 msgid "plugins.generic.publicStats.noAuthorsData"
 msgstr "No authors data available"
+
+msgid "plugins.generic.publicStats.computingPlaceholder"
+msgstr "Computing statistics…"
 
 msgid "plugins.generic.publicStats.noCitationData"
 msgstr "No citation data available"

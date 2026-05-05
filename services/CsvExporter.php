@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/CsvExporter.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class CsvExporter
@@ -34,6 +33,7 @@ class CsvExporter
         private AuthorReviewerStatsService $authorReviewerService,
         private IssueStatsService $issueService,
         private SectionStatsService $sectionService,
+        private LanguageStatsService $languageService,
         private EnrichedStatsService $enrichedService,
     ) {
     }
@@ -371,18 +371,52 @@ class CsvExporter
         ];
     }
 
+    public function languages(int $contextId, ?int $issueId): array
+    {
+        $data = $this->languageService->getLanguageStats($contextId, $issueId);
+
+        $rows = [];
+        foreach ($data as $item) {
+            $rows[] = [
+                $item['code'] ?? '',
+                $item['name'] ?? '',
+                $item['count'] ?? 0,
+            ];
+        }
+
+        $suffix = $issueId ? "issue{$issueId}" : 'all';
+        return [
+            'filename' => "language_stats_{$suffix}_" . date('Y-m-d') . '.csv',
+            'headers'  => ['Language Code', 'Language', 'Articles'],
+            'rows'     => $rows,
+        ];
+    }
+
     // ========================================
     // Citations / enriched
     // ========================================
 
+    /**
+     * Refuse to export a chunked aggregate that hasn't finished computing.
+     * CsvExportTrait converts the STATS_NOT_READY prefix into a 503.
+     */
+    private function assertReady(array $response, string $what): void
+    {
+        if (!empty($response['is_computing'])) {
+            throw new \RuntimeException("STATS_NOT_READY: {$what}");
+        }
+    }
+
     public function topCited(PKPRequest $request, int $contextId, int $limit): array
     {
-        $data = $this->enrichedService->getTopCitedArticles($request, $contextId, $limit);
+        $response = $this->enrichedService->getTopCitedArticles($request, $contextId, $limit);
+        $this->assertReady($response, 'top cited');
+        $articles = $response['articles'] ?? [];
 
         return [
             'filename' => 'top_cited_articles_' . date('Y-m-d') . '.csv',
             'headers' => ['Rank', 'Title', 'Authors', 'Year', 'Citations'],
-            'rows' => $this->rankedArticleRows($data, 'citations', true),
+            'rows' => $this->rankedArticleRows($articles, 'citations', true),
         ];
     }
 
@@ -404,7 +438,9 @@ class CsvExporter
 
     public function citationEvolution(int $contextId): array
     {
-        $data = $this->enrichedService->getCitationEvolution($contextId) ?? [];
+        $response = $this->enrichedService->getCitationEvolution($contextId);
+        $this->assertReady($response, 'citation evolution');
+        $data = $response['data'] ?? [];
 
         $rows = [];
         foreach ($data as $item) {
@@ -421,6 +457,7 @@ class CsvExporter
     public function openAccessStats(int $contextId): array
     {
         $data = $this->enrichedService->getOpenAccessStats($contextId);
+        $this->assertReady($data, 'open access');
         $total = (int)($data['total'] ?? 0);
         $openAccess = (int)($data['open_access'] ?? 0);
         $rate = $total > 0 ? round(($openAccess / $total) * 100, 1) : 0;
@@ -467,6 +504,7 @@ class CsvExporter
     public function thematicProfile(int $contextId): array
     {
         $data = $this->enrichedService->getThematicProfile($contextId);
+        $this->assertReady($data, 'thematic profile');
         $topics = $data['topics'] ?? [];
 
         $rows = [];

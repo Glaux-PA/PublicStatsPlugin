@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/CsvExportTrait.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing CSV export HTTP endpoints.
@@ -103,6 +102,16 @@ trait CsvExportTrait
         try {
             $payload = $build($contextId);
             $this->outputCsv($payload['filename'], $payload['headers'], $payload['rows']);
+        } catch (\RuntimeException $e) {
+            if (str_starts_with($e->getMessage(), 'STATS_NOT_READY:')) {
+                $this->outputError(
+                    'Statistics are still being computed in the background. Please try again in a few minutes.',
+                    503
+                );
+                return;
+            }
+            Logger::error("Error exporting {$errorLabel}", $e);
+            $this->outputError('Error exporting data', 500);
         } catch (\Exception $e) {
             Logger::error("Error exporting {$errorLabel}", $e);
             $this->outputError('Error exporting data', 500);
@@ -235,6 +244,17 @@ trait CsvExportTrait
             $request,
             fn(int $ctx) => $this->csvExporter->sections($ctx, $year),
             'section stats'
+        );
+    }
+
+    public function exportLanguages(array $args, PKPRequest $request): void
+    {
+        $issueIdRaw = $request->getUserVar('issueId');
+        $issueId = ($issueIdRaw !== null && ctype_digit((string) $issueIdRaw)) ? (int) $issueIdRaw : null;
+        $this->runExport(
+            $request,
+            fn(int $ctx) => $this->csvExporter->languages($ctx, $issueId),
+            'language stats'
         );
     }
 

@@ -160,25 +160,25 @@ msgid "plugins.generic.publicStats.authors"
 msgstr "Autors"
 
 msgid "plugins.generic.publicStats.authorsByCountry"
-msgstr "Autors per país"
+msgstr "Autories per país"
 
 msgid "plugins.generic.publicStats.authorsByCountryDescription"
-msgstr "Visualització geogràfica de l'origen dels autors que publiquen a la revista"
+msgstr "Distribució geogràfica d'autories per país d'afiliació. Una autoria = un autor en una publicació; un mateix autor amb diverses publicacions compta una vegada per publicació."
 
 msgid "plugins.generic.publicStats.authorsByCountryTitle"
-msgstr "Distribució d'autors per país"
+msgstr "Autories per país"
 
 # ============================================================
-# AUTHORS BY INSTITUTION (Distribució d'autors per institució)
+# AUTHORSHIPS BY INSTITUTION
 # ============================================================
 msgid "plugins.generic.publicStats.authorsByInstitution"
-msgstr "Autors per institució"
+msgstr "Autories per institució"
 
 msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
-msgstr "Anàlisi de les afiliacions institucionals dels autors que publiquen a la revista"
+msgstr "Distribució d'autories per institució d'afiliació. Una autoria = un autor en una publicació; un mateix autor amb diverses publicacions compta una vegada per publicació."
 
 msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
-msgstr "Distribució d'autors per institució"
+msgstr "Autories per institució"
 
 msgid "plugins.generic.publicStats.authorsCount"
 msgstr "Autors"
@@ -709,6 +709,9 @@ msgstr "No hi ha articles per mostrar"
 
 msgid "plugins.generic.publicStats.noAuthorsData"
 msgstr "No hi ha dades d'autors disponibles"
+
+msgid "plugins.generic.publicStats.computingPlaceholder"
+msgstr "Calculant estadístiques…"
 
 msgid "plugins.generic.publicStats.noCitationData"
 msgstr "No hi ha dades de cites disponibles"

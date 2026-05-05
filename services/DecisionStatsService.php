@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/DecisionStatsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class DecisionStatsService
@@ -22,6 +21,7 @@ declare(strict_types=1);
 namespace APP\plugins\generic\publicStats\services;
 
 use APP\facades\Repo;
+use Illuminate\Support\Facades\DB;
 use PKP\db\DAORegistry;
 use PKP\decision\Decision;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
@@ -184,35 +184,48 @@ class DecisionStatsService extends BaseStatsService
     }
 
     /**
-     * Get review status for submissions.
-     *
-     * Determines whether each submission went through peer review.
-     *
-     * @param array $submissionIds Submission IDs
-     * @return array Review status data
+     * Whether each submission went through peer review, plus its assignments.
+     * Two queries total instead of two per submission; ReviewAssignment objects
+     * are rebuilt via _fromRow so callers keep using their getters as before.
      */
     private function getReviewStatusForSubmissions(array $submissionIds): array
     {
-        $reviewRoundDao = DAORegistry::getDAO('ReviewRoundDAO');
-        $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
-
-        $hasReviewBySubmission = [];
+        $hasReviewBySubmission = array_fill_keys($submissionIds, false);
         $reviewsBySubmission = [];
 
-        foreach ($submissionIds as $submissionId) {
-            $reviewRounds = $reviewRoundDao->getBySubmissionId($submissionId);
-            $hasReview = $reviewRounds && !$reviewRounds->wasEmpty();
-            $hasReviewBySubmission[$submissionId] = $hasReview;
+        if (empty($submissionIds)) {
+            return ['hasReview' => $hasReviewBySubmission, 'reviews' => $reviewsBySubmission];
+        }
 
-            if ($hasReview) {
-                $reviewAssignments = $reviewAssignmentDao->getBySubmissionId($submissionId);
-                $reviewsBySubmission[$submissionId] = $reviewAssignments ?? [];
+        $roundRows = DB::table('review_rounds')
+            ->whereIn('submission_id', $submissionIds)
+            ->get(['submission_id']);
+
+        foreach ($roundRows as $row) {
+            $hasReviewBySubmission[(int) $row->submission_id] = true;
+        }
+
+        $submissionsWithRounds = array_keys(array_filter($hasReviewBySubmission));
+        if (empty($submissionsWithRounds)) {
+            return ['hasReview' => $hasReviewBySubmission, 'reviews' => $reviewsBySubmission];
+        }
+
+        $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
+        $assignmentRows = DB::table('review_assignments')
+            ->whereIn('submission_id', $submissionsWithRounds)
+            ->get();
+
+        foreach ($assignmentRows as $row) {
+            $subId = (int) $row->submission_id;
+            if (!isset($reviewsBySubmission[$subId])) {
+                $reviewsBySubmission[$subId] = [];
             }
+            $reviewsBySubmission[$subId][] = $reviewAssignmentDao->_fromRow((array) $row);
         }
 
         return [
             'hasReview' => $hasReviewBySubmission,
-            'reviews' => $reviewsBySubmission
+            'reviews' => $reviewsBySubmission,
         ];
     }
 

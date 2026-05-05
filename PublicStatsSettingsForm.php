@@ -3,12 +3,14 @@
 /**
  * @file PublicStatsSettingsForm.php
  *
- * Copyright (c) 2017-2023 Simon Fraser University
- * Copyright (c) 2017-2023 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class PublicStatsSettingsForm
- * @brief Form for managing PublicStats plugin settings.
+ * @ingroup plugins_generic_publicStats
+ *
+ * @brief Settings modal form: OpenAlex contact email, primary colour
+ *        and the per-subsection visibility toggles.
  */
 
 namespace APP\plugins\generic\publicStats;

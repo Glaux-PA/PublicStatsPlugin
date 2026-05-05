@@ -1,9 +1,19 @@
 <?php
+
 /**
  * @file plugins/generic/publicStats/controllers/PublicStatisticsHandler.php
  *
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
+ *
  * @class PublicStatisticsHandler
- * @brief Main handler for public statistics display
+ * @ingroup plugins_generic_publicStats
+ *
+ * @brief Main handler for the public statistics page.
+ *
+ * Hosts the `/total` HTML endpoint plus the JSON endpoints consumed by the
+ * dashboard JavaScript. Heavy lifting is delegated to the services in
+ * services/; the traits group endpoints by feature area.
  */
 
 declare(strict_types=1);

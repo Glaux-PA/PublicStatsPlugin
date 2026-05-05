@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/EnrichedStatsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class EnrichedStatsService
@@ -27,6 +26,7 @@ use APP\facades\Repo;
 use PKP\core\PKPRequest;
 use PKP\submission\PKPSubmission;
 use APP\plugins\generic\publicStats\classes\Logger;
+use APP\plugins\generic\publicStats\jobs\ComputeOpenAlexAggregateJob;
 use APP\plugins\generic\publicStats\services\OpenAlexService;
 use APP\plugins\generic\publicStats\services\ArticleStatsService;
 use Illuminate\Support\Facades\Cache;
@@ -46,15 +46,13 @@ class EnrichedStatsService extends BaseStatsService
     }
 
     /**
-     * Get top articles enriched with external citation metrics
-     * 
-     * @param PKPRequest $request Current request
-     * @param int $contextId Context/journal ID
-     * @param string $metricType 'downloads', 'views', or 'citations'
-     * @param int $limit Number of articles to return
-     * @param string|null $dateStart Start date (Ymd format)
-     * @param string|null $dateEnd End date (Ymd format)
-     * @return array Articles with combined local and external metrics
+     * Top articles enriched with OpenAlex metrics.
+     *
+     * @param string $metricType 'downloads', 'views', or 'citations'.
+     *                           For 'citations' the call is delegated to
+     *                           getTopCitedArticles, which scans the whole
+     *                           journal instead of starting from the top
+     *                           downloaded subset.
      */
     public function getEnrichedTopArticles(
         PKPRequest $request,
@@ -64,7 +62,11 @@ class EnrichedStatsService extends BaseStatsService
         ?string $dateStart = null,
         ?string $dateEnd = null
     ): array {
-        // Get base articles from local stats
+        if ($metricType === 'citations') {
+            $response = $this->getTopCitedArticles($request, $contextId, $limit);
+            return $response['articles'] ?? [];
+        }
+
         $baseArticles = $this->getBaseTopArticles(
             $request,
             $contextId,
@@ -74,16 +76,8 @@ class EnrichedStatsService extends BaseStatsService
             $dateEnd
         );
 
-        // Enrich each article with OpenAlex data
         foreach ($baseArticles as &$article) {
             $this->enrichArticleWithExternalData($article);
-        }
-
-        // If sorting by citations, re-order the array
-        if ($metricType === 'citations') {
-            usort($baseArticles, function($a, $b) {
-                return ($b['citations'] ?? 0) <=> ($a['citations'] ?? 0);
-            });
         }
 
         return $baseArticles;
@@ -120,13 +114,13 @@ class EnrichedStatsService extends BaseStatsService
      * @param int $minYear Minimum year to include (default: 2015)
      * @return array Year-by-year citation counts
      */
-   public function getAnnualCitationMetrics(int $contextId, int $minYear = 2015): array
+   public function getAnnualCitationMetrics(int $contextId, int $minYear = 2015, ?int $maxToProcess = null): array
     {
         $submissions = $this->getPublishedSubmissions($contextId);
         $citationsByYear = [];
-        
+
         // Safety limit
-        $maxToProcess = PublicStatsConstants::MAX_OPENALEX_REQUESTS;
+        $maxToProcess = $maxToProcess ?? PublicStatsConstants::MAX_OPENALEX_REQUESTS;
         $processedCount = 0;
 
         foreach ($submissions as $submission) {
@@ -177,6 +171,94 @@ class EnrichedStatsService extends BaseStatsService
         return $result;
     }
 
+    // -- Chunked computation helpers ----------------------------------
+
+    /**
+     * Returns either { __complete__: true, accumulator } when ready, or a
+     * computing placeholder. Kicks off (or resumes) the chunk chain as needed.
+     */
+    private function readOrAdvanceChunked(string $type, int $contextId): array
+    {
+        $state = $this->openAlexService->getChunkedState($type, $contextId);
+
+        if ($state === null) {
+            $this->openAlexService->dispatchChunkJob($type, $contextId);
+            return OpenAlexService::chunkedPlaceholder(null);
+        }
+
+        if (empty($state['is_complete'])) {
+            $this->openAlexService->dispatchChunkJob($type, $contextId);
+            return OpenAlexService::chunkedPlaceholder($state);
+        }
+
+        // Stale state from an older schema (or a partial write). Restart.
+        if (!is_array($state['accumulator'] ?? null)) {
+            $this->openAlexService->forgetChunkedState($type, $contextId);
+            $this->openAlexService->dispatchChunkJob($type, $contextId);
+            return OpenAlexService::chunkedPlaceholder(null);
+        }
+
+        return ['__complete__' => true, 'accumulator' => $state['accumulator']];
+    }
+
+    /**
+     * Pin the list of submission IDs with a DOI on the first call, then return
+     * a window of Submission objects for the current offset.
+     */
+    private function loadNextChunk(int $contextId, array $state): array
+    {
+        if (!isset($state['submission_ids'])) {
+            $ids = [];
+            foreach ($this->getPublishedSubmissions($contextId) as $submission) {
+                $publication = $submission->getCurrentPublication();
+                if (!$publication) continue;
+                if (!$publication->getDoi()) continue;
+                $ids[] = (int) $submission->getId();
+            }
+            $state['submission_ids'] = $ids;
+            $state['total'] = count($ids);
+            $state['processed'] = 0;
+        }
+
+        $offset = (int) ($state['processed'] ?? 0);
+        $chunkIds = array_slice(
+            $state['submission_ids'],
+            $offset,
+            PublicStatsConstants::MAX_INLINE_JOB_SUBMISSIONS
+        );
+
+        // Advance by the slice size, not by the loaded count: if a submission
+        // got deleted in between, skip its slot instead of reprocessing.
+        $state['processed'] = $offset + count($chunkIds);
+        $state['is_complete'] = $state['processed'] >= (int) ($state['total'] ?? 0);
+
+        if (empty($chunkIds)) {
+            return ['submissions' => [], 'state' => $state];
+        }
+
+        $rows = Repo::submission()->getCollector()
+            ->filterByContextIds([$contextId])
+            ->getQueryBuilder()
+            ->whereIn('s.submission_id', $chunkIds)
+            ->get();
+
+        $byId = [];
+        foreach ($rows as $row) {
+            $submission = Repo::submission()->dao->fromRow($row);
+            $byId[(int) $submission->getId()] = $submission;
+        }
+
+        // Preserve the iteration order of submission_ids so chunks are deterministic.
+        $submissions = [];
+        foreach ($chunkIds as $id) {
+            if (isset($byId[$id])) {
+                $submissions[] = $byId[$id];
+            }
+        }
+
+        return ['submissions' => $submissions, 'state' => $state];
+    }
+
     /**
      * Get base top articles without external enrichment
      */
@@ -189,15 +271,7 @@ class EnrichedStatsService extends BaseStatsService
         ?string $dateEnd
     ): array {
         // Use existing ArticleStatsService to get base data
-        if ($metricType === 'downloads') {
-            return $this->articleStatsService->getTopDownloadedArticles(
-                $request,
-                $contextId,
-                $limit,
-                $dateStart,
-                $dateEnd
-            );
-        } elseif ($metricType === 'views') {
+        if ($metricType === 'views') {
             return $this->articleStatsService->getTopViewedArticles(
                 $request,
                 $contextId,
@@ -206,12 +280,12 @@ class EnrichedStatsService extends BaseStatsService
                 $dateEnd
             );
         }
-        
-        // For 'citations' type, start with downloads and will re-sort later
+
+        // 'downloads' (default).
         return $this->articleStatsService->getTopDownloadedArticles(
             $request,
             $contextId,
-            $limit * 2, // Get more to ensure we have enough with DOIs
+            $limit,
             $dateStart,
             $dateEnd
         );
@@ -241,9 +315,8 @@ class EnrichedStatsService extends BaseStatsService
             return;
         }
 
-        // Fetch OpenAlex metrics
         $externalMetrics = $this->openAlexService->getWorkMetrics($doi);
-        
+
         if ($externalMetrics) {
             $article['citations'] = $externalMetrics['cited_by_count'] ?? 0;
             $article['fwci'] = $externalMetrics['fwci'];
@@ -253,10 +326,8 @@ class EnrichedStatsService extends BaseStatsService
         } else {
             $this->addEmptyExternalMetrics($article);
         }
-        
+
         $article['doi'] = $doi;
-        $article['oa_status'] = $externalMetrics['oa_status'] ?? null;
-        $article['is_oa'] = $externalMetrics['is_oa'] ?? false;
     }
 
     /**
@@ -322,12 +393,9 @@ class EnrichedStatsService extends BaseStatsService
     }
 
 
-      /**
-     * Get top cited articles (with cache)
-     * @param PKPRequest $request
-     * @param int $contextId
-     * @param int $limit
-     * @param string|null $year If specified, filter by citations received in this year
+    /**
+     * Top cited articles. The job builds a top-100 list once across the
+     * journal; this wrapper applies the year filter and slices to $limit.
      */
     public function getTopCitedArticles(
         PKPRequest $request,
@@ -335,102 +403,203 @@ class EnrichedStatsService extends BaseStatsService
         int $limit = 20,
         ?string $year = null
     ): array {
-        $cacheKey = "top_cited_articles_{$contextId}_{$limit}" . ($year ? "_{$year}" : "");
-        
-        return Cache::remember($cacheKey, 86400, function() use ($request, $contextId, $limit, $year) {
-            $submissions = $this->getPublishedSubmissions($contextId);
-            $articlesWithCitations = [];
-            
-            $maxSubmissionsToCheck = PublicStatsConstants::MAX_OPENALEX_REQUESTS; 
-            $targetArticles = $limit * 3; 
-            $processedCount = 0;
-            
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_TOP_CITED,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        $articles = $result['accumulator']['articles'] ?? [];
+
+        if ($year !== null) {
+            $filtered = [];
+            foreach ($articles as $article) {
+                $countsByYear = $article['counts_by_year'] ?? [];
+                $yearCitations = 0;
+                foreach ($countsByYear as $yearData) {
+                    if (isset($yearData['year']) && (string)$yearData['year'] === $year) {
+                        $yearCitations = (int)($yearData['cited_by_count'] ?? 0);
+                        break;
+                    }
+                }
+                if ($yearCitations > 0) {
+                    $article['citations'] = $yearCitations;
+                    $filtered[] = $article;
+                }
+            }
+            usort($filtered, fn($a, $b) => $b['citations'] - $a['citations']);
+            $articles = $filtered;
+        }
+
+        // The job has no PKPRequest, so URLs are built here.
+        $dispatcher = $request->getDispatcher();
+        $sliced = array_slice($articles, 0, $limit);
+        foreach ($sliced as &$article) {
+            $bestId = $article['bestId'] ?? $article['submissionId'] ?? null;
+            if ($bestId !== null) {
+                $article['urlPublished'] = $dispatcher->url(
+                    $request,
+                    Application::ROUTE_PAGE,
+                    null,
+                    'article',
+                    'view',
+                    $bestId
+                );
+            }
+            unset($article['counts_by_year'], $article['bestId']);
+        }
+        unset($article);
+
+        return [
+            'articles' => $sliced,
+            'is_computing' => false,
+        ];
+    }
+
+    public function getTopCitedArticlesChunk(int $contextId, array $state): array
+    {
+        // Skip re-runs over already finalized state (retry, race).
+        if (!empty($state['is_complete']) && isset($state['accumulator']['articles'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? ['articles' => []];
+
+        if (!empty($chunk['submissions'])) {
             $userGroups = Repo::userGroup()->getCollector()
                 ->filterByContextIds([$contextId])
                 ->getMany();
-            
-            foreach ($submissions as $submission) {
-                if ($processedCount >= $maxSubmissionsToCheck) {
-                    break;
-                }
-                
+
+            foreach ($chunk['submissions'] as $submission) {
                 $publication = $submission->getCurrentPublication();
                 if (!$publication) continue;
-                
                 $doi = $publication->getDoi();
                 if (!$doi) continue;
-                
-                $processedCount++;
-                
+
                 $metrics = $this->openAlexService->getWorkMetrics($doi);
                 if (!$metrics) continue;
-                
-                // Determine citations count based on year filter
-                $citationsCount = 0;
-                if ($year !== null) {
-                    // Get citations received in the specified year
-                    $countsByYear = $metrics['counts_by_year'] ?? [];
-                    foreach ($countsByYear as $yearData) {
-                        if (isset($yearData['year']) && (string)$yearData['year'] === $year) {
-                            $citationsCount = $yearData['cited_by_count'] ?? 0;
-                            break;
-                        }
-                    }
-                    // Skip articles with no citations in the selected year
-                    if ($citationsCount === 0) continue;
-                } else {
-                    // Use total citations
-                    $citationsCount = $metrics['cited_by_count'] ?? 0;
-                    if ($citationsCount === 0) continue;
-                }
-                
-                $articlesWithCitations[] = [
+
+                $totalCitations = (int)($metrics['cited_by_count'] ?? 0);
+                if ($totalCitations === 0) continue;
+
+                $accumulator['articles'][] = [
                     'submissionId' => $submission->getId(),
+                    'bestId' => $submission->getBestId(),
                     'title' => $publication->getLocalizedTitle(),
                     'authors' => $publication->getAuthorString($userGroups),
                     'year' => date('Y', strtotime($publication->getData('datePublished'))),
-                    'citations' => $citationsCount,
-                    'urlPublished' => $request->getDispatcher()->url(
-                        $request,
-                        Application::ROUTE_PAGE,
-                        null,
-                        'article',
-                        'view',
-                        $submission->getBestId()
-                    )
+                    'citations' => $totalCitations,
+                    'counts_by_year' => $metrics['counts_by_year'] ?? [],
                 ];
-                
-                if (count($articlesWithCitations) >= $targetArticles) {
-                    break;
-                }
             }
-            
-            usort($articlesWithCitations, fn($a, $b) => $b['citations'] - $a['citations']);
-            
-            return array_slice($articlesWithCitations, 0, $limit);
-        });
+        }
+
+        $state['accumulator'] = $accumulator;
+
+        // Final formatting only when fully done.
+        if (!empty($state['is_complete'])) {
+            usort($state['accumulator']['articles'], fn($a, $b) => $b['citations'] - $a['citations']);
+            $state['accumulator']['articles'] = array_slice($state['accumulator']['articles'], 0, 100);
+        }
+
+        return $state;
     }
     /**
-     * Get citation evolution (with cache)
+     * Citations aggregated per year across the journal. The wrapper filters
+     * to $minYear at request time over the full cached series.
      */
     public function getCitationEvolution(int $contextId, int $minYear = 2015): array
     {
-        $cacheKey = "citation_evolution_{$contextId}_{$minYear}";
-        
-        return Cache::remember($cacheKey, 86400, function() use ($contextId, $minYear) {
-            return $this->getAnnualCitationMetrics($contextId, $minYear);
-        });
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_CITATION_EVOLUTION,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        $allYears = $result['accumulator']['data'] ?? [];
+        $filtered = array_values(array_filter(
+            $allYears,
+            fn($entry) => (int)($entry['year'] ?? 0) >= $minYear
+        ));
+
+        return [
+            'data' => $filtered,
+            'is_computing' => false,
+        ];
+    }
+
+    public function getCitationEvolutionChunk(int $contextId, array $state): array
+    {
+        if (!empty($state['is_complete']) && isset($state['accumulator']['data'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? ['years_map' => []];
+
+        foreach ($chunk['submissions'] as $submission) {
+            $publication = $submission->getCurrentPublication();
+            if (!$publication) continue;
+            $doi = $publication->getDoi();
+            if (!$doi) continue;
+
+            $metrics = $this->openAlexService->getWorkMetrics($doi);
+            if (!$metrics || empty($metrics['counts_by_year'])) continue;
+
+            foreach ($metrics['counts_by_year'] as $yearData) {
+                $year = (int)($yearData['year'] ?? 0);
+                if ($year <= 0) continue;
+                $accumulator['years_map'][$year] = ($accumulator['years_map'][$year] ?? 0)
+                    + (int)($yearData['cited_by_count'] ?? 0);
+            }
+        }
+
+        $state['accumulator'] = $accumulator;
+
+        if (!empty($state['is_complete'])) {
+            $yearsMap = $state['accumulator']['years_map'];
+            ksort($yearsMap);
+            $data = [];
+            foreach ($yearsMap as $year => $count) {
+                $data[] = ['year' => (string) $year, 'citations' => $count];
+            }
+            $state['accumulator']['data'] = $data;
+            unset($state['accumulator']['years_map']);
+        }
+
+        return $state;
     }
 
 
-    /**
-     * Get open access statistics
-     */
-     public function getOpenAccessStats(int $contextId): array
+    public function getOpenAccessStats(int $contextId): array
     {
-        $submissions = $this->getPublishedSubmissions($contextId);
-        
-        $stats = [
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_OPEN_ACCESS_STATS,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        return array_merge($result['accumulator'], ['is_computing' => false]);
+    }
+
+    public function getOpenAccessStatsChunk(int $contextId, array $state): array
+    {
+        if (!empty($state['is_complete']) && isset($state['accumulator']['total'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? [
             'total' => 0,
             'open_access' => 0,
             'by_type' => [
@@ -440,96 +609,94 @@ class EnrichedStatsService extends BaseStatsService
                 'green' => 0,
                 'bronze' => 0,
                 'closed' => 0,
-                'unknown' => 0
-            ]
+                'unknown' => 0,
+            ],
         ];
-        
-        // Safety limit
 
-        $processedCount = 0;
-        
-        foreach ($submissions as $submission) {
-     
-            
+        foreach ($chunk['submissions'] as $submission) {
             $publication = $submission->getCurrentPublication();
             if (!$publication) continue;
-            
             $doi = $publication->getDoi();
             if (!$doi) continue;
-            
-            $processedCount++;
-            
+
             $metrics = $this->openAlexService->getWorkMetrics($doi);
             if (!$metrics) continue;
-            
-            $stats['total']++;
-            
+
+            $accumulator['total']++;
             if ($metrics['is_oa']) {
-                $stats['open_access']++;
+                $accumulator['open_access']++;
             }
-            
+
             $oaStatus = $metrics['oa_status'] ?? 'closed';
-            if (isset($stats['by_type'][$oaStatus])) {
-                $stats['by_type'][$oaStatus]++;
+            if (isset($accumulator['by_type'][$oaStatus])) {
+                $accumulator['by_type'][$oaStatus]++;
             } else {
-                $stats['by_type']['closed']++;
+                $accumulator['by_type']['closed']++;
             }
         }
-        
-        return $stats;
+
+        $state['accumulator'] = $accumulator;
+        return $state;
     }
-    /**
-     * Get thematic profile (research areas)
-     */
-      public function getThematicProfile(int $contextId): array
+
+    public function getThematicProfile(int $contextId): array
     {
-        $submissions = $this->getPublishedSubmissions($contextId);
-        $topicsCount = [];
-        
-        $processedCount = 0;
-        $totalArticles = 0;
-        
-        foreach ($submissions as $submission) {
- 
-            
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_THEMATIC_PROFILE,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        return array_merge($result['accumulator'], ['is_computing' => false]);
+    }
+
+    public function getThematicProfileChunk(int $contextId, array $state): array
+    {
+        if (!empty($state['is_complete']) && isset($state['accumulator']['topics'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? [
+            'topics_count' => [],
+            'total_articles' => 0,
+        ];
+
+        foreach ($chunk['submissions'] as $submission) {
             $publication = $submission->getCurrentPublication();
             if (!$publication) continue;
-            
             $doi = $publication->getDoi();
             if (!$doi) continue;
-            
-            $processedCount++;
-            $totalArticles++;
-            
+
+            $accumulator['total_articles']++;
+
             $metrics = $this->openAlexService->getWorkMetrics($doi);
             if (!$metrics || empty($metrics['topics'])) continue;
-            
+
             foreach ($metrics['topics'] as $topic) {
                 $name = $topic['display_name'] ?? 'Unknown';
-                
-                if (!isset($topicsCount[$name])) {
-                    $topicsCount[$name] = 0;
-                }
-                $topicsCount[$name]++;
-                
-                break;
+                $accumulator['topics_count'][$name] = ($accumulator['topics_count'][$name] ?? 0) + 1;
+                break; // primary topic only
             }
         }
-        
-        arsort($topicsCount);
-        
-        $topics = [];
-        foreach ($topicsCount as $name => $count) {
-            $topics[] = [
-                'name' => $name,
-                'count' => $count
-            ];
+
+        $state['accumulator'] = $accumulator;
+
+        if (!empty($state['is_complete'])) {
+            $topicsCount = $state['accumulator']['topics_count'];
+            arsort($topicsCount);
+            $topics = [];
+            foreach ($topicsCount as $name => $count) {
+                $topics[] = ['name' => $name, 'count' => $count];
+            }
+            $state['accumulator']['topics'] = $topics;
+            unset($state['accumulator']['topics_count']);
         }
-        
-        return [
-            'topics' => $topics,
-            'total_articles' => $totalArticles 
-        ];
+
+        return $state;
     }
 
     /**

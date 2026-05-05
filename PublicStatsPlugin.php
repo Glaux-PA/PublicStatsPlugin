@@ -1,13 +1,16 @@
 <?php
+
 /**
  * @file PublicStatsPlugin.php
  *
- * Copyright (c) 2017-2023 Simon Fraser University
- * Copyright (c) 2017-2023 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class PublicStatsPlugin
- * @brief Plugin class for the publicStats plugin.
+ * @ingroup plugins_generic_publicStats
+ *
+ * @brief Plugin entry point: registers hooks, navigation menu type and
+ *        the settings modal action.
  */
 
 namespace APP\plugins\generic\publicStats;

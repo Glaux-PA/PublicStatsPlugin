@@ -59,7 +59,8 @@
     async getOpenAccessStats() {
       if (statsData.openAccessStats) return statsData.openAccessStats;
       const data = await this.fetchData("openAccessStats");
-      statsData.openAccessStats = data;
+      // Skip caching while computing — the next call may already have the result.
+      if (!data || !data.is_computing) statsData.openAccessStats = data;
       return data;
     },
 
@@ -250,21 +251,23 @@
       const params = { limit };
       if (year) params.year = year;
       const data = await this.fetchData("topCited", params);
-      data._cacheKey = cacheKey;
-      statsData.topCitedArticles = data;
+      if (data && !data.is_computing) {
+        data._cacheKey = cacheKey;
+        statsData.topCitedArticles = data;
+      }
       return data;
     },
 
     async getCitationEvolution() {
       if (statsData.citationEvolution) return statsData.citationEvolution;
       const data = await this.fetchData("citationEvolution");
-      statsData.citationEvolution = data;
+      if (data && !data.is_computing) statsData.citationEvolution = data;
       return data;
     },
     async getThematicProfile() {
       if (statsData.thematicProfile) return statsData.thematicProfile;
       const data = await this.fetchData("thematicProfile");
-      statsData.thematicProfile = data;
+      if (data && !data.is_computing) statsData.thematicProfile = data;
       return data;
     },
     async getCitationsByCountry() {
@@ -370,6 +373,11 @@
 
     exportSections(year = null) {
       this.exportCsv("exportSections", year ? { year } : {});
+    },
+
+    exportLanguages() {
+      const issueId = document.getElementById("languageIssueFilter")?.value || null;
+      this.exportCsv("exportLanguages", issueId ? { issueId } : {});
     },
 
     exportReviewersByCountry() {
@@ -525,6 +533,7 @@
         "reviewers-by-institution": { type: "ReviewersByInstitution" },
         "general-issues": { type: "Issues", params: { year: currentYear } },
         "general-sections": { type: "Sections", params: { year: currentYear } },
+        "general-languages": { type: "Languages" },
         "top-cited": { type: "TopCited", params: { limit: 100 } },
         "citation-evolution": { type: "CitationEvolution" },
         "open-access-stats": { type: "OpenAccessStats" },

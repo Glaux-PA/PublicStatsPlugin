@@ -428,10 +428,9 @@
 <script src="{$pluginJavaScriptURL}/vendor/chartjs-plugin-zoom.min.js"></script>
 <link rel="stylesheet" href="{$pluginCssURL}/vendor/leaflet.css" />
 <script src="{$pluginJavaScriptURL}/vendor/leaflet.js"></script>
-{* Font Awesome Icons *}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+{* Font Awesome Icons (vendored, solid only) *}
+<link rel="stylesheet" href="{$pluginCssURL}/vendor/fontawesome/css/fontawesome.min.css" />
+<link rel="stylesheet" href="{$pluginCssURL}/vendor/fontawesome/css/solid.min.css" />
 
 {* Initialize data *}
 <script>
@@ -513,6 +512,7 @@
             externalCitations: "{/literal}{translate key='plugins.generic.publicStats.externalCitations'}{literal}",
             year: "{/literal}{translate key='plugins.generic.publicStats.year'}{literal}",
             noCitationData: "{/literal}{translate key='plugins.generic.publicStats.noCitationData'}{literal}",
+            computingPlaceholder: "{/literal}{translate key='plugins.generic.publicStats.computingPlaceholder'}{literal}",
             citationsPerYear: "{/literal}{translate key='plugins.generic.publicStats.citationsPerYear'}{literal}",
             citationsReceived: "{/literal}{translate key='plugins.generic.publicStats.citationsReceived'}{literal}",
             citationsReceivedInYear: "{/literal}{translate key='plugins.generic.publicStats.citationsReceivedInYear'}{literal}",

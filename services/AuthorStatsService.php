@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/AuthorStatsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class AuthorStatsService
@@ -12,10 +11,9 @@
  *
  * @brief Service for individual author statistics and deduplication.
  *
- * Provides comprehensive statistics for individual authors including
- * publication counts, download/view metrics, co-author networks,
- * and temporal distribution. Implements author deduplication using
- * ORCID, email, and fuzzy name matching.
+ * Per-author publication counts, download/view metrics, co-author
+ * networks and temporal distribution. Authors are deduplicated by
+ * ORCID, email and fuzzy name matching (in that order of preference).
  */
 
 declare(strict_types=1);
@@ -25,13 +23,15 @@ namespace APP\plugins\generic\publicStats\services;
 use APP\core\Services;
 use APP\core\Application;
 use APP\facades\Repo;
+use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
+use Illuminate\Support\Facades\Cache;
 use PKP\core\PKPRequest;
 use PKP\submission\PKPSubmission;
 
 class AuthorStatsService extends BaseStatsService
 {
     /**
-     * Get comprehensive author statistics
+     * Build the per-author dashboard payload (info, summary, charts, articles, co-authors).
      */
     public function getAuthorStats(
         PKPRequest $request,
@@ -40,18 +40,23 @@ class AuthorStatsService extends BaseStatsService
         ?string $dateStart = null,
         ?string $dateEnd = null
     ): array {
-        $authorData = $this->getAuthorDataFromKey($authorKey, $contextId);
-        
-        if (!$authorData) {
+        $authorMap = $this->buildAuthorMap($contextId);
+        $entry = $authorMap[$authorKey] ?? null;
+
+        if (!$entry || empty($entry['ids'])) {
             return $this->getEmptyStats();
         }
-        
-        $authorIds = $this->getMatchingAuthorIds($contextId, $authorKey);
-        
-        if (empty($authorIds)) {
-            return $this->getEmptyStats();
-        }
-        
+
+        $authorIds = $entry['ids'];
+        $authorData = [
+            'id'          => $authorIds[0],
+            'fullName'    => $entry['name'],
+            'email'       => $entry['email'] ?? null,
+            'affiliation' => $entry['affiliation'] ?? null,
+            'country'     => $entry['country'] ?? null,
+            'orcid'       => $entry['orcid'] ?? null,
+        ];
+
         $submissions = $this->getAuthorSubmissions($contextId, $authorIds);
         
         if (empty($submissions)) {
@@ -78,14 +83,17 @@ class AuthorStatsService extends BaseStatsService
             array_merge($params, ['assocTypes' => [Application::ASSOC_TYPE_SUBMISSION]])
         );
         
+        $sectionsMap = $this->getSectionsMap($contextId);
+
         $articleStats = $this->processArticleStats(
             $request,
             $submissions,
             $downloadRecords,
             $viewRecords,
-            $contextId
+            $contextId,
+            $sectionsMap
         );
-        
+
         return [
             'author' => $authorData,
             'summary' => $this->calculateSummary($articleStats),
@@ -93,106 +101,115 @@ class AuthorStatsService extends BaseStatsService
             'orcid' => $authorData['orcid'] ?? null,
             'temporal' => $this->getTemporalDistribution($submissions),
             'coAuthors' => $this->getCoAuthors($submissions, $authorIds),
-            'sections' => $this->getSectionsDistribution($submissions),
+            'sections' => $this->getSectionsDistribution($submissions, $sectionsMap),
         ];
     }
     
     /**
-     * Get authors for context with PRACTICAL deduplication
-     * 
-     * @param int $contextId
-     * @param int $minPublications Minimum publications to include
-     * @return array Deduplicated authors
+     * Author map keyed by author key, after ORCID/email/name merging. Single
+     * source of truth for both the public list and the per-author lookup.
+     *
+     * Cached 6h: building it is O(n) over publications plus O(n²) fuzzy name
+     * matching for authors without email.
      */
-    public function getAuthorsForContext(int $contextId, int $minPublications = 1): array
+    private function buildAuthorMap(int $contextId): array
+    {
+        return Cache::remember(
+            "author_map_{$contextId}",
+            PublicStatsConstants::CACHE_TTL_INTERNAL * 6,
+            fn() => $this->buildAuthorMapUncached($contextId)
+        );
+    }
+
+    private function buildAuthorMapUncached(int $contextId): array
     {
         $submissions = $this->getPublishedSubmissions($contextId);
-
         $authorMap = [];
-        
+
         foreach ($submissions as $submission) {
             $publication = $submission->getCurrentPublication();
             if (!$publication) continue;
-            
+
             $authors = $publication->getData('authors');
             if (!$authors) continue;
-            
+
             foreach ($authors as $author) {
                 $key = $this->createAuthorKey($author);
-                
+
                 if (!isset($authorMap[$key])) {
                     $authorMap[$key] = [
-                        'name' => $author->getFullName(),
-                        'email' => $author->getEmail(),
+                        'name'        => $author->getFullName(),
+                        'email'       => $author->getEmail(),
                         'affiliation' => $author->getLocalizedAffiliation(),
-                        'orcid' => $author->getOrcid(),
-                        'country' => $author->getCountry(),
-                        'ids' => [],
+                        'orcid'       => $author->getOrcid(),
+                        'country'     => $author->getCountry(),
+                        'ids'         => [],
                         'submissionIds' => []
                     ];
                 }
-                
+
                 if (!in_array($author->getId(), $authorMap[$key]['ids'])) {
                     $authorMap[$key]['ids'][] = $author->getId();
                 }
-                
+
                 if (!in_array($submission->getId(), $authorMap[$key]['submissionIds'])) {
                     $authorMap[$key]['submissionIds'][] = $submission->getId();
                 }
-                
-                // Update with most complete information
+
                 if (strlen($author->getFullName()) > strlen($authorMap[$key]['name'])) {
                     $authorMap[$key]['name'] = $author->getFullName();
                 }
-                
-                if (empty($authorMap[$key]['email'])) {
-                    $email = $author->getEmail();
-                    if (!empty($email)) {
-                        $authorMap[$key]['email'] = $email;
-                    }
+
+                if (empty($authorMap[$key]['email']) && !empty($author->getEmail())) {
+                    $authorMap[$key]['email'] = $author->getEmail();
                 }
-                
-                if (empty($authorMap[$key]['affiliation'])) {
-                    $affiliation = $author->getLocalizedAffiliation();
-                    if (!empty($affiliation)) {
-                        $authorMap[$key]['affiliation'] = $affiliation;
-                    }
+
+                if (empty($authorMap[$key]['affiliation']) && !empty($author->getLocalizedAffiliation())) {
+                    $authorMap[$key]['affiliation'] = $author->getLocalizedAffiliation();
                 }
-                
-                if (empty($authorMap[$key]['orcid'])) {
-                    $orcid = $author->getOrcid();
-                    if (!empty($orcid)) {
-                        $authorMap[$key]['orcid'] = $orcid;
-                    }
+
+                if (empty($authorMap[$key]['orcid']) && !empty($author->getOrcid())) {
+                    $authorMap[$key]['orcid'] = $author->getOrcid();
                 }
             }
         }
-        
+
         $authorMap = $this->mergeByOrcid($authorMap);
         $authorMap = $this->mergeSimilarAuthorsWithoutEmail($authorMap);
-        
+
+        return $authorMap;
+    }
+
+    /**
+     * Get authors for context with PRACTICAL deduplication
+     *
+     * @param int $contextId
+     * @param int $minPublications Minimum publications to include
+     * @return array Deduplicated authors as a sorted list for the frontend
+     */
+    public function getAuthorsForContext(int $contextId, int $minPublications = 1): array
+    {
+        $authorMap = $this->buildAuthorMap($contextId);
+
         $result = [];
         foreach ($authorMap as $key => $authorData) {
             $publicationCount = count($authorData['submissionIds']);
-            
+
             if ($publicationCount >= $minPublications) {
                 $result[] = [
-                    'key' => $key,
-                    'ids' => implode(',', $authorData['ids']),
-                    'name' => $authorData['name'],
-                    'email' => $authorData['email'],
-                    'affiliation' => $authorData['affiliation'],
-                    'orcid' => $authorData['orcid'],
+                    'key'             => $key,
+                    'ids'             => implode(',', $authorData['ids']),
+                    'name'            => $authorData['name'],
+                    'email'           => $authorData['email'],
+                    'affiliation'     => $authorData['affiliation'],
+                    'orcid'           => $authorData['orcid'],
                     'publicationCount' => $publicationCount
                 ];
             }
         }
-        
-        // Sort: most publications first, then alphabetically
-       usort($result, function($a, $b) {
-            return strcmp($a['name'], $b['name']);
-        });
-        
+
+        usort($result, fn($a, $b) => strcmp($a['name'], $b['name']));
+
         return $result;
     }
     
@@ -208,17 +225,19 @@ class AuthorStatsService extends BaseStatsService
         }
         
         $name = $this->normalizeString($author->getFullName());
-        $email = $this->normalizeString($author->getEmail() ?? '');
-        
-        if (!empty($email)) {
+        $emailRaw = $author->getEmail() ?? '';
+
+        if (!empty($emailRaw)) {
             $nameWords = array_filter(
                 explode(' ', $name),
                 fn($word) => strlen($word) >= 2
             );
             sort($nameWords);
             $nameKey = implode('_', $nameWords);
-            
-            $emailKey = str_replace(['@', '.', '-', '_'], '', $email);
+
+            $atPos = strpos($emailRaw, '@');
+            $emailDomain = $atPos !== false ? substr($emailRaw, $atPos + 1) : $emailRaw;
+            $emailKey = preg_replace('/[^a-z0-9]/i', '', mb_strtolower($emailDomain, 'UTF-8'));
             
             return 'name_email:' . $nameKey . '__' . $emailKey;
         }
@@ -424,73 +443,6 @@ class AuthorStatsService extends BaseStatsService
     }
     
     /**
-     * Get matching author IDs for a key
-     */
-    private function getMatchingAuthorIds(int $contextId, string $authorKey): array
-    {
-        $authors = Repo::author()
-            ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
-        
-        $matchingIds = [];
-        
-        foreach ($authors as $author) {
-            $key = $this->createAuthorKey($author);
-            
-            if ($key === $authorKey) {
-                $matchingIds[] = $author->getId();
-            }
-        }
-        
-        return array_unique($matchingIds);
-    }
-    
-    /**
-     * Get author data from key
-     */
-    private function getAuthorDataFromKey(string $authorKey, int $contextId): ?array
-    {
-        $matchingIds = $this->getMatchingAuthorIds($contextId, $authorKey);
-        
-        if (empty($matchingIds)) {
-            return null;
-        }
-        
-        $authors = Repo::author()
-            ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
-        
-        $bestAuthor = null;
-        $maxNameLength = 0;
-        
-        foreach ($authors as $author) {
-            if (in_array($author->getId(), $matchingIds)) {
-                $nameLength = strlen($author->getFullName());
-                
-                if ($nameLength > $maxNameLength) {
-                    $bestAuthor = $author;
-                    $maxNameLength = $nameLength;
-                }
-            }
-        }
-        
-        if (!$bestAuthor) {
-            return null;
-        }
-        
-        return [
-            'id' => $bestAuthor->getId(),
-            'fullName' => $bestAuthor->getFullName(),
-            'email' => $bestAuthor->getEmail(),
-            'affiliation' => $bestAuthor->getLocalizedAffiliation(),
-            'country' => $bestAuthor->getCountry(),
-            'orcid' => $bestAuthor->getOrcid()
-        ];
-    }
-    
-    /**
      * Get author submissions
      */
     private function getAuthorSubmissions(int $contextId, array $authorIds): array
@@ -523,7 +475,8 @@ class AuthorStatsService extends BaseStatsService
         array $submissions,
         iterable $downloadRecords,
         iterable $viewRecords,
-        int $contextId
+        int $contextId,
+        array $sectionsMap
     ): array {
         $downloadsBySubmission = [];
         foreach ($downloadRecords as $record) {
@@ -568,7 +521,7 @@ class AuthorStatsService extends BaseStatsService
                     'view',
                     $submission->getBestId()
                 ),
-                'section' => $this->getSectionName($publication)
+                'section' => $this->getSectionName($publication, $sectionsMap)
             ];
         }
         
@@ -670,24 +623,44 @@ class AuthorStatsService extends BaseStatsService
     }
     
     /**
-     * Get sections distribution
+     * `sectionId => localizedTitle` for the context, cached 24h. Only scalars
+     * are stored — the opcache-backed cache uses var_export() and chokes on
+     * Section objects (no __set_state).
+     *
+     * @return array<int, string>
      */
-    private function getSectionsDistribution(array $submissions): array
+    private function getSectionsMap(int $contextId): array
+    {
+        return Cache::remember(
+            "author_sections_map_{$contextId}",
+            PublicStatsConstants::CACHE_TTL_INTERNAL * 24,
+            function () use ($contextId) {
+                $map = [];
+                foreach (Repo::section()->getCollector()->filterByContextIds([$contextId])->getMany() as $section) {
+                    $map[(int) $section->getId()] = (string) $section->getLocalizedTitle();
+                }
+                return $map;
+            }
+        );
+    }
+
+    /**
+     * @param array<int, string> $sectionsMap `sectionId => title` from getSectionsMap()
+     */
+    private function getSectionsDistribution(array $submissions, array $sectionsMap): array
     {
         $sections = [];
-        
+
         foreach ($submissions as $submission) {
             $publication = $submission->getCurrentPublication();
             if (!$publication) continue;
-            
+
             $sectionId = $publication->getData('sectionId');
             if (!$sectionId) continue;
-            
-            $section = Repo::section()->get($sectionId);
-            if (!$section) continue;
-            
-            $sectionTitle = $section->getLocalizedTitle();
-            
+
+            $sectionTitle = $sectionsMap[$sectionId] ?? null;
+            if ($sectionTitle === null) continue;
+
             if (!isset($sections[$sectionId])) {
                 $sections[$sectionId] = [
                     'sectionId' => $sectionId,
@@ -695,25 +668,21 @@ class AuthorStatsService extends BaseStatsService
                     'count' => 0
                 ];
             }
-            
+
             $sections[$sectionId]['count']++;
         }
-        
+
         usort($sections, fn($a, $b) => $b['count'] - $a['count']);
-        
+
         return array_values($sections);
     }
-    
-    /**
-     * Get section name
-     */
-    private function getSectionName($publication): ?string
+
+    private function getSectionName($publication, array $sectionsMap): ?string
     {
         $sectionId = $publication->getData('sectionId');
         if (!$sectionId) return null;
-        
-        $section = Repo::section()->get($sectionId);
-        return $section ? $section->getLocalizedTitle() : null;
+
+        return $sectionsMap[$sectionId] ?? null;
     }
     
     /**

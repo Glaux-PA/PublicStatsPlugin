@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/AuthorReviewerStatsTrait.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing author and reviewer statistics HTTP endpoints.

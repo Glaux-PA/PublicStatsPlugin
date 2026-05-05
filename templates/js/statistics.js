@@ -416,7 +416,8 @@
   window.updateThematicChart = async function (limit) {
     Impact.thematicChartLimit = limit;
     const response = await API.getThematicProfile();
-    Impact.renderThematicChart(response.topics);
+    if (response && response.is_computing) return;
+    Impact.renderThematicChart((response && response.topics) || []);
   };
 
   // ========================================

@@ -159,22 +159,22 @@ msgid "plugins.generic.publicStats.authors"
 msgstr "Autores"
 
 msgid "plugins.generic.publicStats.authorsByCountry"
-msgstr "Autores por país"
+msgstr "Autorías por país"
 
 msgid "plugins.generic.publicStats.authorsByCountryDescription"
-msgstr "Distribución geográfica de autores por país de afiliación"
+msgstr "Distribución geográfica de autorías por país de afiliación. Una autoría = un autor en una publicación; un mismo autor con varias publicaciones cuenta una vez por publicación."
 
 msgid "plugins.generic.publicStats.authorsByCountryTitle"
-msgstr "Autores por país"
+msgstr "Autorías por país"
 
 msgid "plugins.generic.publicStats.authorsByInstitution"
-msgstr "Autores por institución"
+msgstr "Autorías por institución"
 
 msgid "plugins.generic.publicStats.authorsByInstitutionDescription"
-msgstr "Distribución de autores por institución de afiliación"
+msgstr "Distribución de autorías por institución de afiliación. Una autoría = un autor en una publicación; un mismo autor con varias publicaciones cuenta una vez por publicación."
 
 msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
-msgstr "Autores por institución"
+msgstr "Autorías por institución"
 
 msgid "plugins.generic.publicStats.authorsCount"
 msgstr "Autores"
@@ -698,6 +698,9 @@ msgstr "No hay artículos para mostrar"
 
 msgid "plugins.generic.publicStats.noAuthorsData"
 msgstr "No hay datos de autores disponibles"
+
+msgid "plugins.generic.publicStats.computingPlaceholder"
+msgstr "Calculando estadísticas…"
 
 msgid "plugins.generic.publicStats.noCitationData"
 msgstr "No hay datos de citas disponibles"

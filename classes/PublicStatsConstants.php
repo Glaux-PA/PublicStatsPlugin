@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/classes/PublicStatsConstants.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class PublicStatsConstants
@@ -57,6 +56,19 @@ class PublicStatsConstants
      * Balances data completeness with API usage limits.
      */
     public const MAX_OPENALEX_REQUESTS = 500;
+
+    /**
+     * Submissions processed per chunk in the chunked OpenAlex jobs.
+     *
+     * 100 is sized for deployments running an async queue worker (acron plugin
+     * or `php tools/jobs.php run` via cron), which is the documented setup.
+     * At ~300-600ms per submission this gives 30-60s per chunk — safely within
+     * the job's 600s timeout but too long for a 30s inline-runner setup.
+     *
+     * If your installation runs jobs inline on the same HTTP request, drop
+     * this back to 50.
+     */
+    public const MAX_INLINE_JOB_SUBMISSIONS = 100;
 
     /**
      * OpenAlex API rate limit delay in microseconds.

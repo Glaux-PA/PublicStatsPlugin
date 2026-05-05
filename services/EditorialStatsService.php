@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/EditorialStatsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class EditorialStatsService
@@ -65,10 +64,14 @@ class EditorialStatsService extends BaseStatsService
         $endTime = strtotime($dateEnd);
 
         $monthlyStats = $this->initializeMonthlyStats($startTime, $endTime);
-        $submissions = $this->getAllSubmissions($contextId);
+        $submissions = $this->getAllSubmissions($contextId, $dateStart, $dateEnd);
+
+        $decisionsBySubmission = $this->getDecisionsForSubmissions(
+            array_map(fn($s) => $s->getId(), $submissions)
+        );
 
         foreach ($submissions as $submission) {
-            $this->processSubmission($submission, $monthlyStats, $startTime, $endTime);
+            $this->processSubmission($submission, $monthlyStats, $startTime, $endTime, $decisionsBySubmission);
         }
 
         return array_values($monthlyStats);
@@ -88,10 +91,14 @@ class EditorialStatsService extends BaseStatsService
         $endYear = (int)date('Y');
 
         $annualStats = $this->initializeAnnualStats($startYear, $endYear);
-        $submissions = $this->getAllSubmissions($contextId);
+        $submissions = $this->getAllSubmissions($contextId, "{$startYear}-01-01", "{$endYear}-12-31");
+
+        $decisionsBySubmission = $this->getDecisionsForSubmissions(
+            array_map(fn($s) => $s->getId(), $submissions)
+        );
 
         foreach ($submissions as $submission) {
-            $this->processSubmissionAnnual($submission, $annualStats, $startYear, $endYear);
+            $this->processSubmissionAnnual($submission, $annualStats, $startYear, $endYear, $decisionsBySubmission);
         }
 
         return array_values($annualStats);
@@ -155,20 +162,69 @@ class EditorialStatsService extends BaseStatsService
     }
 
     /**
-     * Get all submissions for a context.
+     * Submissions for a context in all statuses (editorial stats need the
+     * full workflow). When a date range is given, filter at SQL level instead
+     * of dragging every draft and old reject into PHP.
      *
-     * Retrieves submissions in all statuses, not just published,
-     * since editorial stats need to track the full workflow.
-     *
-     * @param int $contextId Journal/press ID
-     * @return iterable All submissions
+     * @param string|null $dateStart  Inclusive lower bound for date_submitted
+     * @param string|null $dateEnd    Inclusive upper bound for date_submitted
      */
-    private function getAllSubmissions(int $contextId): iterable
-    {
-        return Repo::submission()
+    private function getAllSubmissions(
+        int $contextId,
+        ?string $dateStart = null,
+        ?string $dateEnd = null
+    ): array {
+        $collector = Repo::submission()
             ->getCollector()
-            ->filterByContextIds([$contextId])
+            ->filterByContextIds([$contextId]);
+
+        if ($dateStart === null && $dateEnd === null) {
+            // Materialise the LazyCollection so callers can use array_map / count.
+            return iterator_to_array($collector->getMany(), false);
+        }
+
+        $query = $collector->getQueryBuilder();
+        if ($dateStart !== null) {
+            $query->where('s.date_submitted', '>=', date('Y-m-d 00:00:00', strtotime($dateStart)));
+        }
+        if ($dateEnd !== null) {
+            $query->where('s.date_submitted', '<=', date('Y-m-d 23:59:59', strtotime($dateEnd)));
+        }
+
+        $submissions = [];
+        foreach ($query->get() as $row) {
+            $submissions[] = Repo::submission()->dao->fromRow($row);
+        }
+        return $submissions;
+    }
+
+    /**
+     * One query per call instead of one per submission. Returns
+     * `submissionId => decisions[]`.
+     *
+     * @param int[] $submissionIds
+     */
+    private function getDecisionsForSubmissions(array $submissionIds): array
+    {
+        if (empty($submissionIds)) {
+            return [];
+        }
+
+        $allDecisions = Repo::decision()
+            ->getCollector()
+            ->filterBySubmissionIds($submissionIds)
             ->getMany();
+
+        $decisionsBySubmission = [];
+        foreach ($allDecisions as $decision) {
+            $subId = $decision->getData('submissionId');
+            if (!isset($decisionsBySubmission[$subId])) {
+                $decisionsBySubmission[$subId] = [];
+            }
+            $decisionsBySubmission[$subId][] = $decision;
+        }
+
+        return $decisionsBySubmission;
     }
 
     /**
@@ -186,7 +242,8 @@ class EditorialStatsService extends BaseStatsService
         Submission $submission,
         array &$monthlyStats,
         int $startTime,
-        int $endTime
+        int $endTime,
+        array $decisionsBySubmission = []
     ): void {
         $dateSubmitted = $submission->getData('dateSubmitted');
         if (!$dateSubmitted) {
@@ -214,7 +271,8 @@ class EditorialStatsService extends BaseStatsService
         }
 
         if ($status === PKPSubmission::STATUS_DECLINED) {
-            $this->processDeclined($submission, $monthlyStats, $startTime, $endTime);
+            $decisions = $decisionsBySubmission[$submission->getId()] ?? [];
+            $this->processDeclined($submission, $monthlyStats, $startTime, $endTime, $decisions);
             return;
         }
 
@@ -275,13 +333,9 @@ class EditorialStatsService extends BaseStatsService
         Submission $submission,
         array &$monthlyStats,
         int $startTime,
-        int $endTime
+        int $endTime,
+        array $decisions = []
     ): void {
-        $decisions = Repo::decision()
-            ->getCollector()
-            ->filterBySubmissionIds([$submission->getId()])
-            ->getMany();
-
         $latestDeclineDate = null;
         $latestDeclineTime = 0;
 
@@ -325,7 +379,8 @@ class EditorialStatsService extends BaseStatsService
         Submission $submission,
         array &$annualStats,
         int $startYear,
-        int $endYear
+        int $endYear,
+        array $decisionsBySubmission = []
     ): void {
         $dateSubmitted = $submission->getData('dateSubmitted');
         if (!$dateSubmitted) {
@@ -352,7 +407,8 @@ class EditorialStatsService extends BaseStatsService
         }
 
         if ($status === PKPSubmission::STATUS_DECLINED) {
-            $this->processDeclinedAnnual($submission, $annualStats, $startYear, $endYear);
+            $decisions = $decisionsBySubmission[$submission->getId()] ?? [];
+            $this->processDeclinedAnnual($submission, $annualStats, $startYear, $endYear, $decisions);
             return;
         }
 
@@ -406,13 +462,9 @@ class EditorialStatsService extends BaseStatsService
         Submission $submission,
         array &$annualStats,
         int $startYear,
-        int $endYear
+        int $endYear,
+        array $decisions = []
     ): void {
-        $decisions = Repo::decision()
-            ->getCollector()
-            ->filterBySubmissionIds([$submission->getId()])
-            ->getMany();
-
         $latestDeclineYear = null;
 
         foreach ($decisions as $decision) {

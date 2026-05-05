@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/OpenAlexService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class OpenAlexService
@@ -174,7 +173,7 @@ class OpenAlexService
      * the placeholder, the worker populates the cache, subsequent requests
      * get the real data.
      */
-    private function cachedOrEnqueue(string $type, int $contextId, mixed $placeholder): mixed
+    public function cachedOrEnqueue(string $type, int $contextId, mixed $placeholder): mixed
     {
         $cacheKey = self::cacheKeyFor($type, $contextId);
         $cached = Cache::get($cacheKey);
@@ -191,6 +190,64 @@ class OpenAlexService
         }
 
         return $placeholder;
+    }
+
+    // Chunked aggregates: state shape under cacheKeyFor($type, $contextId)
+    // is { processed, total, accumulator, is_complete }. Wrappers only expose
+    // 'accumulator' once is_complete is true.
+
+    public function getChunkedState(string $type, int $contextId): ?array
+    {
+        return Cache::get(self::cacheKeyFor($type, $contextId));
+    }
+
+    public function putChunkedState(string $type, int $contextId, array $state): void
+    {
+        Cache::put(
+            self::cacheKeyFor($type, $contextId),
+            $state,
+            self::aggregateCacheTtl()
+        );
+    }
+
+    public function forgetChunkedState(string $type, int $contextId): void
+    {
+        Cache::forget(self::cacheKeyFor($type, $contextId));
+        Cache::forget(self::lockKeyFor($type, $contextId));
+    }
+
+    /**
+     * Wrapper-side dispatch. Skips if another dispatch is already in flight.
+     */
+    public function dispatchChunkJob(string $type, int $contextId): bool
+    {
+        $lockKey = self::lockKeyFor($type, $contextId);
+        if (Cache::add($lockKey, 1, 300)) {
+            ComputeOpenAlexAggregateJob::dispatch($contextId, $type);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Re-dispatch from inside a running chunk job. The wrapper lock is still
+     * held (cleared only in the parent finally), so we'd otherwise stop after
+     * the first chunk.
+     */
+    public function dispatchNextChunk(string $type, int $contextId): void
+    {
+        ComputeOpenAlexAggregateJob::dispatch($contextId, $type);
+    }
+
+    public static function chunkedPlaceholder(?array $state): array
+    {
+        return [
+            'is_computing' => true,
+            'progress' => [
+                'processed' => $state['processed'] ?? 0,
+                'total'     => $state['total'] ?? null,
+            ],
+        ];
     }
 
     /**

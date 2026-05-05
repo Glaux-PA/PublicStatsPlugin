@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/AuthorReviewerStatsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class AuthorReviewerStatsService
@@ -22,7 +21,7 @@ namespace APP\plugins\generic\publicStats\services;
 
 use PKP\submission\PKPSubmission;
 use APP\facades\Repo;
-use PKP\db\DAORegistry;
+use Illuminate\Support\Facades\DB;
 use Sokil\IsoCodes\IsoCodesFactory;
 
 /**
@@ -98,13 +97,31 @@ class AuthorReviewerStatsService
         return $this->formatInstitutionData($institutionStats);
     }
 
-     /**
+    /**
+     * Distinct reviewer IDs for a list of submissions.
+     *
+     * @param int[] $submissionIds
+     * @return int[]
+     */
+    private function getReviewerIdsForSubmissions(array $submissionIds): array
+    {
+        if (empty($submissionIds)) {
+            return [];
+        }
+
+        return DB::table('review_assignments')
+            ->whereIn('submission_id', $submissionIds)
+            ->distinct()
+            ->pluck('reviewer_id')
+            ->map(fn($id) => (int) $id)
+            ->all();
+    }
+
+    /**
      * Get reviewers by country
      */
-  public function getReviewersByCountry(int $contextId): ?array
+    public function getReviewersByCountry(int $contextId): ?array
     {
-        $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
-        
         $submissions = Repo::submission()
             ->getCollector()
             ->filterByContextIds([$contextId])
@@ -113,27 +130,13 @@ class AuthorReviewerStatsService
                 PKPSubmission::STATUS_QUEUED
             ])
             ->getMany();
-        
+
         $submissionIds = [];
         foreach ($submissions as $submission) {
             $submissionIds[] = $submission->getId();
         }
-        
-        if (empty($submissionIds)) {
-            return null;
-        }
-        
-        $reviewerIds = [];
-        $result = $reviewAssignmentDao->retrieve(
-            'SELECT DISTINCT reviewer_id FROM review_assignments WHERE submission_id IN (' . 
-            implode(',', array_map('intval', $submissionIds)) . ')'
-        );
-        
-        while ($row = $result->current()) {
-            $reviewerIds[] = (int)$row->reviewer_id;
-            $result->next();
-        }
-        
+
+        $reviewerIds = $this->getReviewerIdsForSubmissions($submissionIds);
         if (empty($reviewerIds)) {
             return null;
         }
@@ -164,10 +167,8 @@ class AuthorReviewerStatsService
     /**
      * Get reviewers by institution
      */
-   public function getReviewersByInstitution(int $contextId): ?array
+    public function getReviewersByInstitution(int $contextId): ?array
     {
-        $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
-        
         $submissions = Repo::submission()
             ->getCollector()
             ->filterByContextIds([$contextId])
@@ -176,28 +177,13 @@ class AuthorReviewerStatsService
                 PKPSubmission::STATUS_QUEUED
             ])
             ->getMany();
-        
+
         $submissionIds = [];
         foreach ($submissions as $submission) {
             $submissionIds[] = $submission->getId();
         }
-        
-        if (empty($submissionIds)) {
-            return null;
-        }
-        
-  
-        $reviewerIds = [];
-        $result = $reviewAssignmentDao->retrieve(
-            'SELECT DISTINCT reviewer_id FROM review_assignments WHERE submission_id IN (' . 
-            implode(',', array_map('intval', $submissionIds)) . ')'
-        );
-        
-        while ($row = $result->current()) {
-            $reviewerIds[] = (int)$row->reviewer_id;
-            $result->next();
-        }
-        
+
+        $reviewerIds = $this->getReviewerIdsForSubmissions($submissionIds);
         if (empty($reviewerIds)) {
             return null;
         }

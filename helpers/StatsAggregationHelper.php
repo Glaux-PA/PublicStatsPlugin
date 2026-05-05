@@ -1,10 +1,18 @@
 <?php
+
 /**
  * @file plugins/generic/publicStats/helpers/StatsAggregationHelper.php
  *
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
+ *
  * @class StatsAggregationHelper
- * @brief Helper class for aggregating statistics by different entities (sections, issues, etc.)
- *        Eliminates code duplication across multiple services.
+ * @ingroup plugins_generic_publicStats
+ *
+ * @brief Aggregates statistics by entity (sections, issues, …).
+ *
+ * Shared by the per-entity services to avoid duplicating the
+ * downloads/views/total accumulation pattern.
  */
 
 declare(strict_types=1);
@@ -163,31 +171,34 @@ class StatsAggregationHelper
         int $contextId,
         callable $entityIdExtractor
     ): array {
-        $neededIds = array_flip($submissionIds);
-        
-        $submissions = Repo::submission()
+        if (empty($submissionIds)) {
+            return [];
+        }
+
+        // Load only the needed submissions. The collector lacks filterByIds in
+        // this OJS version, so we drop to the query builder.
+        $collector = Repo::submission()
             ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
+            ->filterByContextIds([$contextId]);
+
+        $rows = $collector->getQueryBuilder()
+            ->whereIn('s.submission_id', $submissionIds)
+            ->get();
 
         $submissionToEntityMap = [];
 
-        foreach ($submissions as $submission) {
-            $submissionId = $submission->getId();
-            
-            if (!isset($neededIds[$submissionId])) {
-                continue;
-            }
-            
+        foreach ($rows as $row) {
+            $submission = Repo::submission()->dao->fromRow($row);
+
             $publication = $submission->getCurrentPublication();
             if (!$publication) {
                 continue;
             }
 
             $entityId = $entityIdExtractor($publication);
-            
+
             if ($entityId !== null) {
-                $submissionToEntityMap[$submissionId] = $entityId;
+                $submissionToEntityMap[$submission->getId()] = $entityId;
             }
         }
 

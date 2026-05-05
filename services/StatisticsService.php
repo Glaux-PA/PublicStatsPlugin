@@ -3,8 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/StatisticsService.php
  *
- * Copyright (c) 2024 Simon Fraser University
- * Copyright (c) 2024 John Willinsky
+ * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class StatisticsService
@@ -272,9 +271,9 @@ class StatisticsService extends BaseStatsService
      * Format country data with localized names.
      *
      * @param iterable $countriesData Raw country data from geo service
-     * @return array|null Formatted country data or null if empty
+     * @return array Possibly empty list of country rows
      */
-    private function formatCountryData(iterable $countriesData): ?array
+    private function formatCountryData(iterable $countriesData): array
     {
         $countryData = [];
 
@@ -303,6 +302,6 @@ class StatisticsService extends BaseStatsService
             ];
         }
 
-        return empty($countryData) ? null : $countryData;
+        return $countryData;
     }
 }

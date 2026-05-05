@@ -13,6 +13,16 @@
   const { escapeHtml, Utils } = window.PublicStatsHelpers;
   const PS = (window.PublicStats = window.PublicStats || {});
 
+  // "Calculando estadísticas... 50/200" while a chunked job is running.
+  function computingText(response) {
+    const base = i18n.computingPlaceholder;
+    const progress = response && response.progress;
+    if (progress && progress.total) {
+      return `${base} ${parseInt(progress.processed, 10) || 0}/${parseInt(progress.total, 10) || 0}`;
+    }
+    return base;
+  }
+
   const AuthorStats = {
     chartInstances: {
       temporal: null,
@@ -52,29 +62,27 @@
 
       let html = `
                 <div class="ps-author-cards-grid">
-                    <div><strong>${i18n.name || "Name"}:</strong> ${
-        author.fullName
-      }</div>
+                    <div><strong>${i18n.name || "Name"}:</strong> ${escapeHtml(author.fullName || "")}</div>
             `;
 
       if (author.affiliation) {
-        html += `<div><strong>${i18n.affiliation || "Affiliation"}:</strong> ${
-          author.affiliation
-        }</div>`;
+        html += `<div><strong>${i18n.affiliation || "Affiliation"}:</strong> ${escapeHtml(author.affiliation)}</div>`;
       }
 
       if (author.country) {
-        html += `<div><strong>${i18n.country || "Country"}:</strong> ${
-          author.country
-        }</div>`;
+        html += `<div><strong>${i18n.country || "Country"}:</strong> ${escapeHtml(author.country)}</div>`;
       }
 
       if (author.orcid) {
-        html += `<div><strong>ORCID:</strong> <a href="${
-          author.orcid.indexOf("https://orcid.org/") != -1
-            ? author.orcid
-            : "https://orcid.org/" + author.orcid
-        }" target="_blank">${author.orcid}</a></div>`;
+        // Strip the URL prefix if present, then validate the bare id; only
+        // render the link when it matches the canonical ORCID format.
+        const bareOrcid = String(author.orcid).replace(/^https?:\/\/orcid\.org\//i, "");
+        const safeOrcid = escapeHtml(bareOrcid);
+        if (/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i.test(bareOrcid)) {
+          html += `<div><strong>ORCID:</strong> <a href="https://orcid.org/${safeOrcid}" target="_blank" rel="noopener noreferrer">${safeOrcid}</a></div>`;
+        } else {
+          html += `<div><strong>ORCID:</strong> ${safeOrcid}</div>`;
+        }
       }
 
       html += "</div>";
@@ -237,7 +245,12 @@
       try {
         const response = await PS.API.getTopCited(20);
 
-        const articles = response || [];
+        if (response && response.is_computing) {
+          body.innerHTML = `<tr><td colspan="5" class="ps-empty-message">${escapeHtml(computingText(response))}</td></tr>`;
+          return;
+        }
+
+        const articles = (response && response.articles) || [];
 
         if (!articles || articles.length === 0) {
           body.innerHTML = `<tr><td colspan="5" class="ps-empty-message">${i18n.noCitationData}</td></tr>`;
@@ -276,16 +289,44 @@
       const canvas = document.getElementById("citationEvolutionChart");
       if (!canvas) return;
 
+      // Show/hide a sibling <p> instead of replacing the parent's innerHTML
+      // so the canvas stays in the DOM (the next render needs to find it).
+      const showPlaceholder = (text, cls) => {
+        const container = canvas.parentElement;
+        canvas.style.display = "none";
+        let ph = container.querySelector(".ps-computing-placeholder");
+        if (!ph) {
+          ph = document.createElement("p");
+          ph.className = "ps-computing-placeholder";
+          ph.style.cssText = "display:flex;align-items:center;justify-content:center;height:100%;margin:0;text-align:center;";
+          container.appendChild(ph);
+        }
+        ph.className = `ps-computing-placeholder ${cls}`;
+        ph.textContent = text || "";
+      };
+      const clearPlaceholder = () => {
+        const ph = canvas.parentElement.querySelector(".ps-computing-placeholder");
+        if (ph) ph.remove();
+        canvas.style.display = "";
+      };
+
       Utils.showLoadingIndicator();
       try {
         const response = await PS.API.getCitationEvolution();
 
-        const data = response || [];
-
-        if (!data || data.length === 0) {
-          canvas.parentElement.innerHTML = `<p class="ps-empty-message">${i18n.noCitationData}</p>`;
+        if (response && response.is_computing) {
+          showPlaceholder(computingText(response), "ps-empty-message");
           return;
         }
+
+        const data = (response && response.data) || [];
+
+        if (!data || data.length === 0) {
+          showPlaceholder(i18n.noCitationData, "ps-empty-message");
+          return;
+        }
+
+        clearPlaceholder();
 
         if (this.chartInstance) {
           this.chartInstance.destroy();
@@ -342,7 +383,7 @@
         await this.renderCitedArticlesTable();
       } catch (error) {
         console.error("Error loading citation evolution:", error);
-        canvas.parentElement.innerHTML = `<p class="ps-error-message">${i18n.errorLoading}</p>`;
+        showPlaceholder(i18n.errorLoading, "ps-error-message");
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -354,7 +395,7 @@
 
       try {
         const year = selectedYear || null;
-        const articles = await PS.API.getTopCited(20, year);
+        const response = await PS.API.getTopCited(20, year);
 
         const table = tbody.closest("table");
         if (table) {
@@ -368,6 +409,13 @@
               : i18n.externalCitations || "External Citations";
           }
         }
+
+        if (response && response.is_computing) {
+          tbody.innerHTML = `<tr><td colspan="5" class="ps-empty-message">${escapeHtml(computingText(response))}</td></tr>`;
+          return;
+        }
+
+        const articles = (response && response.articles) || [];
 
         if (!articles || articles.length === 0) {
           tbody.innerHTML = `<tr><td colspan="5" class="ps-empty-message">${i18n.noCitationData}</td></tr>`;
@@ -406,6 +454,13 @@
       try {
         const response = await PS.API.getOpenAccessStats();
         const data = response;
+
+        if (data && data.is_computing) {
+          document.getElementById(
+            "oaSummaryCards"
+          ).innerHTML = `<p class="ps-empty-message">${escapeHtml(computingText(data))}</p>`;
+          return;
+        }
 
         if (!data || !data.total) {
           document.getElementById(
@@ -517,6 +572,13 @@
       try {
         const response = await PS.API.getThematicProfile();
         const data = response;
+
+        if (data && data.is_computing) {
+          document.getElementById(
+            "thematicTableBody"
+          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${escapeHtml(computingText(data))}</td></tr>`;
+          return;
+        }
 
         if (!data || !data.topics || data.topics.length === 0) {
           document.getElementById(
