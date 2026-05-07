@@ -1255,7 +1255,7 @@ msgid "plugins.generic.publicStats.languageDistribution"
 msgstr "Distribució per idioma"
 
 msgid "plugins.generic.publicStats.languageDistributionDesc"
-msgstr "Articles publicats agrupats per idioma"
+msgstr "Articles publicats agrupats per idioma. L'idioma s'infereix a partir dels locales en què el títol està disponible, no del text complet de l'article."
 
 msgid "plugins.generic.publicStats.articleLanguages"
 msgstr "Idiomes dels articles"
@@ -1274,4 +1274,34 @@ msgstr "Tots els números"
 
 msgid "plugins.generic.publicStats.filterByIssue"
 msgstr "Filtra per número"
+
+# ============================================================
+# LANGUAGE TRENDS
+# ============================================================
+msgid "plugins.generic.publicStats.languageTrends"
+msgstr "Tendències per idioma"
+
+msgid "plugins.generic.publicStats.languageTrendsDesc"
+msgstr "Evolució dels idiomes dels articles al llarg del temps"
+
+msgid "plugins.generic.publicStats.languageTrendsChart"
+msgstr "Articles per idioma i any"
+
+msgid "plugins.generic.publicStats.languageDominance"
+msgstr "Idioma dominant per any"
+
+msgid "plugins.generic.publicStats.dominantLanguage"
+msgstr "Idioma dominant"
+
+msgid "plugins.generic.publicStats.noLanguageTrendsData"
+msgstr "No hi ha dades de tendències d'idiomes disponibles"
+
+msgid "plugins.generic.publicStats.languagesIdentified"
+msgstr "Idiomes identificats"
+
+msgid "plugins.generic.publicStats.leadingLanguage"
+msgstr "Idioma predominant"
+
+msgid "plugins.generic.publicStats.dataPeriod"
+msgstr "Període de dades"
 

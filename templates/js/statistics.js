@@ -147,6 +147,11 @@
             Charts.initializeLanguageChart();
             Tables.renderLanguageTable();
           },
+          "language-trends": async () => {
+            await API.getLanguageTrends();
+            Charts.initializeLanguageTrendsChart();
+            Tables.renderLanguageTrendsSummary();
+          },
           "general-sections": async () => {
             await API.getSectionStats(year);
             Charts.initializeSectionChart();

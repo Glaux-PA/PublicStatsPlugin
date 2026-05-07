@@ -463,6 +463,7 @@
             citationsByCountry: null,
             citingJournals: null,
             languageStats: null,
+            languageTrends: null,
         };
 
         var selectedYear = "{/literal}{$selectedYear}{literal}";
@@ -557,6 +558,15 @@
             noLanguageData:"{/literal}{translate key='plugins.generic.publicStats.noLanguageData'}{literal}",
             allIssues:"{/literal}{translate key='plugins.generic.publicStats.allIssues'}{literal}",
             filterByIssue:"{/literal}{translate key='plugins.generic.publicStats.filterByIssue'}{literal}",
+            languageTrends:"{/literal}{translate key='plugins.generic.publicStats.languageTrends'}{literal}",
+            languageTrendsChart:"{/literal}{translate key='plugins.generic.publicStats.languageTrendsChart'}{literal}",
+            languageDominance:"{/literal}{translate key='plugins.generic.publicStats.languageDominance'}{literal}",
+            dominantLanguage:"{/literal}{translate key='plugins.generic.publicStats.dominantLanguage'}{literal}",
+            noLanguageTrendsData:"{/literal}{translate key='plugins.generic.publicStats.noLanguageTrendsData'}{literal}",
+            totalArticles:"{/literal}{translate key='plugins.generic.publicStats.totalArticles'}{literal}",
+            languagesIdentified:"{/literal}{translate key='plugins.generic.publicStats.languagesIdentified'}{literal}",
+            leadingLanguage:"{/literal}{translate key='plugins.generic.publicStats.leadingLanguage'}{literal}",
+            dataPeriod:"{/literal}{translate key='plugins.generic.publicStats.dataPeriod'}{literal}",
 
         };
     {/literal}
@@ -609,6 +619,10 @@
                         <li class="menu-item">
                             <div class="menu-link" data-section="general-languages" onclick="showSection('general-languages')">
                                 {translate key="plugins.generic.publicStats.languageDistribution"}</div>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" data-section="language-trends" onclick="showSection('language-trends')">
+                                {translate key="plugins.generic.publicStats.languageTrends"}</div>
                         </li>
                         <li class="menu-item">
                             <div class="menu-link" data-section="geographic-distribution" onclick="showSection('geographic-distribution')">
@@ -1045,6 +1059,39 @@
                                         {* Populated by JavaScript *}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Language trends section *}
+            <div id="language-trends" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">{translate key="plugins.generic.publicStats.languageTrends"}</h1>
+                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.languageTrendsDesc"}</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">{translate key="plugins.generic.publicStats.languageTrendsChart"}</h2>
+                            <button onclick="resetChartZoom('languageTrendsChart')"
+                                class="reset-zoom-btn">{translate key="plugins.generic.publicStats.resetZoom"}</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="languageTrendsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h2 class="card-title">{translate key="plugins.generic.publicStats.summary"}</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="languageTrendsSummary"
+                                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                                {* Populated by JavaScript *}
                             </div>
                         </div>
                     </div>

@@ -90,6 +90,102 @@ class LanguageStatsService
     }
 
     /**
+     * Get article counts per language grouped by year of publication.
+     *
+     * Uses the issue's date_published as the year dimension. Articles not
+     * assigned to a published issue are excluded (no reliable publish date).
+     *
+     * @param int $contextId
+     * @return array { labels: string[], series: [{code, name, data: int[]}] }
+     */
+    public function getLanguageTrends(int $contextId): array
+    {
+        $rows = DB::table('publications as p')
+            ->join('publication_settings as ps_locale', function ($join) {
+                $join->on('ps_locale.publication_id', '=', 'p.publication_id')
+                    ->where('ps_locale.setting_name', '=', 'title')
+                    ->whereNotNull('ps_locale.locale')
+                    ->where('ps_locale.locale', '!=', '')
+                    ->whereNotNull('ps_locale.setting_value')
+                    ->where('ps_locale.setting_value', '!=', '');
+            })
+            ->join('submissions as s', function ($join) use ($contextId) {
+                $join->on('s.submission_id', '=', 'p.submission_id')
+                    ->where('s.context_id', '=', $contextId)
+                    ->where('s.status', '=', PKPSubmission::STATUS_PUBLISHED);
+            })
+            ->join('publication_settings as ps_issue', function ($join) {
+                $join->on('ps_issue.publication_id', '=', 'p.publication_id')
+                    ->where('ps_issue.setting_name', '=', 'issueId')
+                    ->where('ps_issue.locale', '=', '');
+            })
+            ->join('issues as i', function ($join) {
+                $join->on('i.issue_id', '=', DB::raw('CAST(ps_issue.setting_value AS UNSIGNED)'))
+                    ->where('i.published', '=', 1);
+            })
+            ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
+            ->whereNotNull('i.date_published')
+            ->select(
+                'ps_locale.locale',
+                DB::raw('YEAR(i.date_published) as pub_year'),
+                DB::raw('COUNT(DISTINCT p.submission_id) as article_count')
+            )
+            ->groupBy('ps_locale.locale', DB::raw('YEAR(i.date_published)'))
+            ->orderBy(DB::raw('YEAR(i.date_published)'))
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return ['labels' => [], 'series' => []];
+        }
+
+        $uiLocale = Locale::getLocale();
+        $yearLangMap = [];
+        $langNames = [];
+
+        foreach ($rows as $row) {
+            $langCode = \Locale::getPrimaryLanguage($row->locale) ?: $row->locale;
+            $year = (string)$row->pub_year;
+
+            $yearLangMap[$year][$langCode] = ($yearLangMap[$year][$langCode] ?? 0) + (int)$row->article_count;
+
+            if (!isset($langNames[$langCode])) {
+                $displayName = \Locale::getDisplayLanguage($row->locale, $uiLocale);
+                $langNames[$langCode] = $displayName
+                    ? mb_strtoupper(mb_substr($displayName, 0, 1)) . mb_substr($displayName, 1)
+                    : $langCode;
+            }
+        }
+
+        $allYears = array_keys($yearLangMap);
+        sort($allYears);
+
+        // Rank languages by total count across all years (most common first)
+        $langTotals = [];
+        foreach ($yearLangMap as $yearData) {
+            foreach ($yearData as $code => $count) {
+                $langTotals[$code] = ($langTotals[$code] ?? 0) + $count;
+            }
+        }
+        arsort($langTotals);
+        $orderedCodes = array_keys($langTotals);
+
+        $series = [];
+        foreach ($orderedCodes as $code) {
+            $data = [];
+            foreach ($allYears as $year) {
+                $data[] = $yearLangMap[$year][$code] ?? 0;
+            }
+            $series[] = [
+                'code' => $code,
+                'name' => $langNames[$code] ?? $code,
+                'data' => $data,
+            ];
+        }
+
+        return ['labels' => $allYears, 'series' => $series];
+    }
+
+    /**
      * Get published issues ordered by date desc for the filter dropdown.
      *
      * @param int $contextId

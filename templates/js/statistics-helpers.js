@@ -61,6 +61,7 @@
     fundingChart: null,
     citingJournals: null,
     language: null,
+    languageTrends: null,
   };
 
   /**

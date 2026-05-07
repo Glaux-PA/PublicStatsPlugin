@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace APP\plugins\generic\publicStats\services;
 
 use APP\core\Application;
-use APP\core\Services;
 use APP\facades\Repo;
 use PKP\core\PKPRequest;
 use PKP\submission\PKPSubmission;
@@ -29,7 +28,6 @@ use APP\plugins\generic\publicStats\classes\Logger;
 use APP\plugins\generic\publicStats\jobs\ComputeOpenAlexAggregateJob;
 use APP\plugins\generic\publicStats\services\OpenAlexService;
 use APP\plugins\generic\publicStats\services\ArticleStatsService;
-use Illuminate\Support\Facades\Cache;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\services\BaseStatsService;
 class EnrichedStatsService extends BaseStatsService
@@ -95,7 +93,7 @@ class EnrichedStatsService extends BaseStatsService
         $localStats = $this->getBaseContextStats($contextId);
         
         // Get external stats from OpenAlex
-        $externalStats = $this->openAlexService->enrichContextStatistics($contextId);
+        $externalStats = $this->getExternalEnrichmentStats($contextId);
         
         // Combine and calculate derived metrics
         $combined = $this->combineContextStats($localStats, $externalStats);
@@ -105,70 +103,6 @@ class EnrichedStatsService extends BaseStatsService
             'external' => $externalStats,
             'combined' => $combined
         ];
-    }
-
-    /**
-     * Get annual citation metrics from OpenAlex
-     * 
-     * @param int $contextId Context/journal ID
-     * @param int $minYear Minimum year to include (default: 2015)
-     * @return array Year-by-year citation counts
-     */
-   public function getAnnualCitationMetrics(int $contextId, int $minYear = 2015, ?int $maxToProcess = null): array
-    {
-        $submissions = $this->getPublishedSubmissions($contextId);
-        $citationsByYear = [];
-
-        // Safety limit
-        $maxToProcess = $maxToProcess ?? PublicStatsConstants::MAX_OPENALEX_REQUESTS;
-        $processedCount = 0;
-
-        foreach ($submissions as $submission) {
-            if ($processedCount >= $maxToProcess) {
-                break;
-            }
-            
-            $publication = $submission->getCurrentPublication();
-            if (!$publication) continue;
-
-            $doi = $publication->getDoi();
-            if (!$doi) continue;
-            
-            $processedCount++;
-
-            // Get citation data from OpenAlex
-            $metrics = $this->openAlexService->getWorkMetrics($doi);
-            if (!$metrics || empty($metrics['counts_by_year'])) continue;
-
-            // Aggregate citations by year
-            foreach ($metrics['counts_by_year'] as $yearData) {
-                $year = $yearData['year'];
-                
-                // Skip years before minimum
-                if ($year < $minYear) continue;
-                
-                $citations = $yearData['cited_by_count'] ?? 0;
-                
-                if (!isset($citationsByYear[$year])) {
-                    $citationsByYear[$year] = 0;
-                }
-                $citationsByYear[$year] += $citations;
-            }
-        }
-
-        // Sort by year
-        ksort($citationsByYear);
-        
-        // Convert to format expected by frontend
-        $result = [];
-        foreach ($citationsByYear as $year => $count) {
-            $result[] = [
-                'year' => (string)$year,
-                'citations' => $count
-            ];
-        }
-        
-        return $result;
     }
 
     // -- Chunked computation helpers ----------------------------------
@@ -354,9 +288,6 @@ class EnrichedStatsService extends BaseStatsService
             ->filterByStatus([PKPSubmission::STATUS_PUBLISHED])
             ->getCount();
 
-        // Get total downloads and views from existing stats
-        $statsService = Services::get('publicationStats');
-        
         return [
             'total_articles' => $totalArticles,
             // These could be expanded with actual download/view totals if needed
@@ -486,12 +417,13 @@ class EnrichedStatsService extends BaseStatsService
                 $totalCitations = (int)($metrics['cited_by_count'] ?? 0);
                 if ($totalCitations === 0) continue;
 
+                $datePublished = $publication->getData('datePublished');
                 $accumulator['articles'][] = [
                     'submissionId' => $submission->getId(),
-                    'bestId' => $submission->getBestId(),
+                    'bestId' => $publication->getData('urlPath') ?: $submission->getId(),
                     'title' => $publication->getLocalizedTitle(),
                     'authors' => $publication->getAuthorString($userGroups),
-                    'year' => date('Y', strtotime($publication->getData('datePublished'))),
+                    'year' => $datePublished ? date('Y', strtotime($datePublished)) : null,
                     'citations' => $totalCitations,
                     'counts_by_year' => $metrics['counts_by_year'] ?? [],
                 ];
@@ -699,6 +631,93 @@ class EnrichedStatsService extends BaseStatsService
         return $state;
     }
 
+    public function getExternalEnrichmentStats(int $contextId): array
+    {
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_ENRICH_CONTEXT,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        return array_merge($result['accumulator'], ['is_computing' => false]);
+    }
+
+    public function enrichContextStatisticsChunk(int $contextId, array $state): array
+    {
+        if (!empty($state['is_complete']) && isset($state['accumulator']['total_external_citations'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? [
+            'total_external_citations' => 0,
+            'fwci_sum'                 => 0.0,
+            'works_with_data'          => 0,
+            'topics_count'             => [],
+            'sdgs_count'               => [],
+            'retracted_count'          => 0,
+            'funded_works'             => 0,
+        ];
+
+        foreach ($chunk['submissions'] as $submission) {
+            $publication = $submission->getCurrentPublication();
+            if (!$publication) continue;
+            $doi = $publication->getDoi();
+            if (!$doi) continue;
+
+            $metrics = $this->openAlexService->getWorkMetrics($doi);
+            if (!$metrics) continue;
+
+            $accumulator['works_with_data']++;
+            $accumulator['total_external_citations'] += (int)($metrics['cited_by_count'] ?? 0);
+
+            if (!empty($metrics['fwci'])) {
+                $accumulator['fwci_sum'] += (float)$metrics['fwci'];
+            }
+            if (!empty($metrics['is_retracted'])) {
+                $accumulator['retracted_count']++;
+            }
+            if (!empty($metrics['grants'])) {
+                $accumulator['funded_works']++;
+            }
+            foreach ($metrics['topics'] ?? [] as $topic) {
+                $name = $topic['display_name'] ?? 'Unknown';
+                $accumulator['topics_count'][$name] = ($accumulator['topics_count'][$name] ?? 0) + 1;
+            }
+            foreach ($metrics['sustainable_development_goals'] ?? [] as $sdg) {
+                $name = $sdg['display_name'] ?? 'Unknown';
+                $accumulator['sdgs_count'][$name] = ($accumulator['sdgs_count'][$name] ?? 0) + 1;
+            }
+        }
+
+        $state['accumulator'] = $accumulator;
+
+        if (!empty($state['is_complete'])) {
+            $acc = $state['accumulator'];
+            arsort($acc['topics_count']);
+            arsort($acc['sdgs_count']);
+            $state['accumulator'] = [
+                'total_external_citations' => $acc['total_external_citations'],
+                'avg_fwci'                 => $acc['works_with_data'] > 0
+                    ? round($acc['fwci_sum'] / $acc['works_with_data'], 2)
+                    : 0,
+                'works_with_data'          => $acc['works_with_data'],
+                'top_topics'               => array_slice($acc['topics_count'], 0, 10, true),
+                'top_sdgs'                 => array_slice($acc['sdgs_count'], 0, 10, true),
+                'retracted_count'          => $acc['retracted_count'],
+                'funded_works'             => $acc['funded_works'],
+                'processed_count'          => $state['processed'] ?? 0,
+                'total_submissions'        => $state['total'] ?? 0,
+                'is_partial'               => false,
+            ];
+        }
+
+        return $state;
+    }
+
     /**
      * Get formatted citations by country data
      */
@@ -753,7 +772,11 @@ class EnrichedStatsService extends BaseStatsService
     {
         try {
             $journals = $this->openAlexService->getCitingJournals($contextId);
-            
+
+            if ($journals === null) {
+                return ['is_computing' => true];
+            }
+
             if (empty($journals)) {
                 return null;
             }
@@ -826,7 +849,11 @@ class EnrichedStatsService extends BaseStatsService
     {
         try {
             $institutions = $this->openAlexService->getCitingInstitutions($contextId);
-            
+
+            if ($institutions === null) {
+                return ['is_computing' => true];
+            }
+
             if (empty($institutions)) {
                 return null;
             }

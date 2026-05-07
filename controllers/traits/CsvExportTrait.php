@@ -247,6 +247,15 @@ trait CsvExportTrait
         );
     }
 
+    public function exportLanguageTrends(array $args, PKPRequest $request): void
+    {
+        $this->runExport(
+            $request,
+            fn(int $ctx) => $this->csvExporter->languageTrends($ctx),
+            'language trends'
+        );
+    }
+
     public function exportLanguages(array $args, PKPRequest $request): void
     {
         $issueIdRaw = $request->getUserVar('issueId');
@@ -265,16 +274,6 @@ trait CsvExportTrait
             $request,
             fn(int $ctx) => $this->csvExporter->topCited($request, $ctx, $limit),
             'top cited'
-        );
-    }
-
-    public function exportFundingSources(array $args, PKPRequest $request): void
-    {
-        $limit = InputValidator::validateLimit($request->getUserVar('limit'), 100, 500);
-        $this->runExport(
-            $request,
-            fn(int $ctx) => $this->csvExporter->fundingSources($ctx, $limit),
-            'funding sources'
         );
     }
 
@@ -361,15 +360,6 @@ trait CsvExportTrait
             $request,
             fn(int $ctx) => $this->csvExporter->acceptancePublication($ctx, $year),
             'acceptance to publication stats'
-        );
-    }
-
-    public function exportCollaboration(array $args, PKPRequest $request): void
-    {
-        $this->runExport(
-            $request,
-            fn(int $ctx) => $this->csvExporter->collaboration($ctx),
-            'collaboration metrics'
         );
     }
 

@@ -1244,7 +1244,7 @@ msgid "plugins.generic.publicStats.languageDistribution"
 msgstr "Distribución por idioma"
 
 msgid "plugins.generic.publicStats.languageDistributionDesc"
-msgstr "Artículos publicados agrupados por idioma"
+msgstr "Artículos publicados agrupados por idioma. El idioma se infiere a partir de los locales en que está disponible el título, no del texto completo del artículo."
 
 msgid "plugins.generic.publicStats.articleLanguages"
 msgstr "Idiomas de los artículos"
@@ -1263,4 +1263,34 @@ msgstr "Todos los números"
 
 msgid "plugins.generic.publicStats.filterByIssue"
 msgstr "Filtrar por número"
+
+# ============================================================
+# LANGUAGE TRENDS
+# ============================================================
+msgid "plugins.generic.publicStats.languageTrends"
+msgstr "Tendencias por idioma"
+
+msgid "plugins.generic.publicStats.languageTrendsDesc"
+msgstr "Evolución de los idiomas de los artículos a lo largo del tiempo"
+
+msgid "plugins.generic.publicStats.languageTrendsChart"
+msgstr "Artículos por idioma y año"
+
+msgid "plugins.generic.publicStats.languageDominance"
+msgstr "Idioma dominante por año"
+
+msgid "plugins.generic.publicStats.dominantLanguage"
+msgstr "Idioma dominante"
+
+msgid "plugins.generic.publicStats.noLanguageTrendsData"
+msgstr "No hay datos de tendencias de idiomas disponibles"
+
+msgid "plugins.generic.publicStats.languagesIdentified"
+msgstr "Idiomas identificados"
+
+msgid "plugins.generic.publicStats.leadingLanguage"
+msgstr "Idioma predominante"
+
+msgid "plugins.generic.publicStats.dataPeriod"
+msgstr "Período de datos"
 

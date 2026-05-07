@@ -407,6 +407,63 @@
       });
     },
 
+    initializeLanguageTrendsChart() {
+      const ctx = document.getElementById("languageTrendsChart");
+      if (!ctx || !ctx.getContext) return;
+
+      const data = statsData.languageTrends;
+      if (
+        !data ||
+        !data.labels ||
+        data.labels.length === 0 ||
+        !data.series ||
+        data.series.length === 0
+      ) {
+        Utils.showNoDataMessage(
+          "languageTrendsChart",
+          i18n.noLanguageTrendsData
+        );
+        return;
+      }
+
+      if (ChartInstances.languageTrends) ChartInstances.languageTrends.destroy();
+
+      const colors = Utils.generateColors(data.series.length);
+
+      const toBg = (color) => {
+        if (color.startsWith("#") && color.length === 7) {
+          const r = parseInt(color.slice(1, 3), 16);
+          const g = parseInt(color.slice(3, 5), 16);
+          const b = parseInt(color.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, 0.1)`;
+        }
+        if (color.startsWith("hsl(")) {
+          return color.replace("hsl(", "hsla(").replace(")", ", 0.1)");
+        }
+        return color;
+      };
+
+      const datasets = data.series.map((series, i) => ({
+        label: series.name,
+        data: series.data,
+        fill: true,
+        backgroundColor: toBg(colors[i]),
+        borderColor: colors[i],
+        borderWidth: 2,
+        pointBackgroundColor: colors[i],
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        tension: 0.4,
+      }));
+
+      ChartInstances.languageTrends = new Chart(ctx.getContext("2d"), {
+        type: "line",
+        data: { labels: data.labels, datasets },
+        options: ChartConfig.getLineChartOptions(),
+      });
+    },
+
     initializeInstitutionChart() {
       const ctx = document.getElementById("institutionStatsChart");
       if (!ctx || !ctx.getContext || !statsData.authorsByInstitution) return;

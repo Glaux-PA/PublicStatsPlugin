@@ -576,14 +576,14 @@
         if (data && data.is_computing) {
           document.getElementById(
             "thematicTableBody"
-          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${escapeHtml(computingText(data))}</td></tr>`;
+          ).innerHTML = `<tr><td colspan="4" class="ps-empty-message">${escapeHtml(computingText(data))}</td></tr>`;
           return;
         }
 
         if (!data || !data.topics || data.topics.length === 0) {
           document.getElementById(
             "thematicTableBody"
-          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${i18n.noThematicData}</td></tr>`;
+          ).innerHTML = `<tr><td colspan="4" class="ps-empty-message">${i18n.noThematicData}</td></tr>`;
           return;
         }
 
@@ -681,6 +681,13 @@
       try {
         const response = await PS.API.getCitingJournals();
 
+        if (response && response.is_computing) {
+          document.getElementById(
+            "citingJournalsTableBody"
+          ).innerHTML = `<tr><td colspan="6" class="ps-empty-message">${escapeHtml(computingText(response))}</td></tr>`;
+          return;
+        }
+
         if (
           !response ||
           !response.journals ||
@@ -706,7 +713,7 @@
         console.error("Error loading citing journals:", error);
         document.getElementById(
           "citingJournalsTableBody"
-        ).innerHTML = `<tr><td colspan="5" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
+        ).innerHTML = `<tr><td colspan="6" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
         Utils.hideLoadingIndicator();
       }

@@ -56,7 +56,16 @@ class PublicStatsSettingsForm extends Form
 
         $allSubsections = array_merge(...array_values(array_map('array_keys', PublicStatsConstants::SUBSECTIONS)));
         $saved = $this->plugin->getSetting($contextId, 'enabledSubsections');
-        $this->setData('enabledSubsections', is_array($saved) ? $saved : $allSubsections);
+
+        if (!is_array($saved)) {
+            $enabled = $allSubsections;
+        } else {
+            $stillValid  = array_values(array_intersect($saved, $allSubsections));
+            $known       = $this->plugin->getSetting($contextId, 'knownSubsections');
+            $newlyAdded  = is_array($known) ? array_values(array_diff($allSubsections, $known)) : [];
+            $enabled     = array_values(array_merge($stillValid, $newlyAdded));
+        }
+        $this->setData('enabledSubsections', $enabled);
     }
 
     /**

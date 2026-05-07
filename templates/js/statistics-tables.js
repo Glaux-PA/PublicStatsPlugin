@@ -221,6 +221,50 @@
       });
     },
 
+    renderLanguageTrendsSummary() {
+      const div = document.getElementById("languageTrendsSummary");
+      if (!div) return;
+
+      const data = statsData.languageTrends;
+      if (!data || !data.labels || data.labels.length === 0) {
+        div.innerHTML = `<div class="ps-grid-span-2 ps-empty-message"><p>${
+          i18n.noLanguageTrendsData || "No data available"
+        }</p></div>`;
+        return;
+      }
+
+      const totalArticles = data.series.reduce(
+        (sum, s) => sum + s.data.reduce((a, b) => a + b, 0),
+        0
+      );
+      const languageCount = data.series.length;
+      const leadingLanguage = data.series[0]?.name || "—";
+      const years = data.labels;
+      const dataSpan =
+        years.length > 1
+          ? `${years[0]}–${years[years.length - 1]}`
+          : years[0] || "—";
+
+      div.innerHTML = `
+        <div class="ps-stat-box">
+          <div class="ps-stat-value ps-color-primary">${totalArticles.toLocaleString()}</div>
+          <div class="ps-stat-label">${i18n.totalArticles}</div>
+        </div>
+        <div class="ps-stat-box">
+          <div class="ps-stat-value ps-color-blue">${languageCount}</div>
+          <div class="ps-stat-label">${i18n.languagesIdentified}</div>
+        </div>
+        <div class="ps-stat-box">
+          <div class="ps-stat-value ps-color-primary" style="font-size:22px">${escapeHtml(leadingLanguage)}</div>
+          <div class="ps-stat-label">${i18n.leadingLanguage}</div>
+        </div>
+        <div class="ps-stat-box">
+          <div class="ps-stat-value ps-color-muted" style="font-size:22px">${escapeHtml(dataSpan)}</div>
+          <div class="ps-stat-label">${i18n.dataPeriod}</div>
+        </div>
+      `;
+    },
+
     renderEditorialSummary() {
       const div = document.getElementById("editorialSummary");
       if (!div) return;

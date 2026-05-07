@@ -375,6 +375,38 @@ class PublicStatisticsHandler extends Handler
         }
     }
 
+    /**
+     * Get language distribution trends grouped by year of publication.
+     *
+     * @param array $args URL arguments
+     * @param PKPRequest $request Current request
+     * @return void Outputs JSON
+     */
+    public function languageTrends(array $args, PKPRequest $request): void
+    {
+        $context = $request->getContext();
+        if (!$context) {
+            $this->outputError('Context not found', 404);
+            return;
+        }
+
+        $contextId = $context->getId();
+        $cacheKey = "language_trends_{$contextId}";
+
+        try {
+            $data = Cache::remember(
+                $cacheKey,
+                PublicStatsConstants::CACHE_TTL_INTERNAL,
+                fn() => $this->languageStatsService->getLanguageTrends($contextId)
+            );
+
+            $this->outputJson($data);
+        } catch (\Exception $e) {
+            Logger::error("Error in language trends", $e);
+            $this->outputError('Error loading language trend statistics', 500);
+        }
+    }
+
     // ========================================
     // Helper Methods
     // ========================================

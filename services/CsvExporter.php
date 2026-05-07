@@ -371,6 +371,29 @@ class CsvExporter
         ];
     }
 
+    public function languageTrends(int $contextId): array
+    {
+        $data = $this->languageService->getLanguageTrends($contextId);
+
+        $rows = [];
+        foreach ($data['labels'] ?? [] as $yearIdx => $year) {
+            foreach ($data['series'] ?? [] as $series) {
+                $rows[] = [
+                    $year,
+                    $series['code'] ?? '',
+                    $series['name'] ?? '',
+                    $series['data'][$yearIdx] ?? 0,
+                ];
+            }
+        }
+
+        return [
+            'filename' => 'language_trends_' . date('Y-m-d') . '.csv',
+            'headers'  => ['Year', 'Language Code', 'Language', 'Articles'],
+            'rows'     => $rows,
+        ];
+    }
+
     public function languages(int $contextId, ?int $issueId): array
     {
         $data = $this->languageService->getLanguageStats($contextId, $issueId);
@@ -417,22 +440,6 @@ class CsvExporter
             'filename' => 'top_cited_articles_' . date('Y-m-d') . '.csv',
             'headers' => ['Rank', 'Title', 'Authors', 'Year', 'Citations'],
             'rows' => $this->rankedArticleRows($articles, 'citations', true),
-        ];
-    }
-
-    public function fundingSources(int $contextId, int $limit): array
-    {
-        $data = $this->enrichedService->getFundingSources($contextId, $limit);
-
-        $rows = [];
-        foreach ($data as $item) {
-            $rows[] = [$item['funder'] ?? '', $item['count'] ?? 0];
-        }
-
-        return [
-            'filename' => 'funding_sources_' . date('Y-m-d') . '.csv',
-            'headers' => ['Funder', 'Publications Count'],
-            'rows' => $rows,
         ];
     }
 
@@ -519,28 +526,10 @@ class CsvExporter
         ];
     }
 
-    public function collaboration(int $contextId): array
-    {
-        $data = $this->enrichedService->getCollaborationMetrics($contextId);
-
-        return [
-            'filename' => 'collaboration_metrics_' . date('Y-m-d') . '.csv',
-            'headers' => ['Metric', 'Value'],
-            'rows' => [
-                ['Total Works Analyzed', $data['total_works'] ?? 0],
-                ['International Collaborations', $data['international_collaborations'] ?? 0],
-                ['Multi-Institution Works', $data['multi_institution'] ?? 0],
-                ['Avg Countries per Work', $data['avg_countries_per_work'] ?? 0],
-                ['Avg Institutions per Work', $data['avg_institutions_per_work'] ?? 0],
-                ['International Collaboration Rate (%)', $data['international_collaboration_rate'] ?? 0],
-                ['Multi-Institution Rate (%)', $data['multi_institution_rate'] ?? 0],
-            ],
-        ];
-    }
-
     public function citingJournals(PKPRequest $request, int $contextId, ?string $yearFilter): array
     {
         $response = $this->enrichedService->getCitingJournals($request, $contextId);
+        $this->assertReady($response, 'citing journals');
         $filter = $this->normalizeYearFilter($yearFilter);
         $journals = is_array($response) && is_array($response['journals'] ?? null) ? $response['journals'] : [];
 

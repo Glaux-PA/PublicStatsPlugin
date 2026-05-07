@@ -221,8 +221,8 @@
 
     {fbvFormArea id="publicStatsSettingsFormArea"}
 
-    {fbvFormSection title="plugins.generic.publicStats.settings.openAlexEmail" required=true}
-    {fbvElement type="text" id="openAlexEmail" value=$openAlexEmail required=true}
+    {fbvFormSection title="plugins.generic.publicStats.settings.openAlexEmail"}
+    {fbvElement type="text" id="openAlexEmail" value=$openAlexEmail}
     <p class="pkp_help">{translate key="plugins.generic.publicStats.settings.openAlexEmailDescription"}</p>
     {/fbvFormSection}
 

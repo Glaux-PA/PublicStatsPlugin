@@ -44,20 +44,6 @@ class PublicStatsConstants
     public const CACHE_TTL_EXTERNAL = 604800;
 
     /**
-     * Maximum submissions to process in resource-intensive operations.
-     * Prevents timeout and memory exhaustion in large journals.
-     * Applied to operations like batch statistics aggregation.
-     */
-    public const MAX_SUBMISSIONS_TO_PROCESS = 1000;
-
-    /**
-     * Maximum submissions for OpenAlex API enrichment.
-     * Lower than internal limit due to external API rate constraints.
-     * Balances data completeness with API usage limits.
-     */
-    public const MAX_OPENALEX_REQUESTS = 500;
-
-    /**
      * Submissions processed per chunk in the chunked OpenAlex jobs.
      *
      * 100 is sized for deployments running an async queue worker (acron plugin
@@ -76,13 +62,6 @@ class PublicStatsConstants
      * Ensures compliance with OpenAlex polite pool rate limits.
      */
     public const OPENALEX_RATE_LIMIT_DELAY = 100000;
-
-    /**
-     * OpenAlex /text endpoint rate limit delay in microseconds.
-     * 1,000,000 microseconds = 1 second, allowing 1 request per second.
-     * The /text endpoint has stricter rate limits than other endpoints.
-     */
-    public const OPENALEX_TEXT_RATE_LIMIT_DELAY = 1000000;
 
     /**
      * Sidebar section groups (used for form headers and group-level collapsing).
@@ -107,6 +86,7 @@ class PublicStatsConstants
             'general-sections'        => 'plugins.generic.publicStats.sections',
             'general-issues'          => 'plugins.generic.publicStats.issues',
             'general-languages'       => 'plugins.generic.publicStats.languageDistribution',
+            'language-trends'         => 'plugins.generic.publicStats.languageTrends',
             'geographic-distribution' => 'plugins.generic.publicStats.geographicDistribution',
         ],
         'editorial' => [

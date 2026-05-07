@@ -280,7 +280,15 @@
     async getCitingJournals() {
       if (statsData.citingJournals) return statsData.citingJournals;
       const data = await this.fetchData("citingJournals");
-      statsData.citingJournals = data;
+      // Skip caching while computing — the next call may already have the result.
+      if (data && !data.is_computing) statsData.citingJournals = data;
+      return data;
+    },
+
+    async getLanguageTrends() {
+      if (statsData.languageTrends) return statsData.languageTrends;
+      const data = await this.fetchData("languageTrends");
+      statsData.languageTrends = data;
       return data;
     },
 
@@ -373,6 +381,10 @@
 
     exportSections(year = null) {
       this.exportCsv("exportSections", year ? { year } : {});
+    },
+
+    exportLanguageTrends() {
+      this.exportCsv("exportLanguageTrends");
     },
 
     exportLanguages() {
@@ -534,6 +546,7 @@
         "general-issues": { type: "Issues", params: { year: currentYear } },
         "general-sections": { type: "Sections", params: { year: currentYear } },
         "general-languages": { type: "Languages" },
+        "language-trends": { type: "LanguageTrends" },
         "top-cited": { type: "TopCited", params: { limit: 100 } },
         "citation-evolution": { type: "CitationEvolution" },
         "open-access-stats": { type: "OpenAccessStats" },

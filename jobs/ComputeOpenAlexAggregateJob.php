@@ -39,6 +39,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
     public $tries = 2;
 
     private const CHUNKED_TYPES = [
+        self::TYPE_ENRICH_CONTEXT,
         self::TYPE_OPEN_ACCESS_STATS,
         self::TYPE_THEMATIC_PROFILE,
         self::TYPE_CITATION_EVOLUTION,
@@ -68,8 +69,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
             }
 
             $data = match ($this->type) {
-                self::TYPE_ENRICH_CONTEXT => $openAlexService->enrichContextStatisticsSync($this->contextId),
-                self::TYPE_CITING_JOURNALS => $openAlexService->getCitingJournalsSync($this->contextId),
+                self::TYPE_CITING_JOURNALS     => $openAlexService->getCitingJournalsSync($this->contextId),
                 self::TYPE_CITING_INSTITUTIONS => $openAlexService->getCitingInstitutionsSync($this->contextId),
                 default => throw new \InvalidArgumentException("Unknown aggregate type: {$this->type}"),
             };
@@ -97,10 +97,11 @@ class ComputeOpenAlexAggregateJob extends BaseJob
         }
 
         $newState = match ($this->type) {
+            self::TYPE_ENRICH_CONTEXT    => $enrichedService->enrichContextStatisticsChunk($this->contextId, $state),
             self::TYPE_OPEN_ACCESS_STATS => $enrichedService->getOpenAccessStatsChunk($this->contextId, $state),
-            self::TYPE_THEMATIC_PROFILE => $enrichedService->getThematicProfileChunk($this->contextId, $state),
+            self::TYPE_THEMATIC_PROFILE  => $enrichedService->getThematicProfileChunk($this->contextId, $state),
             self::TYPE_CITATION_EVOLUTION => $enrichedService->getCitationEvolutionChunk($this->contextId, $state),
-            self::TYPE_TOP_CITED => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
+            self::TYPE_TOP_CITED         => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
         };
 
         $openAlexService->putChunkedState($this->type, $this->contextId, $newState);
