@@ -11,9 +11,12 @@
  *
  * @brief Service for combining local statistics with OpenAlex data.
  *
- * Provides enriched article and context statistics by combining
- * local OJS metrics (downloads, views) with external citation data
- * from OpenAlex. Includes citation counts, FWCI scores, and OA status.
+ * Drives every "Impact" subsection: top-cited articles, citation evolution,
+ * open access stats, thematic profile (topics + SDGs), citing journals,
+ * citing institutions, citations by country, and the aggregate context-level
+ * counters (citations, average FWCI, retracted/funded counts) shown in the
+ * overview. Heavy aggregations are exposed through chunked jobs and surface
+ * `is_computing` placeholders while the queue worker is still advancing them.
  */
 
 declare(strict_types=1);
@@ -91,17 +94,29 @@ class EnrichedStatsService extends BaseStatsService
     {
         // Get local stats
         $localStats = $this->getBaseContextStats($contextId);
-        
+
         // Get external stats from OpenAlex
         $externalStats = $this->getExternalEnrichmentStats($contextId);
-        
+
+        // While the chunked job is still running the external payload only
+        // carries `is_computing` + `progress`. The combined metrics depend on
+        // keys that don't exist yet (`works_with_data`, `avg_fwci`, ...), so
+        // skip the calculation and surface the placeholder for both.
+        if (!empty($externalStats['is_computing'])) {
+            return [
+                'local'    => $localStats,
+                'external' => $externalStats,
+                'combined' => ['is_computing' => true],
+            ];
+        }
+
         // Combine and calculate derived metrics
         $combined = $this->combineContextStats($localStats, $externalStats);
-        
+
         return [
-            'local' => $localStats,
+            'local'    => $localStats,
             'external' => $externalStats,
-            'combined' => $combined
+            'combined' => $combined,
         ];
     }
 
@@ -655,6 +670,7 @@ class EnrichedStatsService extends BaseStatsService
         $accumulator = $state['accumulator'] ?? [
             'total_external_citations' => 0,
             'fwci_sum'                 => 0.0,
+            'fwci_count'               => 0,
             'works_with_data'          => 0,
             'topics_count'             => [],
             'sdgs_count'               => [],
@@ -674,8 +690,11 @@ class EnrichedStatsService extends BaseStatsService
             $accumulator['works_with_data']++;
             $accumulator['total_external_citations'] += (int)($metrics['cited_by_count'] ?? 0);
 
-            if (!empty($metrics['fwci'])) {
+            // FWCI is null when OpenAlex hasn't computed it yet; 0.0 is a valid value
+            // (work has zero citations vs the field-weighted expectation).
+            if (isset($metrics['fwci']) && $metrics['fwci'] !== null) {
                 $accumulator['fwci_sum'] += (float)$metrics['fwci'];
+                $accumulator['fwci_count']++;
             }
             if (!empty($metrics['is_retracted'])) {
                 $accumulator['retracted_count']++;
@@ -701,8 +720,8 @@ class EnrichedStatsService extends BaseStatsService
             arsort($acc['sdgs_count']);
             $state['accumulator'] = [
                 'total_external_citations' => $acc['total_external_citations'],
-                'avg_fwci'                 => $acc['works_with_data'] > 0
-                    ? round($acc['fwci_sum'] / $acc['works_with_data'], 2)
+                'avg_fwci'                 => ($acc['fwci_count'] ?? 0) > 0
+                    ? round($acc['fwci_sum'] / $acc['fwci_count'], 2)
                     : 0,
                 'works_with_data'          => $acc['works_with_data'],
                 'top_topics'               => array_slice($acc['topics_count'], 0, 10, true),
@@ -719,49 +738,90 @@ class EnrichedStatsService extends BaseStatsService
     }
 
     /**
-     * Get formatted citations by country data
+     * Citations-by-country (chunked). Returns the formatted array once the
+     * chunked job is complete, or an `is_computing` placeholder while the
+     * queue worker is still walking the journal's submissions.
      */
-    public function getCitationsByCountry(int $contextId): ?array
+    public function getCitationsByCountry(int $contextId): array
     {
-        try {
-            $countryCitations = $this->openAlexService->getCitationsByCountry($contextId);
-            
-            if (empty($countryCitations)) {
-                return null;
-            }
-            
-            $isoCodes = app(\Sokil\IsoCodes\IsoCodesFactory::class);
-            $formattedData = [];
-            
-            foreach ($countryCitations as $countryCode => $citationCount) {
-                // Ensure countryCode is a valid 2-letter string
-                $countryCode = (string) $countryCode;
-                if (strlen($countryCode) !== 2) {
-                    continue;
+        $result = $this->readOrAdvanceChunked(
+            ComputeOpenAlexAggregateJob::TYPE_CITATIONS_BY_COUNTRY,
+            $contextId
+        );
+        if (empty($result['__complete__'])) {
+            return $result;
+        }
+        return $result['accumulator']['data'] ?? [];
+    }
+
+    public function getCitationsByCountryChunk(int $contextId, array $state): array
+    {
+        if (!empty($state['is_complete']) && isset($state['accumulator']['data'])) {
+            return $state;
+        }
+
+        $chunk = $this->loadNextChunk($contextId, $state);
+        $state = $chunk['state'];
+
+        $accumulator = $state['accumulator'] ?? ['country_counts' => []];
+
+        foreach ($chunk['submissions'] as $submission) {
+            $publication = $submission->getCurrentPublication();
+            if (!$publication) continue;
+            $doi = $publication->getDoi();
+            if (!$doi) continue;
+
+            $work = $this->openAlexService->getWorkByDOI($doi);
+            if (!$work || empty($work['id'])) continue;
+
+            $citingWorks = $this->openAlexService->getCitingWorks($work['id']);
+
+            foreach ($citingWorks as $citingWork) {
+                if (empty($citingWork['authorships'])) continue;
+
+                // Count one country per citing work — the first institution of
+                // the first author. Same convention as the pre-chunked version.
+                foreach ($citingWork['authorships'] as $authorship) {
+                    if (empty($authorship['institutions'])) continue;
+                    foreach ($authorship['institutions'] as $institution) {
+                        $countryCode = $institution['country_code'] ?? null;
+                        if ($countryCode) {
+                            $accumulator['country_counts'][$countryCode] =
+                                ($accumulator['country_counts'][$countryCode] ?? 0) + 1;
+                            break;
+                        }
+                    }
+                    break;
                 }
-                
+            }
+        }
+
+        $state['accumulator'] = $accumulator;
+
+        if (!empty($state['is_complete'])) {
+            $isoCodes  = app(\Sokil\IsoCodes\IsoCodesFactory::class);
+            $formatted = [];
+            foreach ($accumulator['country_counts'] as $countryCode => $count) {
+                $countryCode = (string) $countryCode;
+                if (strlen($countryCode) !== 2) continue;
                 try {
                     $country = $isoCodes->getCountries()->getByAlpha2($countryCode);
                     $countryName = $country ? $country->getLocalName() : $countryCode;
                 } catch (\Exception $e) {
                     $countryName = $countryCode;
                 }
-                
-                $formattedData[] = [
-                    'country_code' => $countryCode,
-                    'country_name' => $countryName,
-                    'citations_count' => $citationCount
+                $formatted[] = [
+                    'country_code'    => $countryCode,
+                    'country_name'    => $countryName,
+                    'citations_count' => $count,
                 ];
             }
-            
-            usort($formattedData, fn($a, $b) => $b['citations_count'] - $a['citations_count']);
-            
-            return $formattedData;
-            
-        } catch (\Exception $e) {
-            Logger::error("Error getting citations by country", $e);
-            return null;
+            usort($formatted, fn($a, $b) => $b['citations_count'] - $a['citations_count']);
+            $state['accumulator']['data'] = $formatted;
+            unset($state['accumulator']['country_counts']);
         }
+
+        return $state;
     }
 
     /**

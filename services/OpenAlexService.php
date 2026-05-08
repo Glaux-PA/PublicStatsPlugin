@@ -88,10 +88,16 @@ class OpenAlexService
         $attempts = 3;
         $backoffMs = [250, 1000, 2000]; // exponential-ish: 250ms, 1s, 2s
 
+        // OpenAlex puts callers with a contact email in the "polite pool"
+        // (faster, more consistent throughput). The signal must be a `mailto`
+        // *query parameter* — sending it as an HTTP header is silently ignored.
+        if ($this->contactEmail && !isset($query['mailto'])) {
+            $query['mailto'] = $this->contactEmail;
+        }
+
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {
             try {
                 $response = Http::timeout($timeout)
-                    ->withHeaders($this->apiHeaders())
                     ->get($url, $query);
 
                 $status = $response->status();
@@ -128,16 +134,6 @@ class OpenAlexService
         }
 
         return null;
-    }
-
-    /**
-     * Build HTTP headers for OpenAlex API requests.
-     * Only includes the 'mailto' header when a real contact email is available
-     * (so we don't pollute OpenAlex's polite-pool logs with fake addresses).
-     */
-    private function apiHeaders(): array
-    {
-        return $this->contactEmail ? ['mailto' => $this->contactEmail] : [];
     }
 
     /**
@@ -284,15 +280,25 @@ class OpenAlexService
 
         $cacheKey = "openalex_work_" . md5($doi);
 
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($doi, $sanitizedDoi) {
-            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-            return $this->httpGetWithRetry(
-                self::API_BASE . '/works/doi:' . $sanitizedDoi,
-                [],
-                10,
-                "DOI {$doi}"
-            );
-        });
+        // Don't use Cache::remember — it would cache a transient null (network
+        // hiccup, 5xx) for the full TTL and starve every later request.
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
+        $work = $this->httpGetWithRetry(
+            self::API_BASE . '/works/doi:' . $sanitizedDoi,
+            [],
+            10,
+            "DOI {$doi}"
+        );
+
+        if ($work !== null) {
+            Cache::put($cacheKey, $work, PublicStatsConstants::CACHE_TTL_EXTERNAL);
+        }
+        return $work;
     }
     
     /**
@@ -329,53 +335,41 @@ class OpenAlexService
     {
         $cacheKey = "openalex_author_" . md5($orcid);
 
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($orcid) {
-            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
+        // Same caveat as getWorkByDOI: skip Cache::remember to avoid pinning
+        // null for 7 days when OpenAlex returns a transient error.
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
 
-            $orcidUrl = strpos($orcid, 'https://orcid.org/') === 0
-                ? $orcid
-                : 'https://orcid.org/' . $orcid;
-
-            $author = $this->httpGetWithRetry(
-                self::API_BASE . '/authors/' . $orcidUrl,
-                [],
-                10,
-                "ORCID {$orcid}"
-            );
-            if ($author === null) {
-                return null;
-            }
-
-            return [
-                'openalex_id' => $author['id'] ?? null,
-                'works_count' => $author['works_count'] ?? 0,
-                'cited_by_count' => $author['cited_by_count'] ?? 0,
-                'h_index' => $author['summary_stats']['h_index'] ?? 0,
-                'i10_index' => $author['summary_stats']['i10_index'] ?? 0,
-                '2yr_mean_citedness' => $author['summary_stats']['2yr_mean_citedness'] ?? 0,
-                'counts_by_year' => $author['counts_by_year'] ?? [],
-            ];
-        });
-    }
-    
-    /**
-     * Sync journal works from OpenAlex by ISSN
-     */
-    public function syncJournalByISSN(string $issn, int $limit = 200): array
-    {
         usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
 
-        $body = $this->httpGetWithRetry(
-            self::API_BASE . '/works',
-            [
-                'filter' => 'primary_location.source.issn:' . $issn,
-                'per_page' => $limit,
-            ],
-            15,
-            "ISSN {$issn}"
-        );
+        $orcidUrl = strpos($orcid, 'https://orcid.org/') === 0
+            ? $orcid
+            : 'https://orcid.org/' . $orcid;
 
-        return $body['results'] ?? [];
+        $author = $this->httpGetWithRetry(
+            self::API_BASE . '/authors/' . $orcidUrl,
+            [],
+            10,
+            "ORCID {$orcid}"
+        );
+        if ($author === null) {
+            return null;
+        }
+
+        $metrics = [
+            'openalex_id' => $author['id'] ?? null,
+            'works_count' => $author['works_count'] ?? 0,
+            'cited_by_count' => $author['cited_by_count'] ?? 0,
+            'h_index' => $author['summary_stats']['h_index'] ?? 0,
+            'i10_index' => $author['summary_stats']['i10_index'] ?? 0,
+            '2yr_mean_citedness' => $author['summary_stats']['2yr_mean_citedness'] ?? 0,
+            'counts_by_year' => $author['counts_by_year'] ?? [],
+        ];
+
+        Cache::put($cacheKey, $metrics, PublicStatsConstants::CACHE_TTL_EXTERNAL);
+        return $metrics;
     }
     
     /**
@@ -385,103 +379,53 @@ class OpenAlexService
     {
         $cacheKey = "openalex_citing_paginated_" . md5($openalexId);
 
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function () use ($openalexId) {
-            $results  = [];
-            $cursor   = '*';
-            $maxPages = 5; // safety cap: up to 1 000 citing works
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
 
-            for ($page = 0; $page < $maxPages; $page++) {
-                usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
+        $results   = [];
+        $cursor    = '*';
+        $maxPages  = 5; // safety cap: up to 1 000 citing works
+        $anyFailed = false;
 
-                $body = $this->httpGetWithRetry(
-                    self::API_BASE . '/works',
-                    ['filter' => 'cites:' . $openalexId, 'per_page' => 200, 'cursor' => $cursor],
-                    10,
-                    "citing {$openalexId} page " . ($page + 1)
-                );
+        for ($page = 0; $page < $maxPages; $page++) {
+            usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
 
-                $results = array_merge($results, $body['results'] ?? []);
+            $body = $this->httpGetWithRetry(
+                self::API_BASE . '/works',
+                ['filter' => 'cites:' . $openalexId, 'per_page' => 200, 'cursor' => $cursor],
+                10,
+                "citing {$openalexId} page " . ($page + 1)
+            );
 
-                $cursor = $body['meta']['next_cursor'] ?? null;
-                if (!$cursor) break;
+            if ($body === null) {
+                $anyFailed = true;
+                break;
             }
 
-            return $results;
-        });
+            $results = array_merge($results, $body['results'] ?? []);
+
+            $cursor = $body['meta']['next_cursor'] ?? null;
+            if (!$cursor) break;
+        }
+
+        // Only cache when we got a clean traversal — otherwise a transient
+        // failure would freeze a partial citing-works list for 7 days.
+        if (!$anyFailed) {
+            Cache::put($cacheKey, $results, PublicStatsConstants::CACHE_TTL_EXTERNAL);
+        }
+        return $results;
     }
     
 
 
     /**
-     * Get citations by country for all published works
-     * 
-     */
-    public function getCitationsByCountry(int $contextId): array
-    {
-        $cacheKey = "openalex_citations_by_country_{$contextId}";
-        
-        return Cache::remember($cacheKey, PublicStatsConstants::CACHE_TTL_EXTERNAL, function() use ($contextId) {
-            $submissions = Repo::submission()
-                ->getCollector()
-                ->filterByContextIds([$contextId])
-                ->filterByStatus([PKPSubmission::STATUS_PUBLISHED])
-                ->getMany();
-            
-            $countryCitations = [];
-            $processedCount = 0;
-
-            foreach ($submissions as $submission) {
-                
-                $publication = $submission->getCurrentPublication();
-                if (!$publication) continue;
-                
-                $doi = $publication->getDoi();
-                if (!$doi) continue;
-                
-                $processedCount++;
-                
-                $work = $this->getWorkByDOI($doi);
-                if (!$work || empty($work['id'])) continue;
-                
-                $openalexId = $work['id'];
-                
-                $citingWorks = $this->getCitingWorks($openalexId);
-                
-
-                foreach ($citingWorks as $citingWork) {
-                    if (empty($citingWork['authorships'])) continue;
-                    
-                    foreach ($citingWork['authorships'] as $authorship) {
-                        if (empty($authorship['institutions'])) continue;
-                        
-                        foreach ($authorship['institutions'] as $institution) {
-                            $countryCode = $institution['country_code'] ?? null;
-                            
-                            if ($countryCode) {
-                                if (!isset($countryCitations[$countryCode])) {
-                                    $countryCitations[$countryCode] = 0;
-                                }
-                                $countryCitations[$countryCode]++;
-                                break; 
-                            }
-                        }
-                        break; 
-                    }
-                }
-                
-
-                usleep(PublicStatsConstants::OPENALEX_RATE_LIMIT_DELAY);
-            }
-            
-            return $countryCitations;
-        });
-    }
-
-    /**
      * Get citing journals/sources for all published works.
      *
      * Returns cached data when available; otherwise schedules a background
-     * job and returns an empty array so the request returns immediately.
+     * job and returns null. The caller (EnrichedStatsService::getCitingJournals)
+     * converts that null into an `is_computing` placeholder for the frontend.
      */
     public function getCitingJournals(int $contextId): ?array
     {
@@ -504,7 +448,6 @@ class OpenAlexService
             ->getMany();
 
         $journalCitations = [];
-        $processedCount = 0;
 
         // Get user groups for author strings
         $userGroups = Repo::userGroup()->getCollector()
@@ -512,15 +455,12 @@ class OpenAlexService
             ->getMany();
 
         foreach ($submissions as $submission) {
-                
                 $publication = $submission->getCurrentPublication();
                 if (!$publication) continue;
-                
+
                 $doi = $publication->getDoi();
                 if (!$doi) continue;
-                
-                $processedCount++;
-                
+
                 $work = $this->getWorkByDOI($doi);
                 if (!$work || empty($work['id'])) continue;
                 
@@ -612,8 +552,8 @@ class OpenAlexService
                 $journal['cited_articles'] = array_values($journal['cited_articles']);
                 usort($journal['cited_articles'], fn($a, $b) => $b['times_cited'] - $a['times_cited']);
             }
-            
-   
+            unset($journal); // break the reference left dangling by &$journal so the next usort doesn't corrupt the last element
+
         usort($journalCitations, fn($a, $b) => $b['citations'] - $a['citations']);
 
         return array_values($journalCitations);
@@ -626,10 +566,11 @@ class OpenAlexService
      * aggregated by institution with citation counts.
      *
      * Returns cached data when available; otherwise schedules a background
-     * job and returns an empty array so the request returns immediately.
+     * job and returns null. The caller (EnrichedStatsService::getCitingInstitutions)
+     * converts that null into an `is_computing` placeholder for the frontend.
      *
      * @param int $contextId Journal/press ID
-     * @return array Array of institutions with citation data
+     * @return array|null Institutions with citation data, or null while computing
      */
     public function getCitingInstitutions(int $contextId): ?array
     {
@@ -652,7 +593,6 @@ class OpenAlexService
             ->getMany();
 
         $institutionCitations = [];
-        $processedCount = 0;
 
         // Get user groups for author strings
         $userGroups = Repo::userGroup()->getCollector()
@@ -660,15 +600,12 @@ class OpenAlexService
             ->getMany();
 
         foreach ($submissions as $submission) {
-
                 $publication = $submission->getCurrentPublication();
                 if (!$publication) continue;
-                
+
                 $doi = $publication->getDoi();
                 if (!$doi) continue;
-                
-                $processedCount++;
-                
+
                 $work = $this->getWorkByDOI($doi);
                 if (!$work || empty($work['id'])) continue;
                 
@@ -760,7 +697,8 @@ class OpenAlexService
                 $institution['cited_articles'] = array_values($institution['cited_articles']);
                 usort($institution['cited_articles'], fn($a, $b) => $b['times_cited'] - $a['times_cited']);
             }
-            
+            unset($institution); // break the reference left dangling by &$institution so the next usort doesn't corrupt the last element
+
         // Sort by citation count (descending)
         usort($institutionCitations, fn($a, $b) => $b['citations'] - $a['citations']);
 

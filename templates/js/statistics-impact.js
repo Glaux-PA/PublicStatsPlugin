@@ -278,6 +278,7 @@
               : "ps-color-muted");
         });
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading cited articles:", error);
         body.innerHTML = `<tr><td colspan="5" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
@@ -382,6 +383,7 @@
 
         await this.renderCitedArticlesTable();
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading citation evolution:", error);
         showPlaceholder(i18n.errorLoading, "ps-error-message");
       } finally {
@@ -443,6 +445,7 @@
               : "ps-color-muted");
         });
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading cited articles table:", error);
         tbody.innerHTML = `<tr><td colspan="5" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       }
@@ -472,6 +475,7 @@
         this.renderOaSummaryCards(data);
         this.renderOaDistributionChart(data);
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading OA stats:", error);
         document.getElementById(
           "oaSummaryCards"
@@ -590,10 +594,11 @@
         this.renderThematicChart(data.topics);
         this.renderThematicTable(data.topics);
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading thematic profile:", error);
         document.getElementById(
           "thematicTableBody"
-        ).innerHTML = `<tr><td colspan="3" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
+        ).innerHTML = `<tr><td colspan="4" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -710,6 +715,7 @@
         this.renderCitingJournalsChart(filteredData);
         this.renderCitingJournalsTable(filteredData);
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading citing journals:", error);
         document.getElementById(
           "citingJournalsTableBody"
@@ -742,7 +748,22 @@
       if (!this.citingJournalsOriginalData) return [];
 
       if (year === "all") {
-        return this.citingJournalsOriginalData;
+        // Collapse per-year entries for the same article into one row,
+        // summing times_cited so each cited article appears only once.
+        return this.citingJournalsOriginalData.map((journal) => {
+          const byId = {};
+          (journal.cited_articles || []).forEach((article) => {
+            if (!byId[article.id]) {
+              byId[article.id] = { ...article, citation_year: null };
+            } else {
+              byId[article.id].times_cited += article.times_cited;
+            }
+          });
+          const merged = Object.values(byId).sort(
+            (a, b) => b.times_cited - a.times_cited
+          );
+          return { ...journal, cited_articles: merged };
+        });
       }
 
       return this.citingJournalsOriginalData

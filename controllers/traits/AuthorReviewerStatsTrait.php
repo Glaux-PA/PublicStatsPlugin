@@ -137,6 +137,36 @@ trait AuthorReviewerStatsTrait
     }
 
     /**
+     * Get alphabetical list of reviewers for a given year (or all years).
+     */
+    public function reviewerList(array $args, PKPRequest $request): void
+    {
+        $context = $request->getContext();
+        if (!$context) {
+            $this->outputError('Context not found', 404);
+            return;
+        }
+
+        try {
+            $contextId = $context->getId();
+            $year      = InputValidator::validateYear($request->getUserVar('year'));
+            $yearInt   = $year !== null ? (int) $year : null;
+            $cacheKey  = "reviewer_list_{$contextId}_" . ($year ?? 'all');
+
+            $data = Cache::remember(
+                $cacheKey,
+                PublicStatsConstants::CACHE_TTL_INTERNAL * 2,
+                fn() => $this->authorReviewerService->getReviewerList($contextId, $yearInt)
+            );
+
+            $this->outputJson($data);
+        } catch (\Exception $e) {
+            Logger::error("Error in reviewerList", $e);
+            $this->outputError('Error loading reviewer list', 500);
+        }
+    }
+
+    /**
      * Get authors list (for dropdown/selection)
      */
     public function authorsList(array $args, PKPRequest $request): void

@@ -83,8 +83,11 @@ class PublicStatsSettingsForm extends Form
     {
         $contextId = Application::get()->getRequest()->getContext()->getId();
 
-        // Save OpenAlex email
-        $this->plugin->updateSetting($contextId, 'openAlexEmail', trim($this->getData('openAlexEmail')));
+        // Save OpenAlex email — validate format and discard garbage so the
+        // polite-pool query param never carries a non-email string.
+        $emailRaw = trim((string) $this->getData('openAlexEmail'));
+        $email = ($emailRaw !== '' && filter_var($emailRaw, FILTER_VALIDATE_EMAIL)) ? $emailRaw : '';
+        $this->plugin->updateSetting($contextId, 'openAlexEmail', $email);
 
         // Save primary color
         $primaryColor = $this->getData('primaryColor');

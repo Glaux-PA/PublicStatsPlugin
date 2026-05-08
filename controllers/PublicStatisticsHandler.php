@@ -357,7 +357,11 @@ class PublicStatisticsHandler extends Handler
 
         $contextId = $context->getId();
         $issueIdRaw = $request->getUserVar('issueId');
-        $issueId = (is_numeric($issueIdRaw) && (int) $issueIdRaw > 0) ? (int) $issueIdRaw : null;
+        // Match the strict ctype_digit pattern used in CsvExportTrait::exportLanguages
+        // and InputValidator: only accept positive whole numbers, never floats.
+        $issueId = ($issueIdRaw !== null && ctype_digit((string) $issueIdRaw))
+            ? (int) $issueIdRaw
+            : null;
 
         $cacheKey = sprintf('language_stats_%d_%s', $contextId, $issueId ?? 'all');
 

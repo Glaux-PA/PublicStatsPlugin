@@ -8,8 +8,8 @@
  *
  * @brief Trait providing OpenAlex-enriched statistics HTTP endpoints.
  *
- * Contains handlers for citation metrics, thematic profiles,
- * open access statistics, and collaboration metrics.
+ * Contains handlers for citation metrics, thematic profiles, open access
+ * statistics, citing journals/institutions, and citations by country.
  */
 
 declare(strict_types=1);
@@ -283,13 +283,18 @@ trait EnrichedStatsTrait
 
         try {
             $contextId = $context->getId();
-            $cacheKey = "citations_by_country_{$contextId}";
+            $cacheKey  = "citations_by_country_{$contextId}";
 
-            $data = Cache::remember(
-                $cacheKey,
-                PublicStatsConstants::CACHE_TTL_EXTERNAL,
-                fn() => $this->enrichedService->getCitationsByCountry($contextId)
-            );
+            // Don't use Cache::remember — while the chunked job is running
+            // the service returns ['is_computing' => true], which must not be
+            // cached for the full external TTL.
+            $data = Cache::get($cacheKey);
+            if ($data === null) {
+                $data = $this->enrichedService->getCitationsByCountry($contextId);
+                if (is_array($data) && empty($data['is_computing'])) {
+                    Cache::put($cacheKey, $data, PublicStatsConstants::CACHE_TTL_EXTERNAL);
+                }
+            }
 
             $this->outputJson($data);
         } catch (\Exception $e) {

@@ -363,6 +363,16 @@ trait CsvExportTrait
         );
     }
 
+    public function exportReviewerList(array $args, PKPRequest $request): void
+    {
+        $year = InputValidator::validateYear($request->getUserVar('year'));
+        $this->runExport(
+            $request,
+            fn(int $ctx) => $this->csvExporter->reviewerList($ctx, $year),
+            'reviewer list'
+        );
+    }
+
     public function exportFullReport(array $args, PKPRequest $request): void
     {
         $year = InputValidator::validateYear($request->getUserVar('year'));

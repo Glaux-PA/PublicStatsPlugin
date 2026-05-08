@@ -213,6 +213,8 @@ class DecisionStatsService extends BaseStatsService
         $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
         $assignmentRows = DB::table('review_assignments')
             ->whereIn('submission_id', $submissionsWithRounds)
+            ->where('declined', '<>', 1)
+            ->where('cancelled', '<>', 1)
             ->get();
 
         foreach ($assignmentRows as $row) {

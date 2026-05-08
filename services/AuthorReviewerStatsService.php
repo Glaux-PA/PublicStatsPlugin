@@ -12,7 +12,9 @@
  * @brief Service for author and reviewer geographic and institutional statistics.
  *
  * Provides aggregated data about author and reviewer distributions by country
- * and institution, useful for understanding the journal's contributor diversity.
+ * and institution (contributor diversity), plus an alphabetical per-year
+ * reviewer list (`getReviewerList`) used for the FECYT-aligned public
+ * acknowledgment of completed peer reviews.
  */
 
 declare(strict_types=1);
@@ -109,8 +111,13 @@ class AuthorReviewerStatsService
             return [];
         }
 
+        // Match PKP's own ReviewAssignmentDAO: only count assignments that
+        // weren't declined or cancelled. Otherwise an editor who invited five
+        // people who all rejected would appear as five "active" reviewers.
         return DB::table('review_assignments')
             ->whereIn('submission_id', $submissionIds)
+            ->where('declined', '<>', 1)
+            ->where('cancelled', '<>', 1)
             ->distinct()
             ->pluck('reviewer_id')
             ->map(fn($id) => (int) $id)
@@ -215,6 +222,66 @@ class AuthorReviewerStatsService
         arsort($institutionStats);
 
         return $this->formatInstitutionData($institutionStats);
+    }
+
+    /**
+     * Get alphabetical list of reviewers who completed at least one review in the
+     * given year, or all years when $year is null.
+     */
+    public function getReviewerList(int $contextId, ?int $year): ?array
+    {
+        $query = DB::table('review_assignments as ra')
+            ->join('submissions as s', 'ra.submission_id', '=', 's.submission_id')
+            ->where('s.context_id', $contextId)
+            ->where('ra.declined', '<>', 1)
+            ->where('ra.cancelled', '<>', 1)
+            ->whereNotNull('ra.date_completed');
+
+        if ($year !== null) {
+            $query->whereBetween('ra.date_completed', [
+                "{$year}-01-01 00:00:00",
+                "{$year}-12-31 23:59:59",
+            ]);
+        }
+
+        $reviewerIds = $query
+            ->distinct()
+            ->pluck('ra.reviewer_id')
+            ->map(fn($id) => (int) $id)
+            ->all();
+
+        if (empty($reviewerIds)) {
+            return null;
+        }
+
+        $reviewers = Repo::user()
+            ->getCollector()
+            ->filterByUserIds($reviewerIds)
+            ->getMany();
+
+        $list = [];
+        foreach ($reviewers as $reviewer) {
+            $countryCode = $reviewer->getCountry();
+            $countryName = null;
+            if ($countryCode && strlen($countryCode) === 2) {
+                try {
+                    $country = $this->isoCodes->getCountries()->getByAlpha2($countryCode);
+                    $countryName = $country ? $country->getLocalName() : $countryCode;
+                } catch (\Exception $e) {
+                    $countryName = $countryCode;
+                }
+            }
+
+            $list[] = [
+                'fullName'    => $reviewer->getFullName(),
+                'affiliation' => $reviewer->getLocalizedAffiliation() ?: null,
+                'country'     => $countryName,
+            ];
+        }
+
+        usort($list, fn($a, $b) => strcmp($a['fullName'], $b['fullName']));
+
+        return $list;
     }
 
     /**

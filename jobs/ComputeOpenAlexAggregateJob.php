@@ -11,7 +11,9 @@
  *
  * @brief Pre-computes OpenAlex aggregates in the background so HTTP requests
  *        don't block on a long chain of external API calls. Two modes:
- *        single-shot (legacy types) and chunked (the four enriched stats).
+ *        single-shot (citing journals/institutions) and chunked (enriched
+ *        context, OA stats, thematic profile, citation evolution, top cited,
+ *        citations by country).
  */
 
 declare(strict_types=1);
@@ -32,6 +34,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
     public const TYPE_THEMATIC_PROFILE = 'thematic_profile';
     public const TYPE_CITATION_EVOLUTION = 'citation_evolution';
     public const TYPE_TOP_CITED = 'top_cited';
+    public const TYPE_CITATIONS_BY_COUNTRY = 'citations_by_country';
 
     public int $timeout = 600;
 
@@ -44,6 +47,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
         self::TYPE_THEMATIC_PROFILE,
         self::TYPE_CITATION_EVOLUTION,
         self::TYPE_TOP_CITED,
+        self::TYPE_CITATIONS_BY_COUNTRY,
     ];
 
     protected int $contextId;
@@ -96,13 +100,31 @@ class ComputeOpenAlexAggregateJob extends BaseJob
             return;
         }
 
-        $newState = match ($this->type) {
-            self::TYPE_ENRICH_CONTEXT    => $enrichedService->enrichContextStatisticsChunk($this->contextId, $state),
-            self::TYPE_OPEN_ACCESS_STATS => $enrichedService->getOpenAccessStatsChunk($this->contextId, $state),
-            self::TYPE_THEMATIC_PROFILE  => $enrichedService->getThematicProfileChunk($this->contextId, $state),
-            self::TYPE_CITATION_EVOLUTION => $enrichedService->getCitationEvolutionChunk($this->contextId, $state),
-            self::TYPE_TOP_CITED         => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
-        };
+        // Keep the dispatch lock alive for the whole chain. Without this, a
+        // long run (>5 min) lets the lock expire and a second user request
+        // can dispatch a duplicate chunk that re-processes the same offset.
+        Cache::put(
+            OpenAlexService::lockKeyFor($this->type, $this->contextId),
+            1,
+            300
+        );
+
+        try {
+            $newState = match ($this->type) {
+                self::TYPE_ENRICH_CONTEXT      => $enrichedService->enrichContextStatisticsChunk($this->contextId, $state),
+                self::TYPE_OPEN_ACCESS_STATS   => $enrichedService->getOpenAccessStatsChunk($this->contextId, $state),
+                self::TYPE_THEMATIC_PROFILE    => $enrichedService->getThematicProfileChunk($this->contextId, $state),
+                self::TYPE_CITATION_EVOLUTION  => $enrichedService->getCitationEvolutionChunk($this->contextId, $state),
+                self::TYPE_TOP_CITED           => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
+                self::TYPE_CITATIONS_BY_COUNTRY => $enrichedService->getCitationsByCountryChunk($this->contextId, $state),
+            };
+        } catch (\Throwable $e) {
+            // Persist what we had before the failure so the next attempt
+            // doesn't reprocess every item from offset 0. Re-throw so Laravel
+            // counts the failure against $tries and surfaces it in horizon.
+            $openAlexService->putChunkedState($this->type, $this->contextId, $state);
+            throw $e;
+        }
 
         $openAlexService->putChunkedState($this->type, $this->contextId, $newState);
 

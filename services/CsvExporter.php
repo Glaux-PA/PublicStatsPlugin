@@ -319,6 +319,27 @@ class CsvExporter
         );
     }
 
+    public function reviewerList(int $contextId, ?string $year): array
+    {
+        $yearInt = $year !== null ? (int) $year : null;
+        $data    = $this->authorReviewerService->getReviewerList($contextId, $yearInt) ?? [];
+
+        $yearLabel = $year ?? 'all';
+        $filename  = "reviewer-list-{$yearLabel}.csv";
+        $headers   = ['Name', 'Institution', 'Country'];
+
+        $rows = [];
+        foreach ($data as $reviewer) {
+            $rows[] = [
+                $reviewer['fullName'],
+                $reviewer['affiliation'] ?? '',
+                $reviewer['country']     ?? '',
+            ];
+        }
+
+        return compact('filename', 'headers', 'rows');
+    }
+
     // ========================================
     // Issues / sections
     // ========================================
@@ -490,21 +511,25 @@ class CsvExporter
 
     public function citationsByCountry(int $contextId): array
     {
-        $data = $this->enrichedService->getCitationsByCountry($contextId) ?? [];
-
+        $data = $this->enrichedService->getCitationsByCountry($contextId);
+        // The chunked service returns either an `is_computing` placeholder or
+        // the formatted list directly (no 'data' wrapper).
+        if (is_array($data) && !empty($data['is_computing'])) {
+            $this->assertReady($data, 'citations by country');
+        }
         $rows = [];
-        foreach ($data as $item) {
+        foreach (($data ?? []) as $item) {
             $rows[] = [
-                $item['country_code'] ?? '',
-                $item['country_name'] ?? '',
+                $item['country_code']    ?? '',
+                $item['country_name']    ?? '',
                 $item['citations_count'] ?? 0,
             ];
         }
 
         return [
             'filename' => 'citations_by_country_' . date('Y-m-d') . '.csv',
-            'headers' => ['Country Code', 'Country Name', 'Citations'],
-            'rows' => $rows,
+            'headers'  => ['Country Code', 'Country Name', 'Citations'],
+            'rows'     => $rows,
         ];
     }
 

@@ -111,7 +111,7 @@ https://your-journal.com/publicStats/total
 
 You should see the statistics dashboard with your journal's data.
 
-> **Note**: On the first visit, OpenAlex-powered sections (citing journals, thematic profile, citations map) may show a loading state while the OJS queue processes them. See the [OpenAlex Integration](#openalex-integration) section for details.
+> **Note**: On the first visit, OpenAlex-powered sections (top cited, citation evolution, open access stats, thematic profile, citations map, citing journals) may show a loading state while the OJS queue processes them. See the [OpenAlex Integration](#openalex-integration) section for details.
 
 ## Configuration
 
@@ -129,7 +129,7 @@ Features powered by OpenAlex:
 
 Data is fetched automatically and cached for 24 hours to optimize performance.
 
-> **First-load notice**: building the citing-journals list and the OpenAlex enrichment for a whole journal can take several minutes on large catalogues. The plugin offloads these calculations to the OJS background-jobs queue, so the affected sections (citing journals, thematic profile, citations map) will show a loading state until the queue worker finishes. Make sure the `acron` plugin or a scheduled queue worker is running. Subsequent visits read from cache and are instant.
+> **First-load notice**: building OpenAlex aggregates for a whole journal can take several minutes on large catalogues. The plugin offloads these calculations to the OJS background-jobs queue, so the affected sections — top cited, citation evolution, open access stats, thematic profile, citations map, citing journals, citing institutions, and the enriched totals on the overview — will show a loading state until the queue worker finishes. Make sure the `acron` plugin or a scheduled queue worker is running. Subsequent visits read from cache and are instant.
 
 ### Enable/disable sections
 
@@ -173,6 +173,7 @@ The dashboard groups statistics into four categories. Each subsection can be ena
 - **By section** — distribution across journal sections
 - **By issue** — metrics for each issue
 - **Language distribution** — published articles broken down by language (with per-issue filter)
+- **Language trends** — yearly evolution of articles per language (zoomable chart)
 - **Geographic distribution** — readers by country (world map + table)
 
 ### Editorial
@@ -182,6 +183,7 @@ The dashboard groups statistics into four categories. Each subsection can be ena
 - **Annual submissions** — same data aggregated by year
 - **Authors by country / institution** — contributor distribution
 - **Reviewers by country / institution** — reviewer distribution
+- **Reviewer list** — alphabetical public list of reviewers who completed reviews each year (FECYT-aligned acknowledgment)
 - **First-decision time** — average days from submission to first decision
 - **Acceptance-to-publication time** — average days from accepted to published
 

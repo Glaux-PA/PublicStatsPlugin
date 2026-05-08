@@ -108,6 +108,7 @@
           selector.value = selectedAuthor;
         }
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading authors list:", error);
       }
     },
@@ -198,6 +199,24 @@
             Charts.initializeReviewerInstitutionChart();
             Tables.renderReviewerInstitutionTable();
           },
+          "reviewer-list": async () => {
+            const sel = document.getElementById("reviewerListYearFilter");
+            if (sel && !sel.dataset.initialized) {
+              const prevYear = String(new Date().getFullYear() - 1);
+              if ([...sel.options].some((o) => o.value === prevYear))
+                sel.value = prevYear;
+              sel.dataset.initialized = "1";
+            }
+            const listYear = sel?.value || null;
+            const title = document.getElementById("reviewerListCardTitle");
+            if (title) {
+              title.textContent = listYear
+                ? `${i18n.reviewerListCardTitle} ${listYear}`
+                : i18n.reviewerListCardTitle;
+            }
+            await API.getReviewerList(listYear || null);
+            Tables.renderReviewerListTable();
+          },
           "first-decision-stats": async () => {
             await API.getFirstDecisionStats(year);
             Tables.renderFirstDecisionSummary();
@@ -242,6 +261,10 @@
 
         Export.initializeExportButtons();
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") {
+          // The user changed year mid-fetch; the new fetch already owns the UI.
+          return;
+        }
         console.error("Error loading section:", error);
         alert(i18n.errorLoading || "Error loading data");
       } finally {
@@ -285,6 +308,9 @@
   const DataManager = {
     changeYear(year) {
       selectedYear = year;
+      // Invalidate any in-flight fetches from the previous year so a slow
+      // response can't overwrite the UI we're about to repopulate.
+      API.invalidateInflight();
       API.clearYearDependentCache();
       API.clearAuthorCache();
       Navigation.updateSectionTitles(year);
@@ -352,6 +378,7 @@
       await API.getAuthorStats(authorKey, year);
       AuthorStats.renderAll();
     } catch (error) {
+      if (error && error.code === "STALE_REQUEST") return;
       console.error("Error loading author stats:", error);
       alert(i18n.errorLoading || "Error loading data");
     } finally {
@@ -383,7 +410,31 @@
       Charts.initializeLanguageChart();
       Tables.renderLanguageTable();
     } catch (error) {
+      if (error && error.code === "STALE_REQUEST") return;
       console.error("Error filtering languages by issue:", error);
+    } finally {
+      Utils.hideLoadingIndicator();
+    }
+  };
+
+  window.filterReviewerListByYear = async function (year) {
+    statsData.reviewerList = null;
+    // Cancel any earlier reviewer-list fetch still in flight so a slow
+    // response from the previous year can't overwrite this one's UI.
+    API.invalidateInflight();
+    const title = document.getElementById("reviewerListCardTitle");
+    if (title) {
+      title.textContent = year
+        ? `${i18n.reviewerListCardTitle} ${year}`
+        : i18n.reviewerListCardTitle;
+    }
+    Utils.showLoadingIndicator();
+    try {
+      await API.getReviewerList(year || null);
+      Tables.renderReviewerListTable();
+    } catch (error) {
+      if (error && error.code === "STALE_REQUEST") return;
+      console.error("Error loading reviewer list:", error);
     } finally {
       Utils.hideLoadingIndicator();
     }

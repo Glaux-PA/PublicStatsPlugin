@@ -8,7 +8,7 @@
  * Everything here is attached to window.PublicStatsHelpers so statistics.js
  * can pull it in with a single destructuring line at the top of its IIFE.
  *
- * Depends on two globals that publicStats.tpl defines before loading any JS:
+ * Depends on one global that publicStats.tpl defines before loading any JS:
  *   - i18n (translations bag)
  */
 (function () {
@@ -56,9 +56,6 @@
     institution: null,
     reviewersMap: null,
     reviewerInstitution: null,
-    topicsByDomain: null,
-    sdgChart: null,
-    fundingChart: null,
     citingJournals: null,
     language: null,
     languageTrends: null,

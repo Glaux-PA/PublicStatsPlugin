@@ -97,6 +97,7 @@ class PublicStatsConstants
             'authors-by-institution'       => 'plugins.generic.publicStats.authorsByInstitution',
             'reviewers-by-country'         => 'plugins.generic.publicStats.reviewersByCountry',
             'reviewers-by-institution'     => 'plugins.generic.publicStats.reviewersByInstitution',
+            'reviewer-list'                => 'plugins.generic.publicStats.reviewerList',
             'first-decision-stats'         => 'plugins.generic.publicStats.firstDecisionDays',
             'acceptance-publication-stats' => 'plugins.generic.publicStats.acceptancePublicationDays',
         ],

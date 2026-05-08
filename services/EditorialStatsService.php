@@ -297,7 +297,10 @@ class EditorialStatsService extends BaseStatsService
         int $startTime,
         int $endTime
     ): void {
-        $publication = $submission->getLatestPublication();
+        // Use the currently visible publication (what readers actually see),
+        // not the latest draft — a 2023 article with a 2024 unpublished revision
+        // should still count for 2023.
+        $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
         }
@@ -431,7 +434,10 @@ class EditorialStatsService extends BaseStatsService
         int $startYear,
         int $endYear
     ): void {
-        $publication = $submission->getLatestPublication();
+        // Use the currently visible publication (what readers actually see),
+        // not the latest draft — a 2023 article with a 2024 unpublished revision
+        // should still count for 2023.
+        $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
         }

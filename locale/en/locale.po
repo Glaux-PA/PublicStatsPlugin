@@ -27,34 +27,6 @@ msgstr "Analysis of time elapsed between acceptance and final publication"
 msgid "plugins.generic.publicStats.acceptancePublicationDaysTitle"
 msgstr "Time from acceptance to publication"
 
-# Acceptance to publication
-msgid "plugins.generic.publicStats.acceptancePublicationStats"
-msgstr "Acceptance to publication statistics"
-
-msgid "plugins.generic.publicStats.acceptanceRate"
-msgstr "Acceptance rate"
-
-msgid "plugins.generic.publicStats.accepted"
-msgstr "Accepted"
-
-msgid "plugins.generic.publicStats.accessCount"
-msgstr "Access count"
-
-msgid "plugins.generic.publicStats.accesses"
-msgstr "Accesses"
-
-msgid "plugins.generic.publicStats.accessesByCountry"
-msgstr "Accesses by country"
-
-msgid "plugins.generic.publicStats.accessesFrom"
-msgstr "Accesses from"
-
-msgid "plugins.generic.publicStats.accessesFromCountry"
-msgstr "Accesses from this country"
-
-msgid "plugins.generic.publicStats.activeSubmissions"
-msgstr "Active submissions"
-
 msgid "plugins.generic.publicStats.activity"
 msgstr "Activity"
 
@@ -64,9 +36,6 @@ msgstr "Affiliation"
 msgid "plugins.generic.publicStats.all"
 msgstr "All"
 
-msgid "plugins.generic.publicStats.allCitingInstitutions"
-msgstr "All citing institutions"
-
 msgid "plugins.generic.publicStats.allCitingJournals"
 msgstr "All citing journals"
 
@@ -75,9 +44,6 @@ msgstr "All time"
 
 msgid "plugins.generic.publicStats.allTimeSummary"
 msgstr "All-time summary"
-
-msgid "plugins.generic.publicStats.allYears"
-msgstr "All years"
 
 msgid "plugins.generic.publicStats.annualActivity"
 msgstr "Annual activity"
@@ -122,20 +88,8 @@ msgstr "articles analyzed"
 msgid "plugins.generic.publicStats.articlesBy"
 msgstr "Articles by"
 
-msgid "plugins.generic.publicStats.articlesBySections"
-msgstr "Articles by sections"
-
-msgid "plugins.generic.publicStats.articlesFromInstitution"
-msgstr "Articles from institution"
-
 msgid "plugins.generic.publicStats.articlesInArea"
 msgstr "articles in this area"
-
-msgid "plugins.generic.publicStats.articlesPerIssue"
-msgstr "Articles per issue"
-
-msgid "plugins.generic.publicStats.audienceReachByCountry"
-msgstr "Audience reach by country"
 
 msgid "plugins.generic.publicStats.author"
 msgstr "Author"
@@ -151,9 +105,6 @@ msgstr "Detailed statistics of publications, downloads and views by author"
 
 msgid "plugins.generic.publicStats.authorInformation"
 msgstr "Author information"
-
-msgid "plugins.generic.publicStats.authorName"
-msgstr "Author name"
 
 # Authors
 msgid "plugins.generic.publicStats.authors"
@@ -180,15 +131,6 @@ msgstr "Distribution of authorships by institution of affiliation. One authorshi
 msgid "plugins.generic.publicStats.authorsByInstitutionTitle"
 msgstr "Authorships by institution"
 
-msgid "plugins.generic.publicStats.authorsCount"
-msgstr "Authors count"
-
-msgid "plugins.generic.publicStats.authorsFromInstitution"
-msgstr "Authors from this institution"
-
-msgid "plugins.generic.publicStats.authorsPerCountry"
-msgstr "Authors per country"
-
 msgid "plugins.generic.publicStats.authorsWorldMap"
 msgstr "World authors map"
 
@@ -197,24 +139,6 @@ msgstr "Average days (all)"
 
 msgid "plugins.generic.publicStats.averageDaysReviewed"
 msgstr "Average days (reviewed)"
-
-msgid "plugins.generic.publicStats.averageDaysToPublication"
-msgstr "Average days to publication"
-
-msgid "plugins.generic.publicStats.averageEditorialTime"
-msgstr "Average editorial time"
-
-msgid "plugins.generic.publicStats.averageFirstDecisionDays"
-msgstr "Average days to first decision"
-
-msgid "plugins.generic.publicStats.averageProductionTime"
-msgstr "Average production time"
-
-msgid "plugins.generic.publicStats.averageReviewTime"
-msgstr "Average review time"
-
-msgid "plugins.generic.publicStats.avgArticlesPerIssue"
-msgstr "Average articles per issue"
 
 msgid "plugins.generic.publicStats.avgDaysAllPublications"
 msgstr "Average for all publications"
@@ -231,9 +155,6 @@ msgstr "Average views per article"
 msgid "plugins.generic.publicStats.citationEvolution"
 msgstr "Citation evolution"
 
-msgid "plugins.generic.publicStats.citationYear"
-msgstr "Citation year"
-
 # Citations and impact
 msgid "plugins.generic.publicStats.citations"
 msgstr "Citations"
@@ -247,20 +168,8 @@ msgstr "Citations by country"
 msgid "plugins.generic.publicStats.citationsByCountryDesc"
 msgstr "Geographic distribution of citations received from external sources (OpenAlex)"
 
-msgid "plugins.generic.publicStats.citationsByCountryTitle"
-msgstr "Geographic distribution of citations"
-
-msgid "plugins.generic.publicStats.citationsByYear"
-msgstr "Citations by year"
-
-msgid "plugins.generic.publicStats.citationsCount"
-msgstr "Citations count"
-
 msgid "plugins.generic.publicStats.citationsFromCountry"
 msgstr "Citations from this country"
-
-msgid "plugins.generic.publicStats.citationsFromInstitution"
-msgstr "Citations from this institution"
 
 msgid "plugins.generic.publicStats.citationsFromJournal"
 msgstr "Citations from this journal"
@@ -277,24 +186,8 @@ msgstr "Citations received"
 msgid "plugins.generic.publicStats.citationsReceivedInYear"
 msgstr "Citations received in "
 
-msgid "plugins.generic.publicStats.citationsTimeline"
-msgstr "Citations timeline"
-
-msgid "plugins.generic.publicStats.citationsWorldMap"
-msgstr "World citations map"
-
 msgid "plugins.generic.publicStats.citedArticlesFromJournal"
 msgstr "Articles cited by this journal"
-
-msgid "plugins.generic.publicStats.citingCountryRanking"
-msgstr "Ranking of countries by citation count"
-
-# Citing institutions
-msgid "plugins.generic.publicStats.citingInstitutions"
-msgstr "Citing institutions"
-
-msgid "plugins.generic.publicStats.citingInstitutionsDesc"
-msgstr "Institutions that cite articles from this journal"
 
 # Citing journals section
 msgid "plugins.generic.publicStats.citingJournals"
@@ -303,26 +196,11 @@ msgstr "Citing journals"
 msgid "plugins.generic.publicStats.citingJournalsDesc"
 msgstr "Journals that cite articles from this journal"
 
-msgid "plugins.generic.publicStats.citingWorksPerCountry"
-msgstr "Citing works per country"
-
 msgid "plugins.generic.publicStats.coAuthorName"
 msgstr "Co-author name"
 
-msgid "plugins.generic.publicStats.coAuthors"
-msgstr "Co-authors"
-
 msgid "plugins.generic.publicStats.collaborations"
 msgstr "Collaborations"
-
-msgid "plugins.generic.publicStats.contributingAuthors"
-msgstr "Contributing authors"
-
-msgid "plugins.generic.publicStats.contributingReviewers"
-msgstr "Contributing reviewers"
-
-msgid "plugins.generic.publicStats.contributionsBySections"
-msgstr "Contributions by sections"
 
 msgid "plugins.generic.publicStats.contributionsDownloads"
 msgstr "Contributions (downloads)"
@@ -330,26 +208,11 @@ msgstr "Contributions (downloads)"
 msgid "plugins.generic.publicStats.contributionsViews"
 msgstr "Contributions (views)"
 
-msgid "plugins.generic.publicStats.countries"
-msgstr "Countries"
-
 msgid "plugins.generic.publicStats.country"
 msgstr "Country"
 
-msgid "plugins.generic.publicStats.countryCode"
-msgstr "Country code"
-
-msgid "plugins.generic.publicStats.countryDistribution"
-msgstr "Country distribution"
-
-msgid "plugins.generic.publicStats.countryName"
-msgstr "Country name"
-
 msgid "plugins.generic.publicStats.countryStats"
 msgstr "Country statistics"
-
-msgid "plugins.generic.publicStats.dataSourceOpenAlex"
-msgstr "Data source: OpenAlex"
 
 msgid "plugins.generic.publicStats.dateDecided"
 msgstr "Decision date"
@@ -368,9 +231,6 @@ msgstr "days average"
 
 msgid "plugins.generic.publicStats.daysFirstDecision"
 msgstr "Days to first decision"
-
-msgid "plugins.generic.publicStats.daysToDecision"
-msgstr "Days to decision"
 
 msgid "plugins.generic.publicStats.daysToPublication"
 msgstr "Days to publication"
@@ -394,26 +254,8 @@ msgstr "Sent to production"
 msgid "plugins.generic.publicStats.decision.sentToReview"
 msgstr "Sent to review"
 
-msgid "plugins.generic.publicStats.decisionDistribution"
-msgstr "Decision distribution"
-
-msgid "plugins.generic.publicStats.decisionType"
-msgstr "Decision type"
-
-msgid "plugins.generic.publicStats.decisionsCount"
-msgstr "Decisions count"
-
-msgid "plugins.generic.publicStats.decisionsWithReview"
-msgstr "Decisions after review"
-
-msgid "plugins.generic.publicStats.decisionsWithoutReview"
-msgstr "Decisions without review"
-
 msgid "plugins.generic.publicStats.declined"
 msgstr "Declined"
-
-msgid "plugins.generic.publicStats.declinedSubmissions"
-msgstr "Declined submissions"
 
 msgid "plugins.generic.publicStats.description"
 msgstr "Plugin to display public journal statistics."
@@ -438,29 +280,14 @@ msgstr "Downloads by issue"
 msgid "plugins.generic.publicStats.downloadsBySection"
 msgstr "Downloads by section"
 
-msgid "plugins.generic.publicStats.downloadsPerCountry"
-msgstr "Downloads per country"
-
 msgid "plugins.generic.publicStats.downloadsViewsOverYear"
 msgstr "Downloads and views throughout the year"
-
-msgid "plugins.generic.publicStats.editorName"
-msgstr "Editor name"
-
-msgid "plugins.generic.publicStats.editorialDecisions"
-msgstr "Editorial decisions"
 
 msgid "plugins.generic.publicStats.editorialStatistics"
 msgstr "Editorial statistics"
 
 msgid "plugins.generic.publicStats.editorialStats"
 msgstr "Editorial statistics"
-
-msgid "plugins.generic.publicStats.editors"
-msgstr "Editors"
-
-msgid "plugins.generic.publicStats.editorsInvolved"
-msgstr "Editors involved"
 
 # Error and no data messages
 msgid "plugins.generic.publicStats.errorLoading"
@@ -488,18 +315,6 @@ msgstr "Analysis of time elapsed between submission and first editorial decision
 msgid "plugins.generic.publicStats.firstDecisionDaysTitle"
 msgstr "Time to first decision"
 
-msgid "plugins.generic.publicStats.firstDecisionDistribution"
-msgstr "Distribution of first decision times"
-
-# ============================================================
-# FIRST DECISION (Tiempo desde la primera decisión)
-# ============================================================
-msgid "plugins.generic.publicStats.firstDecisionStats"
-msgstr "First decision statistics"
-
-msgid "plugins.generic.publicStats.firstDecisionSummary"
-msgstr "Summary of first decision times"
-
 msgid "plugins.generic.publicStats.frequentCoAuthors"
 msgstr "Frequent co-authors"
 
@@ -516,24 +331,6 @@ msgstr "General statistics"
 msgid "plugins.generic.publicStats.geographicDistribution"
 msgstr "Geographic distribution"
 
-msgid "plugins.generic.publicStats.geographicDistributionAuthors"
-msgstr "Geographic distribution of authors"
-
-msgid "plugins.generic.publicStats.geographicDistributionCitations"
-msgstr "Geographic distribution of citations"
-
-msgid "plugins.generic.publicStats.geographicDistributionDescription"
-msgstr "Map showing the worldwide distribution of downloads and views by country of origin"
-
-msgid "plugins.generic.publicStats.geographicDistributionReviewers"
-msgstr "Geographic distribution of reviewers"
-
-msgid "plugins.generic.publicStats.geographicDistributionTitle"
-msgstr "Geographic distribution of article access"
-
-msgid "plugins.generic.publicStats.hadReview"
-msgstr "Had review"
-
 msgid "plugins.generic.publicStats.impactAnalysis"
 msgstr "Impact analysis"
 
@@ -543,20 +340,8 @@ msgstr "In process"
 msgid "plugins.generic.publicStats.institution"
 msgstr "Institution"
 
-msgid "plugins.generic.publicStats.institutionCount"
-msgstr "Number of authors"
-
 msgid "plugins.generic.publicStats.institutionDistribution"
 msgstr "Distribution by institution"
-
-msgid "plugins.generic.publicStats.institutionName"
-msgstr "Institution"
-
-msgid "plugins.generic.publicStats.institutionRanking"
-msgstr "Ranking of institutions by number of authors"
-
-msgid "plugins.generic.publicStats.institutionType"
-msgstr "Type"
 
 msgid "plugins.generic.publicStats.issn"
 msgstr "ISSN"
@@ -593,41 +378,17 @@ msgstr "50-99 authors"
 msgid "plugins.generic.publicStats.legend.authorsLessThan10"
 msgstr "<10 authors"
 
-msgid "plugins.generic.publicStats.legend.between100and500"
-msgstr "100-500"
-
-msgid "plugins.generic.publicStats.legend.between500and1000"
-msgstr "500-1,000"
-
 msgid "plugins.generic.publicStats.legend.bottomQuartile"
 msgstr "Bottom 25%"
 
-msgid "plugins.generic.publicStats.legend.citationsHigh"
-msgstr "High (50-75%)"
-
-msgid "plugins.generic.publicStats.legend.citationsLow"
-msgstr "Low (<25%)"
-
-msgid "plugins.generic.publicStats.legend.citationsMedium"
-msgstr "Medium (25-50%)"
-
-msgid "plugins.generic.publicStats.legend.citationsVeryHigh"
-msgstr "Very high (Top 25%)"
-
 msgid "plugins.generic.publicStats.legend.highAccess"
 msgstr "500-999 accesses"
-
-msgid "plugins.generic.publicStats.legend.lessThan100"
-msgstr "Less than 100"
 
 msgid "plugins.generic.publicStats.legend.lowAccess"
 msgstr "<100 accesses"
 
 msgid "plugins.generic.publicStats.legend.mediumAccess"
 msgstr "100-499 accesses"
-
-msgid "plugins.generic.publicStats.legend.moreThan1000"
-msgstr "More than 1,000"
 
 # Map legends - Reviewers
 msgid "plugins.generic.publicStats.legend.reviewers100plus"
@@ -678,9 +439,6 @@ msgstr "Monthly submissions tracking"
 msgid "plugins.generic.publicStats.monthlyTrends"
 msgstr "Monthly trends"
 
-msgid "plugins.generic.publicStats.mostCitedArticles"
-msgstr "Most cited articles"
-
 msgid "plugins.generic.publicStats.mostDownloaded60Days"
 msgstr "Most downloaded (60 days)"
 
@@ -699,9 +457,6 @@ msgstr "Name"
 msgid "plugins.generic.publicStats.no"
 msgstr "No"
 
-msgid "plugins.generic.publicStats.noAffiliation"
-msgstr "No affiliation"
-
 msgid "plugins.generic.publicStats.noAnnualData"
 msgstr "No annual data available"
 
@@ -719,9 +474,6 @@ msgstr "No citation data available"
 
 msgid "plugins.generic.publicStats.noCitationMapData"
 msgstr "No citation data available yet. Citations are retrieved from OpenAlex."
-
-msgid "plugins.generic.publicStats.noCitingInstitutionsData"
-msgstr "No citing institutions data available"
 
 msgid "plugins.generic.publicStats.noCitingJournalsData"
 msgstr "No citing journals data available"
@@ -829,29 +581,14 @@ msgstr "Other institutions"
 msgid "plugins.generic.publicStats.overview"
 msgstr "Overview"
 
-msgid "plugins.generic.publicStats.publicationTimeline"
-msgstr "Publication timeline"
-
 msgid "plugins.generic.publicStats.publications"
 msgstr "publications"
-
-msgid "plugins.generic.publicStats.publicationsBy"
-msgstr "Publications by"
-
-msgid "plugins.generic.publicStats.publicationsByYear"
-msgstr "Publications by year"
 
 msgid "plugins.generic.publicStats.publicationsReviewed"
 msgstr "reviewed publications"
 
 msgid "plugins.generic.publicStats.published"
 msgstr "Published"
-
-msgid "plugins.generic.publicStats.publishedIssues"
-msgstr "Published issues"
-
-msgid "plugins.generic.publicStats.publishedSubmissions"
-msgstr "Published submissions"
 
 msgid "plugins.generic.publicStats.rank"
 msgstr "Rank"
@@ -874,9 +611,6 @@ msgstr "Ranking of articles by view count"
 msgid "plugins.generic.publicStats.received"
 msgstr "Received"
 
-msgid "plugins.generic.publicStats.receivedSubmissions"
-msgstr "Received submissions"
-
 msgid "plugins.generic.publicStats.recentDecisions"
 msgstr "Recent decisions"
 
@@ -886,9 +620,6 @@ msgstr "Recent publications"
 msgid "plugins.generic.publicStats.recommendation"
 msgstr "Recommendation"
 
-msgid "plugins.generic.publicStats.rejectionRate"
-msgstr "Rejection rate"
-
 msgid "plugins.generic.publicStats.researchAreas"
 msgstr "Research areas"
 
@@ -897,9 +628,6 @@ msgstr "Reset zoom"
 
 msgid "plugins.generic.publicStats.reviewerInstitutionDistribution"
 msgstr "Distribution by institution (reviewers)"
-
-msgid "plugins.generic.publicStats.reviewerName"
-msgstr "Reviewer name"
 
 msgid "plugins.generic.publicStats.reviewers"
 msgstr "Reviewers"
@@ -922,32 +650,14 @@ msgstr "Analysis of institutional affiliations of reviewers"
 msgid "plugins.generic.publicStats.reviewersByInstitutionTitle"
 msgstr "Distribution of reviewers by institution"
 
-msgid "plugins.generic.publicStats.reviewersFromInstitution"
-msgstr "Reviewers from institution"
-
 msgid "plugins.generic.publicStats.reviewersWorldMap"
 msgstr "World reviewers map"
-
-msgid "plugins.generic.publicStats.reviewsByCountry"
-msgstr "Reviews by country"
-
-msgid "plugins.generic.publicStats.reviewsCompleted"
-msgstr "Reviews completed"
-
-msgid "plugins.generic.publicStats.revisions"
-msgstr "Revisions"
-
-msgid "plugins.generic.publicStats.revisionsRequested"
-msgstr "Revisions requested"
 
 msgid "plugins.generic.publicStats.section"
 msgstr "Section"
 
 msgid "plugins.generic.publicStats.sectionDistribution"
 msgstr "Distribution by sections"
-
-msgid "plugins.generic.publicStats.sectionName"
-msgstr "Section name"
 
 msgid "plugins.generic.publicStats.sections"
 msgstr "Sections"
@@ -962,9 +672,6 @@ msgstr "Select an author..."
 msgid "plugins.generic.publicStats.selectYear"
 msgstr "Select year:"
 
-msgid "plugins.generic.publicStats.sendBackToAuthor"
-msgstr "Send back to author"
-
 msgid "plugins.generic.publicStats.settings.colorAffectedElements"
 msgstr "This color affects: active menu items, loading spinner, reset zoom button, metric values, table links, and export buttons."
 
@@ -975,17 +682,11 @@ msgstr "Generated variants"
 msgid "plugins.generic.publicStats.settings.description"
 msgstr "Configure the public statistics plugin settings."
 
-msgid "plugins.generic.publicStats.settings.invalidColorFormat"
-msgstr "Invalid color format. Please use a valid hex color (e.g., #8b2635)."
-
 msgid "plugins.generic.publicStats.settings.openAlexEmail"
 msgstr "OpenAlex contact email"
 
 msgid "plugins.generic.publicStats.settings.openAlexEmailDescription"
 msgstr "Email address that will be used to contact the OpenAlex API. This is required for proper API usage."
-
-msgid "plugins.generic.publicStats.settings.openAlexEmailRequired"
-msgstr "OpenAlex email is required."
 
 msgid "plugins.generic.publicStats.settings.primaryColor"
 msgstr "Primary Color"
@@ -995,9 +696,6 @@ msgstr "Select the main accent color for the statistics interface. This color wi
 
 msgid "plugins.generic.publicStats.settings.resetColor"
 msgstr "Reset"
-
-msgid "plugins.generic.publicStats.settings.resetToDefault"
-msgstr "Reset to default color"
 
 msgid "plugins.generic.publicStats.settings.enabledSections"
 msgstr "Enabled statistics sections"
@@ -1041,27 +739,12 @@ msgstr "ID"
 msgid "plugins.generic.publicStats.submissions"
 msgstr "Submissions"
 
-msgid "plugins.generic.publicStats.submissionsAnalyzed"
-msgstr "submissions analyzed"
-
-msgid "plugins.generic.publicStats.submissionsByYear"
-msgstr "Submissions by year"
-
 # Editorial workflow
 msgid "plugins.generic.publicStats.submissionsOverview"
 msgstr "Submissions overview"
 
-msgid "plugins.generic.publicStats.submissionsPerYear"
-msgstr "Submissions per year"
-
-msgid "plugins.generic.publicStats.submissionsReceived"
-msgstr "Submissions received"
-
 msgid "plugins.generic.publicStats.submissionsReviewed"
 msgstr "reviewed submissions"
-
-msgid "plugins.generic.publicStats.submissionsTimeline"
-msgstr "Submissions timeline"
 
 msgid "plugins.generic.publicStats.summary"
 msgstr "Summary"
@@ -1070,20 +753,8 @@ msgstr "Summary"
 msgid "plugins.generic.publicStats.thematicProfile"
 msgstr "Thematic profile"
 
-msgid "plugins.generic.publicStats.timeToDecision"
-msgstr "Time to decision"
-
-msgid "plugins.generic.publicStats.timeToPublication"
-msgstr "Time to publication"
-
 msgid "plugins.generic.publicStats.timesCited"
 msgstr "Times cited"
-
-msgid "plugins.generic.publicStats.topAccessCountries"
-msgstr "Top access countries"
-
-msgid "plugins.generic.publicStats.topArticlesByCitations"
-msgstr "Top articles by citations"
 
 msgid "plugins.generic.publicStats.topArticlesByDownloads"
 msgstr "Top articles by downloads"
@@ -1097,12 +768,6 @@ msgstr "Top articles by recent views"
 msgid "plugins.generic.publicStats.topArticlesByViews"
 msgstr "Top articles by views"
 
-msgid "plugins.generic.publicStats.topAuthorCountries"
-msgstr "Top author countries"
-
-msgid "plugins.generic.publicStats.topAuthorInstitutions"
-msgstr "Top author institutions"
-
 msgid "plugins.generic.publicStats.topCited"
 msgstr "Top cited"
 
@@ -1112,20 +777,8 @@ msgstr "Top cited articles"
 msgid "plugins.generic.publicStats.topCitingCountries"
 msgstr "Top citing countries"
 
-msgid "plugins.generic.publicStats.topCitingInstitutions"
-msgstr "Top citing institutions"
-
 msgid "plugins.generic.publicStats.topCitingJournals"
 msgstr "Top citing journals"
-
-msgid "plugins.generic.publicStats.topCoAuthors"
-msgstr "Top co-authors"
-
-msgid "plugins.generic.publicStats.topContributingAuthors"
-msgstr "Top contributing authors"
-
-msgid "plugins.generic.publicStats.topContributingReviewers"
-msgstr "Top contributing reviewers"
 
 msgid "plugins.generic.publicStats.topCountries"
 msgstr "Top countries"
@@ -1136,14 +789,8 @@ msgstr "Top countries by access"
 msgid "plugins.generic.publicStats.topCountriesByAuthors"
 msgstr "Top countries by authors"
 
-msgid "plugins.generic.publicStats.topCountriesByDownloads"
-msgstr "Top countries by downloads"
-
 msgid "plugins.generic.publicStats.topCountriesByReviewers"
 msgstr "Top countries by reviewers"
-
-msgid "plugins.generic.publicStats.topCountriesByViews"
-msgstr "Top countries by views"
 
 msgid "plugins.generic.publicStats.topDownloaded"
 msgstr "Top downloaded"
@@ -1151,20 +798,11 @@ msgstr "Top downloaded"
 msgid "plugins.generic.publicStats.topInstitutions"
 msgstr "Top institutions"
 
-msgid "plugins.generic.publicStats.topInstitutionsByAuthors"
-msgstr "Top institutions by number of authors"
-
 msgid "plugins.generic.publicStats.topResearchAreas"
 msgstr "Top research areas"
 
-msgid "plugins.generic.publicStats.topReviewerCountries"
-msgstr "Top reviewer countries"
-
 msgid "plugins.generic.publicStats.topReviewerInstitutions"
 msgstr "Top institutions by reviewers"
-
-msgid "plugins.generic.publicStats.topReviewers"
-msgstr "Top reviewers"
 
 msgid "plugins.generic.publicStats.topViewed"
 msgstr "Top viewed"
@@ -1190,12 +828,6 @@ msgstr "Total citations received"
 msgid "plugins.generic.publicStats.totalDownloads"
 msgstr "Total downloads"
 
-msgid "plugins.generic.publicStats.totalEditors"
-msgstr "Total editors"
-
-msgid "plugins.generic.publicStats.totalIssues"
-msgstr "Total issues"
-
 msgid "plugins.generic.publicStats.totalPublications"
 msgstr "total publications"
 
@@ -1206,9 +838,6 @@ msgstr "Total received"
 msgid "plugins.generic.publicStats.totalReviewers"
 msgstr "Total reviewers"
 
-msgid "plugins.generic.publicStats.totalSections"
-msgstr "Total sections"
-
 msgid "plugins.generic.publicStats.totalSubmissions"
 msgstr "total submissions"
 
@@ -1217,9 +846,6 @@ msgstr "Total views"
 
 msgid "plugins.generic.publicStats.views"
 msgstr "Views"
-
-msgid "plugins.generic.publicStats.viewsPerCountry"
-msgstr "Views per country"
 
 msgid "plugins.generic.publicStats.worldAccessMap"
 msgstr "World access map"
@@ -1235,9 +861,6 @@ msgstr "Annual downloads and views since journal inception"
 
 msgid "plugins.generic.publicStats.yearlySubmissionsTracking"
 msgstr "Yearly submissions tracking"
-
-msgid "plugins.generic.publicStats.yes"
-msgstr "Yes"
 
 msgid "plugins.publicStats.page.description"
 msgstr "Consult public statistics and usage metrics of the journal."
@@ -1288,12 +911,6 @@ msgstr "Evolution of article languages over time"
 msgid "plugins.generic.publicStats.languageTrendsChart"
 msgstr "Articles by language per year"
 
-msgid "plugins.generic.publicStats.languageDominance"
-msgstr "Dominant language by year"
-
-msgid "plugins.generic.publicStats.dominantLanguage"
-msgstr "Dominant language"
-
 msgid "plugins.generic.publicStats.noLanguageTrendsData"
 msgstr "No language trend data available"
 
@@ -1306,3 +923,20 @@ msgstr "Leading language"
 msgid "plugins.generic.publicStats.dataPeriod"
 msgstr "Data period"
 
+msgid "plugins.generic.publicStats.reviewerList"
+msgstr "Reviewer list"
+
+msgid "plugins.generic.publicStats.reviewerListTitle"
+msgstr "Reviewer list"
+
+msgid "plugins.generic.publicStats.reviewerListDescription"
+msgstr "The journal gratefully acknowledges the contribution of the following reviewers to the peer review process."
+
+msgid "plugins.generic.publicStats.reviewerListCardTitle"
+msgstr "Reviewers"
+
+msgid "plugins.generic.publicStats.noReviewerListData"
+msgstr "No reviewers found for the selected period."
+
+msgid "plugins.generic.publicStats.noArticlesData"
+msgstr "No article data available"

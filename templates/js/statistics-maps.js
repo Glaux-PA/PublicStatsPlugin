@@ -325,6 +325,21 @@
       try {
         const data = await PS.API.getCitationsByCountry();
 
+        if (data && data.is_computing) {
+          const base = i18n.computingPlaceholder;
+          const p = data.progress;
+          const msg =
+            p && p.total
+              ? `${base} ${parseInt(p.processed, 10) || 0}/${
+                  parseInt(p.total, 10) || 0
+                }`
+              : base;
+          document.getElementById(
+            "citationsMapTableBody"
+          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${msg}</td></tr>`;
+          return;
+        }
+
         if (!data || data.length === 0) {
           document.getElementById(
             "citationsMapTableBody"
@@ -335,6 +350,7 @@
         this.renderCitationsMap(data);
         this.renderCitationsTable(data);
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading citations map:", error);
         document.getElementById(
           "citationsMapTableBody"

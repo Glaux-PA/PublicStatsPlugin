@@ -57,6 +57,7 @@
           ).toLocaleString();
         });
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading downloads:", error);
         body.innerHTML = `<tr><td colspan="4" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       }
@@ -88,6 +89,7 @@
           row.insertCell(3).textContent = (article.views || 0).toLocaleString();
         });
       } catch (error) {
+        if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading views:", error);
         body.innerHTML = `<tr><td colspan="4" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       }
@@ -437,6 +439,27 @@
         ).innerHTML = `<span class="table-color-indicator" style="background-color: ${color}"></span>`;
         row.insertCell(2).textContent = item.institution;
         row.insertCell(3).textContent = item.total_count.toLocaleString();
+      });
+    },
+
+    renderReviewerListTable() {
+      const body = document.getElementById("reviewerListTableBody");
+      if (!body) return;
+
+      if (!statsData.reviewerList || statsData.reviewerList.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" class="ps-empty-message">${
+          i18n.noReviewerListData
+        }</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = "";
+      statsData.reviewerList.forEach((reviewer, index) => {
+        const row = body.insertRow();
+        row.insertCell(0).textContent = index + 1;
+        row.insertCell(1).textContent = reviewer.fullName;
+        row.insertCell(2).textContent = reviewer.affiliation || "-";
+        row.insertCell(3).textContent = reviewer.country || "-";
       });
     },
 
