@@ -732,7 +732,16 @@ class CsvExporter
         if ($yearFilter === null || $yearFilter === '' || $yearFilter === 'all') {
             return 'all';
         }
-        return $yearFilter;
+        // Strict: only accept a 4-digit year in a reasonable range. Anything
+        // else falls back to 'all' so unsanitised input from `?year=foo` can't
+        // leak weird characters into the CSV filename / Content-Disposition.
+        if (preg_match('/^\d{4}$/', $yearFilter)) {
+            $y = (int) $yearFilter;
+            if ($y >= 1900 && $y <= ((int) date('Y') + 1)) {
+                return $yearFilter;
+            }
+        }
+        return 'all';
     }
 
     /**

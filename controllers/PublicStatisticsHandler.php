@@ -159,6 +159,9 @@ class PublicStatisticsHandler extends Handler
             'defaultSection'     => $defaultSection,
             // Language-section issue filter
             'availableIssues'    => $this->languageStatsService->getPublishedIssues($contextId),
+            // JS i18n bag — JSON-encoded so a translator using " or \ in a
+            // .po msgstr can't break the inline <script> that consumes it.
+            'publicStatsI18nJson' => $this->buildJsI18nJson(),
         ]);
 
         $this->setupAssets($templateMgr, $request);
@@ -175,11 +178,11 @@ class PublicStatisticsHandler extends Handler
     private function getColorSettings(int $contextId): array
     {
         $primaryColor = $this->plugin->getSetting($contextId, 'primaryColor');
-        
+
         if (empty($primaryColor) || !preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $primaryColor)) {
-            $primaryColor = '#8b2635'; // Default burgundy
+            $primaryColor = ColorHelper::DEFAULT_COLOR;
         }
-        
+
         return ColorHelper::calculateVariants($primaryColor);
     }
 
@@ -443,6 +446,123 @@ class PublicStatisticsHandler extends Handler
         $currentYear = (int)date('Y');
         $minYear = PublicStatsConstants::MIN_YEAR;
         return range($currentYear, $minYear);
+    }
+
+    /**
+     * Build the JSON i18n bag consumed by templates/js/*.js as `window.i18n`.
+     *
+     * Centralising the keys in PHP (and passing the bag as a single JSON blob)
+     * means a translator using a quote or backslash in a `.po` msgstr can't
+     * break the inline <script> in publicStats.tpl — every value flows through
+     * `json_encode`, which escapes it safely for JavaScript.
+     */
+    private function buildJsI18nJson(): string
+    {
+        $bag = [
+            'downloads' => __('plugins.generic.publicStats.downloads'),
+            'views' => __('plugins.generic.publicStats.views'),
+            'received' => __('plugins.generic.publicStats.received'),
+            'published' => __('plugins.generic.publicStats.published'),
+            'declined' => __('plugins.generic.publicStats.declined'),
+            'inProcess' => __('plugins.generic.publicStats.inProcess'),
+            'totalReceived' => __('plugins.generic.publicStats.totalReceived'),
+            'totalAccesses' => __('plugins.generic.publicStats.totalAccesses'),
+            'errorLoading' => __('plugins.generic.publicStats.errorLoading'),
+            'monthlyOverview' => __('plugins.generic.publicStats.monthlyOverview'),
+            'mostDownloadedArticles' => __('plugins.generic.publicStats.mostDownloadedArticles'),
+            'mostViewedArticles' => __('plugins.generic.publicStats.mostViewedArticles'),
+            'downloadsByIssue' => __('plugins.generic.publicStats.downloadsByIssue'),
+            'downloadsBySection' => __('plugins.generic.publicStats.downloadsBySection'),
+            'submissionsOverview' => __('plugins.generic.publicStats.submissionsOverview'),
+            'totalAuthors' => __('plugins.generic.publicStats.totalAuthors'),
+            'totalReviewers' => __('plugins.generic.publicStats.totalReviewers'),
+            'otherInstitutions' => __('plugins.generic.publicStats.otherInstitutions'),
+            'acceptancePublicationStats' => __('plugins.generic.publicStats.acceptancePublicationDaysTitle'),
+            'firstDecisionStats' => __('plugins.generic.publicStats.firstDecisionDaysTitle'),
+            'noDataAvailable' => __('plugins.generic.publicStats.noDataAvailable'),
+            'noDataMessage' => __('plugins.generic.publicStats.noDataMessage'),
+            'noAuthorsData' => __('plugins.generic.publicStats.noAuthorsData'),
+            'noReviewersData' => __('plugins.generic.publicStats.noReviewersData'),
+            'noReviewerListData' => __('plugins.generic.publicStats.noReviewerListData'),
+            'reviewerListCardTitle' => __('plugins.generic.publicStats.reviewerListCardTitle'),
+            'noInstitutionData' => __('plugins.generic.publicStats.noInstitutionData'),
+            'noMonthlyData' => __('plugins.generic.publicStats.noMonthlyData'),
+            'noAnnualData' => __('plugins.generic.publicStats.noAnnualData'),
+            'noIssueData' => __('plugins.generic.publicStats.noIssueData'),
+            'noSectionData' => __('plugins.generic.publicStats.noSectionData'),
+            'noEditorialData' => __('plugins.generic.publicStats.noEditorialData'),
+            'noEditorialAnnualData' => __('plugins.generic.publicStats.noEditorialAnnualData'),
+            'noDownloadsData' => __('plugins.generic.publicStats.noDownloadsData'),
+            'noViewsData' => __('plugins.generic.publicStats.noViewsData'),
+            'noGeographicData' => __('plugins.generic.publicStats.noGeographicData'),
+            'noRecentDownloadsData' => __('plugins.generic.publicStats.noRecentDownloadsData'),
+            'noRecentViewsData' => __('plugins.generic.publicStats.noRecentViewsData'),
+            'externalCitations' => __('plugins.generic.publicStats.externalCitations'),
+            'year' => __('plugins.generic.publicStats.year'),
+            'noCitationData' => __('plugins.generic.publicStats.noCitationData'),
+            'computingPlaceholder' => __('plugins.generic.publicStats.computingPlaceholder'),
+            'citationsReceived' => __('plugins.generic.publicStats.citationsReceived'),
+            'citationsReceivedInYear' => __('plugins.generic.publicStats.citationsReceivedInYear'),
+            'openAccess' => __('plugins.generic.publicStats.openAccess'),
+            'oaPercentage' => __('plugins.generic.publicStats.oaPercentage'),
+            'oaDiamond' => __('plugins.generic.publicStats.oaDiamond'),
+            'oaGold' => __('plugins.generic.publicStats.oaGold'),
+            'oaHybrid' => __('plugins.generic.publicStats.oaHybrid'),
+            'oaGreen' => __('plugins.generic.publicStats.oaGreen'),
+            'oaBronze' => __('plugins.generic.publicStats.oaBronze'),
+            'oaClosed' => __('plugins.generic.publicStats.oaClosed'),
+            'oaUnknown' => __('plugins.generic.publicStats.oaUnknown'),
+            'articlesAnalyzed' => __('plugins.generic.publicStats.articlesAnalyzed'),
+            'noOaData' => __('plugins.generic.publicStats.noOaData'),
+            'articlesInArea' => __('plugins.generic.publicStats.articlesInArea'),
+            'noThematicData' => __('plugins.generic.publicStats.noThematicData'),
+            'citationsFromCountry' => __('plugins.generic.publicStats.citationsFromCountry'),
+            'noCitationMapData' => __('plugins.generic.publicStats.noCitationMapData'),
+            'noCitingJournalsData' => __('plugins.generic.publicStats.noCitingJournalsData'),
+            'citationsFromJournal' => __('plugins.generic.publicStats.citationsFromJournal'),
+            'citedArticlesFromJournal' => __('plugins.generic.publicStats.citedArticlesFromJournal'),
+            'timesCited' => __('plugins.generic.publicStats.timesCited'),
+            'allTime' => __('plugins.generic.publicStats.allTime'),
+            'noLanguageData' => __('plugins.generic.publicStats.noLanguageData'),
+            'noLanguageTrendsData' => __('plugins.generic.publicStats.noLanguageTrendsData'),
+            'totalArticles' => __('plugins.generic.publicStats.totalArticles'),
+            'languagesIdentified' => __('plugins.generic.publicStats.languagesIdentified'),
+            'leadingLanguage' => __('plugins.generic.publicStats.leadingLanguage'),
+            'dataPeriod' => __('plugins.generic.publicStats.dataPeriod'),
+            'affiliation' => __('plugins.generic.publicStats.affiliation'),
+            'annualStats' => __('plugins.generic.publicStats.annualStats'),
+            'articleTitle' => __('plugins.generic.publicStats.articleTitle'),
+            'authors' => __('plugins.generic.publicStats.authors'),
+            'authorsByCountry' => __('plugins.generic.publicStats.authorsByCountry'),
+            'citations' => __('plugins.generic.publicStats.citations'),
+            'country' => __('plugins.generic.publicStats.country'),
+            'countryStats' => __('plugins.generic.publicStats.countryStats'),
+            'days' => __('plugins.generic.publicStats.days'),
+            'daysAverage' => __('plugins.generic.publicStats.daysAverage'),
+            'editorialStats' => __('plugins.generic.publicStats.editorialStats'),
+            'export' => __('plugins.generic.publicStats.export'),
+            'exportCsv' => __('plugins.generic.publicStats.exportCsv'),
+            'exportOptions' => __('plugins.generic.publicStats.exportOptions'),
+            'fullReport' => __('plugins.generic.publicStats.fullReport'),
+            'monthlyStats' => __('plugins.generic.publicStats.monthlyStats'),
+            'name' => __('plugins.generic.publicStats.name'),
+            'noArticles' => __('plugins.generic.publicStats.noArticles'),
+            'noArticlesData' => __('plugins.generic.publicStats.noArticlesData'),
+            'noCoAuthors' => __('plugins.generic.publicStats.noCoAuthors'),
+            'noDecisionData' => __('plugins.generic.publicStats.noDecisionData'),
+            'noPublicationData' => __('plugins.generic.publicStats.noPublicationData'),
+            'publications' => __('plugins.generic.publicStats.publications'),
+            'publicationsReviewed' => __('plugins.generic.publicStats.publicationsReviewed'),
+            'reviewersByCountry' => __('plugins.generic.publicStats.reviewersByCountry'),
+            'selectAuthorPlaceholder' => __('plugins.generic.publicStats.selectAuthorPlaceholder'),
+            'submissionsReviewed' => __('plugins.generic.publicStats.submissionsReviewed'),
+            'topCited' => __('plugins.generic.publicStats.topCited'),
+            'topDownloaded' => __('plugins.generic.publicStats.topDownloaded'),
+            'topViewed' => __('plugins.generic.publicStats.topViewed'),
+            'totalPublications' => __('plugins.generic.publicStats.totalPublications'),
+            'totalSubmissions' => __('plugins.generic.publicStats.totalSubmissions'),
+        ];
+        return json_encode($bag, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     }
 
     /**

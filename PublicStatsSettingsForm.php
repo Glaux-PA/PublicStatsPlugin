@@ -20,6 +20,7 @@ use PKP\form\validation\FormValidatorPost;
 use PKP\form\validation\FormValidatorCSRF;
 use APP\core\Application;
 use APP\template\TemplateManager;
+use APP\plugins\generic\publicStats\classes\ColorHelper;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 
 class PublicStatsSettingsForm extends Form
@@ -27,8 +28,9 @@ class PublicStatsSettingsForm extends Form
     /** @var PublicStatsPlugin Plugin instance */
     private PublicStatsPlugin $plugin;
 
-    /** @var string Default primary color */
-    private const DEFAULT_PRIMARY_COLOR = '#8b2635';
+    // Default primary color lives in ColorHelper so settings form, handler,
+    // and any other consumer share a single source of truth.
+    private const DEFAULT_PRIMARY_COLOR = ColorHelper::DEFAULT_COLOR;
 
     /**
      * Constructor

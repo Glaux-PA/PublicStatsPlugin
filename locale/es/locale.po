@@ -908,7 +908,7 @@ msgid "plugins.generic.publicStats.languagesIdentified"
 msgstr "Idiomas identificados"
 
 msgid "plugins.generic.publicStats.leadingLanguage"
-msgstr "Idioma predominante"
+msgstr "Idioma principal"
 
 msgid "plugins.generic.publicStats.dataPeriod"
 msgstr "Período de datos"

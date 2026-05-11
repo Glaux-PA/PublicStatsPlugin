@@ -100,6 +100,18 @@ class LanguageStatsService
      */
     public function getLanguageTrends(int $contextId): array
     {
+        // Portable SQL: MySQL exposes YEAR() and casts to UNSIGNED/SIGNED
+        // (no INTEGER alias). PostgreSQL uses EXTRACT(YEAR FROM ...) and
+        // CAST(x AS INTEGER). Detect the driver once and pick the right form.
+        $driver = DB::connection()->getDriverName();
+        $isPgsql = $driver === 'pgsql';
+        $yearExpr  = $isPgsql
+            ? 'EXTRACT(YEAR FROM i.date_published)::integer'
+            : 'YEAR(i.date_published)';
+        $issueCast = $isPgsql
+            ? 'CAST(ps_issue.setting_value AS INTEGER)'
+            : 'CAST(ps_issue.setting_value AS UNSIGNED)';
+
         $rows = DB::table('publications as p')
             ->join('publication_settings as ps_locale', function ($join) {
                 $join->on('ps_locale.publication_id', '=', 'p.publication_id')
@@ -119,19 +131,19 @@ class LanguageStatsService
                     ->where('ps_issue.setting_name', '=', 'issueId')
                     ->where('ps_issue.locale', '=', '');
             })
-            ->join('issues as i', function ($join) {
-                $join->on('i.issue_id', '=', DB::raw('CAST(ps_issue.setting_value AS UNSIGNED)'))
+            ->join('issues as i', function ($join) use ($issueCast) {
+                $join->on('i.issue_id', '=', DB::raw($issueCast))
                     ->where('i.published', '=', 1);
             })
             ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
             ->whereNotNull('i.date_published')
             ->select(
                 'ps_locale.locale',
-                DB::raw('YEAR(i.date_published) as pub_year'),
+                DB::raw("{$yearExpr} as pub_year"),
                 DB::raw('COUNT(DISTINCT p.submission_id) as article_count')
             )
-            ->groupBy('ps_locale.locale', DB::raw('YEAR(i.date_published)'))
-            ->orderBy(DB::raw('YEAR(i.date_published)'))
+            ->groupBy('ps_locale.locale', DB::raw($yearExpr))
+            ->orderBy(DB::raw($yearExpr))
             ->get();
 
         if ($rows->isEmpty()) {
