@@ -236,6 +236,7 @@
 
   const Impact = {
     chartInstance: null,
+    citedArticlesYear: null,
 
     async renderTopCited() {
       const body = document.getElementById("topCitedArticlesTableBody");
@@ -396,7 +397,7 @@
       if (!tbody) return;
 
       try {
-        const year = selectedYear || null;
+        const year = this.citedArticlesYear || null;
         const response = await PS.API.getTopCited(20, year);
 
         const table = tbody.closest("table");
@@ -410,6 +411,12 @@
                 year
               : i18n.externalCitations || "External Citations";
           }
+        }
+
+        const title = document.getElementById("citedArticlesCardTitle");
+        if (title) {
+          const base = i18n.topCitedArticles || "Top cited articles";
+          title.textContent = year ? `${base} (${year})` : base;
         }
 
         if (response && response.is_computing) {

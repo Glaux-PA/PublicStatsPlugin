@@ -239,6 +239,10 @@
             await Impact.renderTopCited();
           },
           "citation-evolution": async () => {
+            const sel = document.getElementById("citedArticlesYearFilter");
+            if (sel) {
+              sel.value = Impact.citedArticlesYear || "all";
+            }
             await Impact.renderCitationEvolution();
           },
           "open-access-stats": async () => {
@@ -435,6 +439,20 @@
     } catch (error) {
       if (error && error.code === "STALE_REQUEST") return;
       console.error("Error loading reviewer list:", error);
+    } finally {
+      Utils.hideLoadingIndicator();
+    }
+  };
+
+  window.filterCitedArticlesByYear = async function (year) {
+    Impact.citedArticlesYear = year && year !== "all" ? year : null;
+    API.invalidateInflight();
+    Utils.showLoadingIndicator();
+    try {
+      await Impact.renderCitedArticlesTable();
+    } catch (error) {
+      if (error && error.code === "STALE_REQUEST") return;
+      console.error("Error filtering cited articles:", error);
     } finally {
       Utils.hideLoadingIndicator();
     }

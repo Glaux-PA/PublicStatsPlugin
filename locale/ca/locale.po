@@ -547,7 +547,7 @@ msgid "plugins.generic.publicStats.oaClosed"
 msgstr "Tancat"
 
 msgid "plugins.generic.publicStats.oaDiamond"
-msgstr "Diamond (sense taxes)"
+msgstr "Diamond (sense costos de tramitació d'articles)"
 
 msgid "plugins.generic.publicStats.oaDistribution"
 msgstr "Distribució per tipus d'accés"

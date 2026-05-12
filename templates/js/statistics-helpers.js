@@ -37,7 +37,6 @@
     "first-decision-stats",
     "acceptance-publication-stats",
     "author-individual-stats",
-    "citation-evolution",
   ];
 
   /**

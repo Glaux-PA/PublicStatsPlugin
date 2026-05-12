@@ -1657,9 +1657,20 @@
                     {* Cited articles table *}
                     <div class="stats-card" style="margin-top: 30px;">
                         <div class="card-header">
-                            <h2 class="card-title">
-                                {translate key="plugins.generic.publicStats.topCitedArticles"}{if $selectedYear}
-                                ({$selectedYear}){/if}</h2>
+                            <h2 class="card-title" id="citedArticlesCardTitle">
+                                {translate key="plugins.generic.publicStats.topCitedArticles"}
+                            </h2>
+                            <div style="text-align: right;">
+                                <label for="citedArticlesYearFilter" style="margin-right: 10px;">
+                                    {translate key="plugins.generic.publicStats.selectYear"}
+                                </label>
+                                <select id="citedArticlesYearFilter" onchange="filterCitedArticlesByYear(this.value)">
+                                    <option value="all">{translate key="plugins.generic.publicStats.allTime"}</option>
+                                    {foreach from=$availableYears item=year}
+                                        <option value="{$year}">{$year}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-container">

@@ -557,6 +557,7 @@ class PublicStatisticsHandler extends Handler
             'selectAuthorPlaceholder' => __('plugins.generic.publicStats.selectAuthorPlaceholder'),
             'submissionsReviewed' => __('plugins.generic.publicStats.submissionsReviewed'),
             'topCited' => __('plugins.generic.publicStats.topCited'),
+            'topCitedArticles' => __('plugins.generic.publicStats.topCitedArticles'),
             'topDownloaded' => __('plugins.generic.publicStats.topDownloaded'),
             'topViewed' => __('plugins.generic.publicStats.topViewed'),
             'totalPublications' => __('plugins.generic.publicStats.totalPublications'),

@@ -548,7 +548,7 @@ msgid "plugins.generic.publicStats.oaClosed"
 msgstr "Closed"
 
 msgid "plugins.generic.publicStats.oaDiamond"
-msgstr "Diamond (no fees)"
+msgstr "Diamond (without article processing charges)"
 
 msgid "plugins.generic.publicStats.oaDistribution"
 msgstr "Distribution by access type"
