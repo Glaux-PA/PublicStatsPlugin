@@ -11,12 +11,10 @@
  *
  * @brief Service for combining local statistics with OpenAlex data.
  *
- * Drives every "Impact" subsection: top-cited articles, citation evolution,
- * open access stats, thematic profile (topics + SDGs), citing journals,
- * citing institutions, citations by country, and the aggregate context-level
- * counters (citations, average FWCI, retracted/funded counts) shown in the
- * overview. Heavy aggregations are exposed through chunked jobs and surface
- * `is_computing` placeholders while the queue worker is still advancing them.
+ * Drives the Impact subsections (top-cited, citation evolution, OA, thematic
+ * profile, citing journals/institutions, citations-by-country) and the
+ * aggregate context-level counters. Heavy aggregations run as chunked jobs
+ * and return `is_computing` placeholders until the worker finishes.
  */
 
 declare(strict_types=1);
@@ -84,24 +82,12 @@ class EnrichedStatsService extends BaseStatsService
         return $baseArticles;
     }
 
-    /**
-     * Get enriched statistics for total overview
-     * 
-     * @param int $contextId Context/journal ID
-     * @return array Combined local and external statistics
-     */
     public function getEnrichedContextStats(int $contextId): array
     {
-        // Get local stats
         $localStats = $this->getBaseContextStats($contextId);
-
-        // Get external stats from OpenAlex
         $externalStats = $this->getExternalEnrichmentStats($contextId);
 
-        // While the chunked job is still running the external payload only
-        // carries `is_computing` + `progress`. The combined metrics depend on
-        // keys that don't exist yet (`works_with_data`, `avg_fwci`, ...), so
-        // skip the calculation and surface the placeholder for both.
+        // Combined metrics depend on external keys that don't exist yet while computing.
         if (!empty($externalStats['is_computing'])) {
             return [
                 'local'    => $localStats,
@@ -110,7 +96,6 @@ class EnrichedStatsService extends BaseStatsService
             ];
         }
 
-        // Combine and calculate derived metrics
         $combined = $this->combineContextStats($localStats, $externalStats);
 
         return [
@@ -208,9 +193,6 @@ class EnrichedStatsService extends BaseStatsService
         return ['submissions' => $submissions, 'state' => $state];
     }
 
-    /**
-     * Get base top articles without external enrichment
-     */
     private function getBaseTopArticles(
         PKPRequest $request,
         int $contextId,
@@ -219,7 +201,6 @@ class EnrichedStatsService extends BaseStatsService
         ?string $dateStart,
         ?string $dateEnd
     ): array {
-        // Use existing ArticleStatsService to get base data
         if ($metricType === 'views') {
             return $this->articleStatsService->getTopViewedArticles(
                 $request,
@@ -230,7 +211,6 @@ class EnrichedStatsService extends BaseStatsService
             );
         }
 
-        // 'downloads' (default).
         return $this->articleStatsService->getTopDownloadedArticles(
             $request,
             $contextId,
@@ -240,12 +220,8 @@ class EnrichedStatsService extends BaseStatsService
         );
     }
 
-    /**
-     * Enrich a single article with OpenAlex data
-     */
     private function enrichArticleWithExternalData(array &$article): void
     {
-        // Get the submission to access DOI
         $submission = Repo::submission()->get($article['submissionId']);
         if (!$submission) {
             $this->addEmptyExternalMetrics($article);
@@ -279,9 +255,6 @@ class EnrichedStatsService extends BaseStatsService
         $article['doi'] = $doi;
     }
 
-    /**
-     * Add empty external metrics when data is not available
-     */
     private function addEmptyExternalMetrics(array &$article): void
     {
         $article['citations'] = 0;
@@ -292,9 +265,6 @@ class EnrichedStatsService extends BaseStatsService
         $article['doi'] = null;
     }
 
-    /**
-     * Get base context statistics (local data only)
-     */
     private function getBaseContextStats(int $contextId): array
     {
         $totalArticles = Repo::submission()
@@ -305,13 +275,9 @@ class EnrichedStatsService extends BaseStatsService
 
         return [
             'total_articles' => $totalArticles,
-            // These could be expanded with actual download/view totals if needed
-        ];
+            ];
     }
 
-    /**
-     * Combine local and external statistics
-     */
     private function combineContextStats(array $local, array $external): array
     {
         $totalArticles = $local['total_articles'];
@@ -447,7 +413,6 @@ class EnrichedStatsService extends BaseStatsService
 
         $state['accumulator'] = $accumulator;
 
-        // Final formatting only when fully done.
         if (!empty($state['is_complete'])) {
             usort($state['accumulator']['articles'], fn($a, $b) => $b['citations'] - $a['citations']);
             $state['accumulator']['articles'] = array_slice($state['accumulator']['articles'], 0, 100);
@@ -690,8 +655,7 @@ class EnrichedStatsService extends BaseStatsService
             $accumulator['works_with_data']++;
             $accumulator['total_external_citations'] += (int)($metrics['cited_by_count'] ?? 0);
 
-            // FWCI is null when OpenAlex hasn't computed it yet; 0.0 is a valid value
-            // (work has zero citations vs the field-weighted expectation).
+            // 0.0 is a valid FWCI; only null means OpenAlex hasn't computed it.
             if (isset($metrics['fwci']) && $metrics['fwci'] !== null) {
                 $accumulator['fwci_sum'] += (float)$metrics['fwci'];
                 $accumulator['fwci_count']++;
@@ -779,8 +743,7 @@ class EnrichedStatsService extends BaseStatsService
             foreach ($citingWorks as $citingWork) {
                 if (empty($citingWork['authorships'])) continue;
 
-                // Count one country per citing work — the first institution of
-                // the first author. Same convention as the pre-chunked version.
+                // One country per citing work: first institution of the first author.
                 foreach ($citingWork['authorships'] as $authorship) {
                     if (empty($authorship['institutions'])) continue;
                     foreach ($authorship['institutions'] as $institution) {
@@ -824,10 +787,6 @@ class EnrichedStatsService extends BaseStatsService
         return $state;
     }
 
-    /**
-     * Get formatted citing journals data
-     * 
-     */
     public function getCitingJournals(PKPRequest $request, int $contextId): ?array
     {
         try {
@@ -845,7 +804,6 @@ class EnrichedStatsService extends BaseStatsService
             $allYears = [];
             
             foreach ($journals as $journal) {
-                // Build URLs for cited articles and collect years
                 $citedArticles = [];
                 foreach ($journal['cited_articles'] ?? [] as $article) {
                     $citationYear = $article['citation_year'] ?? null;
@@ -883,7 +841,6 @@ class EnrichedStatsService extends BaseStatsService
                 ];
             }
             
-            // Sort years descending
             $sortedYears = array_keys($allYears);
             rsort($sortedYears);
             
@@ -898,13 +855,6 @@ class EnrichedStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Get formatted citing institutions data
-     * 
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @return array|null Formatted institutions data or null if no data
-     */
     public function getCitingInstitutions(PKPRequest $request, int $contextId): ?array
     {
         try {
@@ -923,7 +873,6 @@ class EnrichedStatsService extends BaseStatsService
             $allYears = [];
             
             foreach ($institutions as $institution) {
-                // Get country name from code
                 $countryCode = $institution['country_code'] ?? null;
                 $countryName = null;
                 
@@ -936,7 +885,6 @@ class EnrichedStatsService extends BaseStatsService
                     }
                 }
                 
-                // Build URLs for cited articles and collect years
                 $citedArticles = [];
                 foreach ($institution['cited_articles'] ?? [] as $article) {
                     $citationYear = $article['citation_year'] ?? null;
@@ -975,7 +923,6 @@ class EnrichedStatsService extends BaseStatsService
                 ];
             }
             
-            // Sort years descending
             $sortedYears = array_keys($allYears);
             rsort($sortedYears);
             

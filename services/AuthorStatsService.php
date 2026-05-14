@@ -57,13 +57,12 @@ class AuthorStatsService extends BaseStatsService
             'orcid'       => $entry['orcid'] ?? null,
         ];
 
-        $submissions = $this->getAuthorSubmissions($contextId, $authorIds);
+        $submissions = $this->getSubmissionsByIds($entry['submissionIds']);
         
         if (empty($submissions)) {
             return $this->getEmptyStats();
         }
         
-        // Get statistics
         $statsService = Services::get('publicationStats');
         $submissionIds = array_keys($submissions);
         
@@ -180,13 +179,6 @@ class AuthorStatsService extends BaseStatsService
         return $authorMap;
     }
 
-    /**
-     * Get authors for context with PRACTICAL deduplication
-     *
-     * @param int $contextId
-     * @param int $minPublications Minimum publications to include
-     * @return array Deduplicated authors as a sorted list for the frontend
-     */
     public function getAuthorsForContext(int $contextId, int $minPublications = 1): array
     {
         $authorMap = $this->buildAuthorMap($contextId);
@@ -213,10 +205,6 @@ class AuthorStatsService extends BaseStatsService
         return $result;
     }
     
-    /**
-     * Create author key based on ORCID or Name+Email combination
-     * 
-     */
     private function createAuthorKey($author): string
     {
         $orcid = $author->getOrcid();
@@ -261,7 +249,6 @@ class AuthorStatsService extends BaseStatsService
      */
     private function mergeByOrcid(array $authorMap): array
     {
-        // Group entries by normalized ORCID
         $orcidGroups = []; // normalized_orcid => [key1, key2, ...]
         
         foreach ($authorMap as $key => $data) {
@@ -274,11 +261,9 @@ class AuthorStatsService extends BaseStatsService
             $orcidGroups[$normalizedOrcid][] = $key;
         }
         
-        // Merge groups with more than one entry
         foreach ($orcidGroups as $normalizedOrcid => $keys) {
             if (count($keys) <= 1) continue;
-            
-            // Use the orcid-prefixed key if it exists, otherwise the first key
+
             $primaryKey = null;
             foreach ($keys as $k) {
                 if (str_starts_with($k, 'orcid:')) {
@@ -295,7 +280,6 @@ class AuthorStatsService extends BaseStatsService
                 
                 $secondary = $authorMap[$k];
                 
-                // Merge IDs and submission IDs
                 $authorMap[$primaryKey]['ids'] = array_unique(
                     array_merge($authorMap[$primaryKey]['ids'], $secondary['ids'])
                 );
@@ -303,7 +287,6 @@ class AuthorStatsService extends BaseStatsService
                     array_merge($authorMap[$primaryKey]['submissionIds'], $secondary['submissionIds'])
                 );
                 
-                // Keep the most complete info
                 if (strlen($secondary['name']) > strlen($authorMap[$primaryKey]['name'])) {
                     $authorMap[$primaryKey]['name'] = $secondary['name'];
                 }
@@ -324,10 +307,6 @@ class AuthorStatsService extends BaseStatsService
         return $authorMap;
     }
     
-    /**
-     * Merge similar authors that don't have email
-     * 
-     */
     private function mergeSimilarAuthorsWithoutEmail(array $authorMap): array
     {
         $noEmailGroups = [];
@@ -377,10 +356,6 @@ class AuthorStatsService extends BaseStatsService
         return array_merge($withEmailGroups, $merged);
     }
     
-    /**
-     * Check if one name is a subset of another
-     * 
-     */
     private function areNamesSimilar(string $name1, string $name2): bool {
         $words1 = explode(' ', $this->normalizeString($name1));
         $words2 = explode(' ', $this->normalizeString($name2));
@@ -436,40 +411,23 @@ class AuthorStatsService extends BaseStatsService
     private function normalizeOrcid(string $orcid): string
     {
         $orcid = strtolower(trim($orcid));
-        // Strip URL prefix: https://orcid.org/, http://orcid.org/, orcid.org/
         $orcid = preg_replace('#^https?://orcid\.org/#', '', $orcid);
         $orcid = preg_replace('#^orcid\.org/#', '', $orcid);
         return trim($orcid, '/');
     }
     
-    /**
-     * Get author submissions
-     */
-    private function getAuthorSubmissions(int $contextId, array $authorIds): array
+    private function getSubmissionsByIds(array $submissionIds): array
     {
-        $submissions = $this->getPublishedSubmissions($contextId);
-        
-        $authorSubmissions = [];
-        
-        foreach ($submissions as $submission) {
-            $publication = $submission->getCurrentPublication();
-            if (!$publication) continue;
-            
-            $authors = $publication->getData('authors');
-            foreach ($authors as $pubAuthor) {
-                if (in_array($pubAuthor->getId(), $authorIds)) {
-                    $authorSubmissions[$submission->getId()] = $submission;
-                    break;
-                }
+        $submissions = [];
+        foreach ($submissionIds as $id) {
+            $submission = Repo::submission()->get($id);
+            if ($submission) {
+                $submissions[$id] = $submission;
             }
         }
-        
-        return $authorSubmissions;
+        return $submissions;
     }
     
-    /**
-     * Process article statistics
-     */
     private function processArticleStats(
         PKPRequest $request,
         array $submissions,
@@ -530,9 +488,6 @@ class AuthorStatsService extends BaseStatsService
         return $articleStats;
     }
     
-    /**
-     * Calculate summary
-     */
     private function calculateSummary(array $articleStats): array
     {
         $totalArticles = count($articleStats);
@@ -554,9 +509,6 @@ class AuthorStatsService extends BaseStatsService
         ];
     }
     
-    /**
-     * Get temporal distribution
-     */
     private function getTemporalDistribution(array $submissions): array
     {
         $byYear = [];
@@ -586,9 +538,6 @@ class AuthorStatsService extends BaseStatsService
         return $result;
     }
     
-    /**
-     * Get co-authors
-     */
     private function getCoAuthors(array $submissions, array $excludeAuthorIds): array
     {
         $coAuthors = [];
@@ -685,9 +634,6 @@ class AuthorStatsService extends BaseStatsService
         return $sectionsMap[$sectionId] ?? null;
     }
     
-    /**
-     * Get empty stats
-     */
     private function getEmptyStats(): array
     {
         return [

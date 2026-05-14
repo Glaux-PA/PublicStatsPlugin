@@ -1,22 +1,11 @@
 /**
- * Public Statistics - Shared helpers.
- *
- * This file holds the pieces of the frontend that do not reference the
- * other internal modules (API, Navigation, Charts, ...), which makes them
- * safe to live in their own <script> without cross-module coordination.
- *
- * Everything here is attached to window.PublicStatsHelpers so statistics.js
- * can pull it in with a single destructuring line at the top of its IIFE.
- *
- * Depends on one global that publicStats.tpl defines before loading any JS:
- *   - i18n (translations bag)
+ * Public Statistics - Shared helpers (escapeHtml, Utils, ChartInstances,
+ * ChartConfig, YEAR_FILTERABLE_SECTIONS). Attached to window.PublicStatsHelpers.
+ * Depends on the i18n global defined in publicStats.tpl.
  */
 (function () {
   "use strict";
 
-  /**
-   * Escape HTML to prevent XSS
-   */
   function escapeHtml(text) {
     const div = document.createElement("div");
     div.textContent = text;
@@ -60,9 +49,6 @@
     languageTrends: null,
   };
 
-  /**
-   * Small DOM helpers used across the UI.
-   */
   const Utils = {
     showNoDataMessage(containerId, message) {
       const container = document.getElementById(containerId);

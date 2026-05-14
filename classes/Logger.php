@@ -24,9 +24,6 @@ class Logger
 {
     private const PREFIX = '[publicStats]';
 
-    /**
-     * Log an error. Optionally include the exception message at the end.
-     */
     public static function error(string $message, ?\Throwable $e = null): void
     {
         error_log(self::format($message, $e));

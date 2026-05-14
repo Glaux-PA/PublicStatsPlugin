@@ -29,9 +29,8 @@ class LanguageStatsService
     /**
      * Get article counts grouped by language.
      *
-     * Determines languages from publication_settings where setting_name='title'
-     * and the value is non-empty. An article with titles in two locales is
-     * counted in both language categories.
+     * Determines languages from publication_galleys. An article with galleys
+     * in two locales is counted in both language categories.
      *
      * @param int $contextId
      * @param int|null $issueId Null = all published issues
@@ -40,13 +39,10 @@ class LanguageStatsService
     public function getLanguageStats(int $contextId, ?int $issueId = null): array
     {
         $query = DB::table('publications as p')
-            ->join('publication_settings as ps', function ($join) {
-                $join->on('ps.publication_id', '=', 'p.publication_id')
-                    ->where('ps.setting_name', '=', 'title')
-                    ->whereNotNull('ps.locale')
-                    ->where('ps.locale', '!=', '')
-                    ->whereNotNull('ps.setting_value')
-                    ->where('ps.setting_value', '!=', '');
+            ->join('publication_galleys as pg', function ($join) {
+                $join->on('pg.publication_id', '=', 'p.publication_id')
+                    ->whereNotNull('pg.locale')
+                    ->where('pg.locale', '!=', '');
             })
             ->join('submissions as s', function ($join) use ($contextId) {
                 $join->on('s.submission_id', '=', 'p.submission_id')
@@ -54,8 +50,8 @@ class LanguageStatsService
                     ->where('s.status', '=', PKPSubmission::STATUS_PUBLISHED);
             })
             ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
-            ->select('ps.locale', DB::raw('COUNT(DISTINCT p.submission_id) as article_count'))
-            ->groupBy('ps.locale');
+            ->select('pg.locale', DB::raw('COUNT(DISTINCT p.submission_id) as article_count'))
+            ->groupBy('pg.locale');
 
         if ($issueId !== null) {
             $query->join('publication_settings as ps_issue', function ($join) use ($issueId) {
@@ -92,17 +88,16 @@ class LanguageStatsService
     /**
      * Get article counts per language grouped by year of publication.
      *
-     * Uses the issue's date_published as the year dimension. Articles not
-     * assigned to a published issue are excluded (no reliable publish date).
+     * Determines languages from publication_galleys. Articles with galleys in
+     * multiple locales are counted in each. Articles not assigned to a
+     * published issue are excluded (no reliable publish date).
      *
      * @param int $contextId
      * @return array { labels: string[], series: [{code, name, data: int[]}] }
      */
     public function getLanguageTrends(int $contextId): array
     {
-        // Portable SQL: MySQL exposes YEAR() and casts to UNSIGNED/SIGNED
-        // (no INTEGER alias). PostgreSQL uses EXTRACT(YEAR FROM ...) and
-        // CAST(x AS INTEGER). Detect the driver once and pick the right form.
+        // MySQL: YEAR() + CAST AS UNSIGNED. PostgreSQL: EXTRACT + CAST AS INTEGER.
         $driver = DB::connection()->getDriverName();
         $isPgsql = $driver === 'pgsql';
         $yearExpr  = $isPgsql
@@ -113,13 +108,10 @@ class LanguageStatsService
             : 'CAST(ps_issue.setting_value AS UNSIGNED)';
 
         $rows = DB::table('publications as p')
-            ->join('publication_settings as ps_locale', function ($join) {
-                $join->on('ps_locale.publication_id', '=', 'p.publication_id')
-                    ->where('ps_locale.setting_name', '=', 'title')
-                    ->whereNotNull('ps_locale.locale')
-                    ->where('ps_locale.locale', '!=', '')
-                    ->whereNotNull('ps_locale.setting_value')
-                    ->where('ps_locale.setting_value', '!=', '');
+            ->join('publication_galleys as pg', function ($join) {
+                $join->on('pg.publication_id', '=', 'p.publication_id')
+                    ->whereNotNull('pg.locale')
+                    ->where('pg.locale', '!=', '');
             })
             ->join('submissions as s', function ($join) use ($contextId) {
                 $join->on('s.submission_id', '=', 'p.submission_id')
@@ -138,11 +130,11 @@ class LanguageStatsService
             ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
             ->whereNotNull('i.date_published')
             ->select(
-                'ps_locale.locale',
+                'pg.locale',
                 DB::raw("{$yearExpr} as pub_year"),
                 DB::raw('COUNT(DISTINCT p.submission_id) as article_count')
             )
-            ->groupBy('ps_locale.locale', DB::raw($yearExpr))
+            ->groupBy('pg.locale', DB::raw($yearExpr))
             ->orderBy(DB::raw($yearExpr))
             ->get();
 

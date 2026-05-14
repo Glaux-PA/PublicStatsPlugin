@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Cache;
 
 trait EditorialStatsTrait
 {
-    /**
-     * Get editorial statistics (monthly submissions overview)
-     */
     public function editorial(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -64,9 +61,6 @@ trait EditorialStatsTrait
         }
     }
 
-    /**
-     * Get editorial annual statistics
-     */
     public function editorialAnnual(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -92,9 +86,6 @@ trait EditorialStatsTrait
         }
     }
 
-    /**
-     * Get first decision statistics
-     */
     public function firstDecision(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -132,9 +123,6 @@ trait EditorialStatsTrait
         }
     }
 
-    /**
-     * Get acceptance to publication statistics
-     */
     public function acceptancePublication(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();

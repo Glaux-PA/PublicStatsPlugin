@@ -28,18 +28,6 @@ use PKP\core\PKPRequest;
 
 class ArticleStatsService
 {
-    /**
-     * Get top downloaded articles.
-     *
-     * Returns articles ranked by download count within the specified date range.
-     *
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param int $limit Maximum number of articles to return
-     * @param string|null $dateStart Start date in Ymd format
-     * @param string|null $dateEnd End date in Ymd format
-     * @return array Array of article data with download counts
-     */
     public function getTopDownloadedArticles(
         PKPRequest $request,
         int $contextId,
@@ -57,18 +45,6 @@ class ArticleStatsService
         );
     }
 
-    /**
-     * Get top viewed articles.
-     *
-     * Returns articles ranked by abstract page view count within the specified date range.
-     *
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param int $limit Maximum number of articles to return
-     * @param string|null $dateStart Start date in Ymd format
-     * @param string|null $dateEnd End date in Ymd format
-     * @return array Array of article data with view counts
-     */
     public function getTopViewedArticles(
         PKPRequest $request,
         int $contextId,
@@ -86,17 +62,6 @@ class ArticleStatsService
         );
     }
 
-    /**
-     * Get recent top downloaded articles.
-     *
-     * Returns articles ranked by downloads in the last 60 days.
-     * Useful for highlighting currently popular content.
-     *
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param int $limit Maximum number of articles to return
-     * @return array Array of article data with recent download counts
-     */
     public function getRecentTopDownloadedArticles(
         PKPRequest $request,
         int $contextId,
@@ -114,16 +79,6 @@ class ArticleStatsService
         );
     }
 
-    /**
-     * Get recent top viewed articles.
-     *
-     * Returns articles ranked by views in the last 60 days.
-     *
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param int $limit Maximum number of articles to return
-     * @return array Array of article data with recent view counts
-     */
     public function getRecentTopViewedArticles(
         PKPRequest $request,
         int $contextId,
@@ -141,19 +96,6 @@ class ArticleStatsService
         );
     }
 
-    /**
-     * Get top articles by metric type.
-     *
-     * Internal method that retrieves ranked articles based on the specified metric.
-     *
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param string $metricType Either 'downloads' or 'views'
-     * @param int $limit Maximum results
-     * @param string|null $dateStart Start date
-     * @param string|null $dateEnd End date
-     * @return array Array of formatted article results
-     */
     private function getTopArticles(
         PKPRequest $request,
         int $contextId,
@@ -169,7 +111,6 @@ class ArticleStatsService
             ->filterByContextIds([$contextId])
             ->getMany();
 
-        // Select appropriate association type based on metric
         $assocType = ($metricType === 'downloads')
             ? Application::ASSOC_TYPE_SUBMISSION_FILE
             : Application::ASSOC_TYPE_SUBMISSION;
@@ -202,20 +143,6 @@ class ArticleStatsService
         );
     }
 
-    /**
-     * Format article results with metadata.
-     *
-     * Enriches raw statistics records with article title, authors,
-     * publication date, and URL.
-     *
-     * @param iterable $records Raw statistics records
-     * @param PKPRequest $request Current request for URL generation
-     * @param int $contextId Journal/press ID
-     * @param iterable $userGroups User groups for author string formatting
-     * @param string $metricType Type of metric (downloads/views)
-     * @param int $limit Maximum results
-     * @return array Formatted article data array
-     */
     private function formatArticleResults(
         iterable $records,
         PKPRequest $request,

@@ -11,19 +11,12 @@
 
   const PS = (window.PublicStats = window.PublicStats || {});
 
-  // ========================================
-  // API CALLS
-  // ========================================
   const API = {
     baseUrl:
       window.location.origin + window.location.pathname.replace("/total", ""),
 
-    // Stale-response token. Bumped by callers that invalidate in-flight
-    // fetches (e.g. when the user changes the global year, or a section's
-    // own year filter). Each fetchData call captures the token at the
-    // request start and throws STALE_REQUEST if it differs at the end —
-    // the orchestrator swallows that error so a late response from a
-    // previous year never overwrites freshly-fetched UI state.
+    // Token bumped by callers to invalidate in-flight fetches; fetchData
+    // throws STALE_REQUEST if the token changes mid-request.
     _token: 0,
     invalidateInflight() {
       this._token++;
@@ -354,9 +347,6 @@
       if (statsData.topCitedArticles) statsData.topCitedArticles = null;
     },
 
-    // ========================================
-    // CSV Export Functions
-    // ========================================
 
     exportCsv(endpoint, params = {}) {
       const url = this.buildUrl(endpoint, params);
@@ -471,13 +461,7 @@
     },
   };
 
-  // ========================================
-  // CSV EXPORT HELPERS (button wiring)
-  // ========================================
   const Export = {
-    /**
-     * Create an export button element
-     */
     createButton(
       label,
       onClick,
@@ -491,9 +475,6 @@
       return btn;
     },
 
-    /**
-     * Add export button to a section header
-     */
     addToSection(sectionId, exportType, params = {}) {
       const section = document.getElementById(sectionId);
       if (!section) return;
@@ -530,9 +511,6 @@
       header.appendChild(btn);
     },
 
-    /**
-     * Initialize export buttons for all sections
-     */
     initializeExportButtons() {
       const currentYear =
         document.getElementById("yearSelector")?.value || null;

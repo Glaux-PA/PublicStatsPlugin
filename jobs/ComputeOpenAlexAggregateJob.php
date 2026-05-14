@@ -9,21 +9,20 @@
  * @class ComputeOpenAlexAggregateJob
  * @ingroup plugins_generic_publicStats
  *
- * @brief Pre-computes OpenAlex aggregates in the background so HTTP requests
- *        don't block on a long chain of external API calls. Two modes:
- *        single-shot (citing journals/institutions) and chunked (enriched
- *        context, OA stats, thematic profile, citation evolution, top cited,
- *        citations by country).
+ * @brief Background job for OpenAlex aggregates. Single-shot for citing
+ *        journals/institutions, chunked for everything else under CHUNKED_TYPES.
  */
 
 declare(strict_types=1);
 
 namespace APP\plugins\generic\publicStats\jobs;
 
+use APP\core\Application;
 use APP\plugins\generic\publicStats\services\EnrichedStatsService;
 use APP\plugins\generic\publicStats\services\OpenAlexService;
 use Illuminate\Support\Facades\Cache;
 use PKP\jobs\BaseJob;
+use PKP\plugins\PluginRegistry;
 
 class ComputeOpenAlexAggregateJob extends BaseJob
 {
@@ -63,7 +62,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
 
     public function handle(): void
     {
-        $openAlexService = app(OpenAlexService::class);
+        $openAlexService = new OpenAlexService($this->resolveContactEmail());
         $enrichedService = app(EnrichedStatsService::class);
 
         try {
@@ -95,14 +94,12 @@ class ComputeOpenAlexAggregateJob extends BaseJob
         $state = $openAlexService->getChunkedState($this->type, $this->contextId)
             ?? ['processed' => 0, 'total' => 0, 'accumulator' => null, 'is_complete' => false];
 
-        // A duplicate chunk job may arrive after the chain already finalized.
+        // Duplicate chunk job arriving after completion.
         if (!empty($state['is_complete'])) {
             return;
         }
 
-        // Keep the dispatch lock alive for the whole chain. Without this, a
-        // long run (>5 min) lets the lock expire and a second user request
-        // can dispatch a duplicate chunk that re-processes the same offset.
+        // Refresh the dispatch lock; without this a long chain (>5 min) can spawn duplicates.
         Cache::put(
             OpenAlexService::lockKeyFor($this->type, $this->contextId),
             1,
@@ -119,9 +116,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
                 self::TYPE_CITATIONS_BY_COUNTRY => $enrichedService->getCitationsByCountryChunk($this->contextId, $state),
             };
         } catch (\Throwable $e) {
-            // Persist what we had before the failure so the next attempt
-            // doesn't reprocess every item from offset 0. Re-throw so Laravel
-            // counts the failure against $tries and surfaces it in horizon.
+            // Persist progress so the retry doesn't restart from offset 0.
             $openAlexService->putChunkedState($this->type, $this->contextId, $state);
             throw $e;
         }
@@ -131,5 +126,18 @@ class ComputeOpenAlexAggregateJob extends BaseJob
         if (empty($newState['is_complete'])) {
             $openAlexService->dispatchNextChunk($this->type, $this->contextId);
         }
+    }
+
+    private function resolveContactEmail(): ?string
+    {
+        $plugin = PluginRegistry::getPlugin('generic', 'publicstatsplugin');
+        $email = $plugin?->getSetting($this->contextId, 'openAlexEmail') ?: null;
+
+        if (!$email) {
+            $context = Application::get()->getContextDAO()->getById($this->contextId);
+            $email = $context?->getData('contactEmail') ?: null;
+        }
+
+        return $email;
     }
 }

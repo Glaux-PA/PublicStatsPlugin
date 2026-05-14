@@ -29,25 +29,12 @@ use APP\plugins\generic\publicStats\services\BaseStatsService;
 
 class DecisionStatsService extends BaseStatsService
 {
-    /**
-     * Decision types indicating rejection.
-     */
     private const DECLINE_DECISIONS = [
         Decision::DECLINE,
         Decision::INITIAL_DECLINE,
         Decision::DECLINE_INTERNAL,
     ];
 
-    /**
-     * Get first decision statistics.
-     *
-     * Calculates average time from submission to first editorial decision.
-     *
-     * @param int $contextId Journal/press ID
-     * @param string|null $dateStart Start date in Ymd format
-     * @param string|null $dateEnd End date in Ymd format
-     * @return array Decision timing statistics
-     */
     public function getFirstDecisionStats(
         int $contextId,
         ?string $dateStart = null,
@@ -81,16 +68,6 @@ class DecisionStatsService extends BaseStatsService
         return $this->calculateAverages($decisionsData);
     }
 
-    /**
-     * Get acceptance to publication statistics.
-     *
-     * Calculates average time from submission to publication for published submissions.
-     *
-     * @param int $contextId Journal/press ID
-     * @param string|null $dateStart Start date in Ymd format
-     * @param string|null $dateEnd End date in Ymd format
-     * @return array Publication timing statistics
-     */
     public function getAcceptancePublicationStats(
         int $contextId,
         ?string $dateStart = null,
@@ -123,14 +100,6 @@ class DecisionStatsService extends BaseStatsService
         return $this->calculatePublicationAverages($publicationData);
     }
 
-    /**
-     * Get submissions within date range.
-     *
-     * @param int $contextId Context ID
-     * @param int $startTime Start timestamp
-     * @param int $endTime End timestamp
-     * @return array Submissions indexed by ID
-     */
     private function getSubmissionsInRange(
         int $contextId,
         int $startTime,
@@ -158,12 +127,6 @@ class DecisionStatsService extends BaseStatsService
         return $submissionsInRange;
     }
 
-    /**
-     * Get all decisions for given submissions.
-     *
-     * @param array $submissionIds Submission IDs
-     * @return array Decisions grouped by submission ID
-     */
     private function getDecisionsForSubmissions(array $submissionIds): array
     {
         $allDecisions = Repo::decision()
@@ -231,16 +194,6 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
-    /**
-     * Process first decisions for all submissions.
-     *
-     * @param array $submissions Submissions to process
-     * @param array $decisionsBySubmission Decisions grouped by submission
-     * @param array $reviewStatus Review status data
-     * @param int $startTime Start timestamp
-     * @param int $endTime End timestamp
-     * @return array Processed decision data
-     */
     private function processFirstDecisions(
         array $submissions,
         array $decisionsBySubmission,
@@ -288,12 +241,6 @@ class DecisionStatsService extends BaseStatsService
         return $decisionsData;
     }
 
-    /**
-     * Get the first decision from a list.
-     *
-     * @param array $decisions Array of decisions
-     * @return object|null First decision or null
-     */
     private function getFirstDecision(array $decisions): ?object
     {
         $firstDecision = null;
@@ -315,15 +262,6 @@ class DecisionStatsService extends BaseStatsService
         return $firstDecision;
     }
 
-    /**
-     * Build decision data array.
-     *
-     * @param object $submission Submission object
-     * @param object $decision Decision object
-     * @param array $reviewStatus Review status data
-     * @param int $submissionId Submission ID
-     * @return array|null Decision data or null if invalid
-     */
     private function buildDecisionData(
         object $submission,
         object $decision,
@@ -372,14 +310,6 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
-    /**
-     * Get recommendation from review assignments.
-     *
-     * @param bool $hasReview Whether submission had review
-     * @param array $reviewAssignments Review assignments
-     * @param int $dateDecidedTime Decision timestamp
-     * @return string|null Recommendation or null
-     */
     private function getRecommendation(
         bool $hasReview,
         array $reviewAssignments,
@@ -399,15 +329,6 @@ class DecisionStatsService extends BaseStatsService
         return null;
     }
 
-    /**
-     * Process publications for timing statistics.
-     *
-     * @param iterable $submissions Published submissions
-     * @param array $reviewStatus Review status data
-     * @param int $startTime Start timestamp
-     * @param int $endTime End timestamp
-     * @return array Publication timing data
-     */
     private function processPublications(
         iterable $submissions,
         array $reviewStatus,
@@ -435,7 +356,6 @@ class DecisionStatsService extends BaseStatsService
             $submissionTime = strtotime($dateSubmitted);
             $publishedTime = strtotime($datePublished);
 
-            // Filter by publication date range
             if ($publishedTime < $startTime || $publishedTime > $endTime) {
                 continue;
             }
@@ -474,12 +394,6 @@ class DecisionStatsService extends BaseStatsService
         return $publicationData;
     }
 
-    /**
-     * Calculate average decision times.
-     *
-     * @param array $decisionsData Decision timing data
-     * @return array Computed averages and individual decisions
-     */
     private function calculateAverages(array $decisionsData): array
     {
         $totalDaysReviewed = 0;
@@ -509,12 +423,6 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
-    /**
-     * Calculate average publication times.
-     *
-     * @param array $publicationData Publication timing data
-     * @return array Computed averages and individual publications
-     */
     private function calculatePublicationAverages(array $publicationData): array
     {
         $totalDaysReviewed = 0;
@@ -544,11 +452,6 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
-    /**
-     * Get empty decision stats structure.
-     *
-     * @return array Empty stats array
-     */
     private function getEmptyDecisionStats(): array
     {
         return [
@@ -560,12 +463,6 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
-    /**
-     * Get human-readable decision type name.
-     *
-     * @param int $decisionType Decision constant
-     * @return string Localized decision type name
-     */
     private function getDecisionTypeName(int $decisionType): string
     {
         $acceptDecisions = [

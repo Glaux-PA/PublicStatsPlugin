@@ -29,9 +29,6 @@ use APP\plugins\generic\publicStats\helpers\StatsAggregationHelper;
 
 class IssueStatsService extends BaseStatsService
 {
-    /**
-    * Get issue statistics
-    */
     public function getIssueStats(
         PKPRequest $request,
         int $contextId,

@@ -22,50 +22,24 @@ namespace APP\plugins\generic\publicStats\classes;
 
 class PublicStatsConstants
 {
-    /**
-     * Minimum year for statistics queries.
-     * Prevents excessive data processing for historical records
-     * and establishes a reasonable lower bound for statistics display.
-     */
+    /** Lower bound for year-based filters and selectors. */
     public const MIN_YEAR = 2010;
 
-    /**
-     * Cache TTL for internal statistics in seconds (1 hour).
-     * Used for frequently changing journal-specific data such as
-     * download counts and view metrics.
-     */
+    /** Cache TTL for local stats (1 hour). */
     public const CACHE_TTL_INTERNAL = 3600;
 
-    /**
-     * Cache TTL for external API data in seconds (7 days).
-     * Used for OpenAlex data which updates less frequently.
-     * Longer TTL reduces API calls and improves performance.
-     */
+    /** Cache TTL for OpenAlex aggregates (7 days). */
     public const CACHE_TTL_EXTERNAL = 604800;
 
     /**
-     * Submissions processed per chunk in the chunked OpenAlex jobs.
-     *
-     * 100 is sized for deployments running an async queue worker (acron plugin
-     * or `php tools/jobs.php run` via cron), which is the documented setup.
-     * At ~300-600ms per submission this gives 30-60s per chunk — safely within
-     * the job's 600s timeout but too long for a 30s inline-runner setup.
-     *
-     * If your installation runs jobs inline on the same HTTP request, drop
-     * this back to 50.
+     * Submissions processed per chunked OpenAlex job invocation.
+     * Sized for async workers (~30-60s per chunk). Drop to 50 if jobs run inline.
      */
     public const MAX_INLINE_JOB_SUBMISSIONS = 100;
 
-    /**
-     * OpenAlex API rate limit delay in microseconds.
-     * 100,000 microseconds = 100ms, allowing ~10 requests per second.
-     * Ensures compliance with OpenAlex polite pool rate limits.
-     */
+    /** Microsecond delay between OpenAlex API calls (~10 req/s, polite-pool safe). */
     public const OPENALEX_RATE_LIMIT_DELAY = 100000;
 
-    /**
-     * Sidebar section groups (used for form headers and group-level collapsing).
-     */
     public const SECTION_GROUPS = [
         'general'   => 'plugins.generic.publicStats.settings.section.general',
         'editorial' => 'plugins.generic.publicStats.settings.section.editorial',
@@ -73,10 +47,7 @@ class PublicStatsConstants
         'impact'    => 'plugins.generic.publicStats.settings.section.impact',
     ];
 
-    /**
-     * All subsections per group: content-section div id → sidebar label key.
-     * Order here matches the sidebar order.
-     */
+    /** Subsections by group: content-section id → sidebar label key. Order = sidebar order. */
     public const SUBSECTIONS = [
         'general' => [
             'monthly-trends'          => 'plugins.generic.publicStats.monthlyTrends',

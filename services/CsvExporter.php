@@ -38,9 +38,6 @@ class CsvExporter
     ) {
     }
 
-    // ========================================
-    // Access metrics
-    // ========================================
 
     public function monthly(int $contextId, ?string $year): array
     {
@@ -106,9 +103,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Top articles
-    // ========================================
 
     public function topDownloaded(PKPRequest $request, int $contextId, ?string $year, int $limit): array
     {
@@ -156,9 +150,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Editorial
-    // ========================================
 
     public function editorial(int $contextId, ?string $year): array
     {
@@ -279,9 +270,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Authors / reviewers
-    // ========================================
 
     public function authorsByCountry(int $contextId): array
     {
@@ -340,9 +328,6 @@ class CsvExporter
         return compact('filename', 'headers', 'rows');
     }
 
-    // ========================================
-    // Issues / sections
-    // ========================================
 
     public function issues(PKPRequest $request, int $contextId, ?string $year): array
     {
@@ -436,9 +421,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Citations / enriched
-    // ========================================
 
     /**
      * Refuse to export a chunked aggregate that hasn't finished computing.
@@ -512,8 +494,6 @@ class CsvExporter
     public function citationsByCountry(int $contextId): array
     {
         $data = $this->enrichedService->getCitationsByCountry($contextId);
-        // The chunked service returns either an `is_computing` placeholder or
-        // the formatted list directly (no 'data' wrapper).
         if (is_array($data) && !empty($data['is_computing'])) {
             $this->assertReady($data, 'citations by country');
         }
@@ -619,9 +599,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Full report
-    // ========================================
 
     public function fullReport(int $contextId, ?string $year): array
     {
@@ -652,9 +629,6 @@ class CsvExporter
         ];
     }
 
-    // ========================================
-    // Shared helpers
-    // ========================================
 
     /**
      * Build the date range used by statistics queries, matching the handler's
@@ -732,9 +706,7 @@ class CsvExporter
         if ($yearFilter === null || $yearFilter === '' || $yearFilter === 'all') {
             return 'all';
         }
-        // Strict: only accept a 4-digit year in a reasonable range. Anything
-        // else falls back to 'all' so unsanitised input from `?year=foo` can't
-        // leak weird characters into the CSV filename / Content-Disposition.
+        // Only accept a 4-digit year in range; anything else is sanitised to 'all'.
         if (preg_match('/^\d{4}$/', $yearFilter)) {
             $y = (int) $yearFilter;
             if ($y >= 1900 && $y <= ((int) date('Y') + 1)) {

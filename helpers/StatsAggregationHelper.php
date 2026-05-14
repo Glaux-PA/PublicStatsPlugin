@@ -24,10 +24,6 @@ use PKP\submission\Submission;
 
 class StatsAggregationHelper
 {
-    /**
-     * Aggregate statistics by section
-     * 
-     */
     public static function aggregateBySection(
         iterable $downloadRecords,
         iterable $viewRecords,
@@ -54,10 +50,6 @@ class StatsAggregationHelper
         );
     }
 
-    /**
-     * Aggregate statistics by issue
-     * 
-     */
     public static function aggregateByIssue(
         iterable $downloadRecords,
         iterable $viewRecords,
@@ -84,10 +76,6 @@ class StatsAggregationHelper
         );
     }
 
-    /**
-     * Generic aggregation by any entity (section, issue, author, etc.)
-     * 
-     */
     public static function aggregateByEntity(
         iterable $downloadRecords,
         iterable $viewRecords,
@@ -137,10 +125,6 @@ class StatsAggregationHelper
         return self::prepareFinalResults($entityStats);
     }
 
-    /**
-     * Extract unique submission IDs from all records
-     * 
-     */
     private static function extractUniqueSubmissionIds(
         iterable $downloadRecords,
         iterable $viewRecords
@@ -162,10 +146,6 @@ class StatsAggregationHelper
         return array_keys($submissionIds);
     }
 
-    /**
-     * Build mapping from submission ID to entity ID
-     * 
-     */
     private static function buildSubmissionToEntityMap(
         array $submissionIds,
         int $contextId,
@@ -205,10 +185,6 @@ class StatsAggregationHelper
         return $submissionToEntityMap;
     }
 
-    /**
-     * Validate entities and build entity info map
-     * 
-     */
     private static function validateEntities(
         array $entityIds,
         int $contextId,
@@ -227,10 +203,6 @@ class StatsAggregationHelper
         return $validEntities;
     }
 
-    /**
-     * Aggregate metrics (downloads or views) by entity
-     * 
-     */
     private static function aggregateMetrics(
         iterable $records,
         array $submissionToEntityMap,
@@ -304,10 +276,6 @@ class StatsAggregationHelper
         return $results;
     }
 
-    /**
-     * Aggregate statistics by a single metric type (for backward compatibility)
-     * 
-     */
     public static function aggregateSingleMetric(
         iterable $records,
         int $contextId,
@@ -338,10 +306,6 @@ class StatsAggregationHelper
         }
     }
 
-    /**
-     * Count submissions by entity (without metrics)
-     * Useful for editorial statistics
-     */
     public static function countByEntity(
         iterable $submissions,
         callable $entityIdExtractor,
@@ -378,10 +342,6 @@ class StatsAggregationHelper
         return $results;
     }
 
-    /**
-     * Optimized version: Aggregate by entity when you already have submissions loaded
-     * Avoids re-loading submissions from database
-     */
     public static function aggregateWithPreloadedSubmissions(
         iterable $downloadRecords,
         iterable $viewRecords,

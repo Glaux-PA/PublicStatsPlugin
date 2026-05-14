@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Cache;
 
 trait EnrichedStatsTrait
 {
-    /**
-     * Get total enriched statistics (combines local + OpenAlex)
-     */
     public function totalEnriched(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -55,9 +52,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get external citations count
-     */
     public function externalCitations(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -86,9 +80,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get top cited articles from OpenAlex
-     */
     public function topCitedArticles(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -112,9 +103,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get research topics distribution
-     */
     public function topicsDistribution(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -132,9 +120,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get citation timeline for specific article
-     */
     public function articleCitationTimeline(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -182,9 +167,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get top cited articles
-     */
     public function topCited(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -211,9 +193,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get citation evolution
-     */
     public function citationEvolution(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -231,9 +210,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get open access statistics
-     */
     public function openAccessStats(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -251,9 +227,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get thematic profile
-     */
     public function thematicProfile(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -270,9 +243,6 @@ trait EnrichedStatsTrait
             $this->outputError('Error loading thematic profile', 500);
         }
     }
-    /**
-     * Get citations by country (map data)
-     */
     public function citationsByCountry(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -285,9 +255,7 @@ trait EnrichedStatsTrait
             $contextId = $context->getId();
             $cacheKey  = "citations_by_country_{$contextId}";
 
-            // Don't use Cache::remember — while the chunked job is running
-            // the service returns ['is_computing' => true], which must not be
-            // cached for the full external TTL.
+            // Manual get/put: skip the cache when the service returns is_computing.
             $data = Cache::get($cacheKey);
             if ($data === null) {
                 $data = $this->enrichedService->getCitationsByCountry($contextId);
@@ -303,9 +271,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get citing journals
-     */
     public function citingJournals(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -318,8 +283,7 @@ trait EnrichedStatsTrait
             $contextId = $context->getId();
             $cacheKey = "citing_journals_{$contextId}";
 
-            // Don't use Cache::remember — while the job is still running the service
-            // returns ['is_computing' => true], which must not be cached.
+            // Manual get/put: skip the cache when the service returns is_computing.
             $data = Cache::get($cacheKey);
             if ($data === null) {
                 $data = $this->enrichedService->getCitingJournals($request, $contextId);
@@ -335,9 +299,6 @@ trait EnrichedStatsTrait
         }
     }
 
-    /**
-     * Get citing institutions
-     */
     public function citingInstitutions(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();

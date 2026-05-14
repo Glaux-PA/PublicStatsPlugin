@@ -472,7 +472,6 @@
         var enabledSubsections = {/literal}{$enabledSubsections|json_encode}{literal};
         var defaultSection     = "{/literal}{$defaultSection}{literal}";
 
-        // Translation strings — JSON-encoded server-side so msgstr can contain " or \ safely.
         var i18n = {/literal}{$publicStatsI18nJson nofilter}{literal};
     {/literal}
 </script>
@@ -498,7 +497,8 @@
                 <div class="section-content" id="general-content">
                     <ul class="sidebar-menu">
                         <li class="menu-item">
-                            <div class="menu-link" data-section="monthly-trends" onclick="showSection('monthly-trends')">
+                            <div class="menu-link" data-section="monthly-trends"
+                                onclick="showSection('monthly-trends')">
                                 {translate key="plugins.generic.publicStats.monthlyTrends"}</div>
                         </li>
                         <li class="menu-item">
@@ -506,7 +506,8 @@
                                 {translate key="plugins.generic.publicStats.annualTrends"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="general-downloads" onclick="showSection('general-downloads')">
+                            <div class="menu-link" data-section="general-downloads"
+                                onclick="showSection('general-downloads')">
                                 {translate key="plugins.generic.publicStats.contributionsDownloads"}</div>
                         </li>
                         <li class="menu-item">
@@ -514,23 +515,28 @@
                                 {translate key="plugins.generic.publicStats.contributionsViews"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="general-sections" onclick="showSection('general-sections')">
+                            <div class="menu-link" data-section="general-sections"
+                                onclick="showSection('general-sections')">
                                 {translate key="plugins.generic.publicStats.sections"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="general-issues" onclick="showSection('general-issues')">
+                            <div class="menu-link" data-section="general-issues"
+                                onclick="showSection('general-issues')">
                                 {translate key="plugins.generic.publicStats.issues"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="general-languages" onclick="showSection('general-languages')">
+                            <div class="menu-link" data-section="general-languages"
+                                onclick="showSection('general-languages')">
                                 {translate key="plugins.generic.publicStats.languageDistribution"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="language-trends" onclick="showSection('language-trends')">
+                            <div class="menu-link" data-section="language-trends"
+                                onclick="showSection('language-trends')">
                                 {translate key="plugins.generic.publicStats.languageTrends"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="geographic-distribution" onclick="showSection('geographic-distribution')">
+                            <div class="menu-link" data-section="geographic-distribution"
+                                onclick="showSection('geographic-distribution')">
                                 {translate key="plugins.generic.publicStats.geographicDistribution"}</div>
                         </li>
                     </ul>
@@ -550,32 +556,39 @@
                 <div class="section-content section-collapsed" id="editorial-content">
                     <ul class="sidebar-menu">
                         <li class="menu-item">
-                            <div class="menu-link" data-section="author-individual-stats" onclick="showSection('author-individual-stats')">
+                            <div class="menu-link" data-section="author-individual-stats"
+                                onclick="showSection('author-individual-stats')">
                                 {translate key="plugins.generic.publicStats.authorIndividualStats"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="editorial-submissions" onclick="showSection('editorial-submissions')">
+                            <div class="menu-link" data-section="editorial-submissions"
+                                onclick="showSection('editorial-submissions')">
                                 {translate key="plugins.generic.publicStats.monthlyContributions"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="editorial-annual" onclick="showSection('editorial-annual')">
+                            <div class="menu-link" data-section="editorial-annual"
+                                onclick="showSection('editorial-annual')">
                                 {translate key="plugins.generic.publicStats.annualContributions"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="authors-by-country" onclick="showSection('authors-by-country')">
+                            <div class="menu-link" data-section="authors-by-country"
+                                onclick="showSection('authors-by-country')">
                                 {translate key="plugins.generic.publicStats.authorsByCountry"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="authors-by-institution" onclick="showSection('authors-by-institution')">
+                            <div class="menu-link" data-section="authors-by-institution"
+                                onclick="showSection('authors-by-institution')">
                                 {translate key="plugins.generic.publicStats.authorsByInstitution"}
                             </div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="reviewers-by-country" onclick="showSection('reviewers-by-country')">
+                            <div class="menu-link" data-section="reviewers-by-country"
+                                onclick="showSection('reviewers-by-country')">
                                 {translate key="plugins.generic.publicStats.reviewersByCountry"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="reviewers-by-institution" onclick="showSection('reviewers-by-institution')">
+                            <div class="menu-link" data-section="reviewers-by-institution"
+                                onclick="showSection('reviewers-by-institution')">
                                 {translate key="plugins.generic.publicStats.reviewersByInstitution"}
                             </div>
                         </li>
@@ -585,12 +598,14 @@
                             </div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="first-decision-stats" onclick="showSection('first-decision-stats')">
+                            <div class="menu-link" data-section="first-decision-stats"
+                                onclick="showSection('first-decision-stats')">
                                 {translate key="plugins.generic.publicStats.firstDecisionDays"}
                             </div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="acceptance-publication-stats" onclick="showSection('acceptance-publication-stats')">
+                            <div class="menu-link" data-section="acceptance-publication-stats"
+                                onclick="showSection('acceptance-publication-stats')">
                                 {translate key="plugins.generic.publicStats.acceptancePublicationDays"}
                             </div>
                         </li>
@@ -611,7 +626,8 @@
                 <div class="section-content section-collapsed" id="reach-content">
                     <ul class="sidebar-menu">
                         <li class="menu-item">
-                            <div class="menu-link" data-section="recent-downloads" onclick="showSection('recent-downloads')">
+                            <div class="menu-link" data-section="recent-downloads"
+                                onclick="showSection('recent-downloads')">
                                 {translate key="plugins.generic.publicStats.mostDownloaded60Days"}</div>
                         </li>
                         <li class="menu-item">
@@ -637,15 +653,18 @@
                                 {translate key="plugins.generic.publicStats.topCitedArticles"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="citation-evolution" onclick="showSection('citation-evolution')">
+                            <div class="menu-link" data-section="citation-evolution"
+                                onclick="showSection('citation-evolution')">
                                 {translate key="plugins.generic.publicStats.citationEvolution"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="open-access-stats" onclick="showSection('open-access-stats')">
+                            <div class="menu-link" data-section="open-access-stats"
+                                onclick="showSection('open-access-stats')">
                                 {translate key="plugins.generic.publicStats.openAccessStats"}</div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="thematic-profile" onclick="showSection('thematic-profile')">
+                            <div class="menu-link" data-section="thematic-profile"
+                                onclick="showSection('thematic-profile')">
                                 {translate key="plugins.generic.publicStats.thematicProfile"}</div>
                         </li>
                         <li class="menu-item">
@@ -654,7 +673,8 @@
                             </div>
                         </li>
                         <li class="menu-item">
-                            <div class="menu-link" data-section="citing-journals" onclick="showSection('citing-journals')">
+                            <div class="menu-link" data-section="citing-journals"
+                                onclick="showSection('citing-journals')">
                                 {translate key="plugins.generic.publicStats.citingJournals"}
                             </div>
                         </li>
@@ -685,7 +705,8 @@
             </div>
 
             {* Monthly trends section *}
-            <div id="monthly-trends" class="content-section"{if $defaultSection !== 'monthly-trends'} style="display:none"{/if}>
+            <div id="monthly-trends" class="content-section" {if $defaultSection !== 'monthly-trends'}
+                style="display:none" {/if}>
                 <div class="content-header">
                     <h1 class="content-title">
                         {translate key="plugins.generic.publicStats.monthlyOverview"}{if $selectedYear}
@@ -937,7 +958,8 @@
 
                 <div class="content-header">
                     <h1 class="content-title">{translate key="plugins.generic.publicStats.languageDistribution"}</h1>
-                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.languageDistributionDesc"}</p>
+                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.languageDistributionDesc"}
+                    </p>
                 </div>
                 <div class="stats-grid">
                     <div class="stats-card">
@@ -984,7 +1006,8 @@
                 <div class="stats-grid">
                     <div class="stats-card">
                         <div class="card-header">
-                            <h2 class="card-title">{translate key="plugins.generic.publicStats.languageTrendsChart"}</h2>
+                            <h2 class="card-title">{translate key="plugins.generic.publicStats.languageTrendsChart"}
+                            </h2>
                             <button onclick="resetChartZoom('languageTrendsChart')"
                                 class="reset-zoom-btn">{translate key="plugins.generic.publicStats.resetZoom"}</button>
                         </div>
@@ -1369,7 +1392,8 @@
                 </div>
                 <div class="content-header">
                     <h1 class="content-title">{translate key="plugins.generic.publicStats.reviewerListTitle"}</h1>
-                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.reviewerListDescription"}</p>
+                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.reviewerListDescription"}
+                    </p>
                 </div>
                 <div class="stats-grid">
                     <div class="stats-card" style="grid-column: span 2;">

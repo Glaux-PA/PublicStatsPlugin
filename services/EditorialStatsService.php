@@ -30,27 +30,12 @@ use APP\plugins\generic\publicStats\services\BaseStatsService;
 
 class EditorialStatsService extends BaseStatsService
 {
-    /**
-     * Decision types that indicate rejection.
-     * Includes initial decline, standard decline, and internal decline.
-     */
     private const DECLINE_DECISIONS = [
         Decision::DECLINE,
         Decision::INITIAL_DECLINE,
         Decision::DECLINE_INTERNAL,
     ];
 
-    /**
-     * Get monthly editorial statistics.
-     *
-     * Returns counts of submissions received, declined, published, and
-     * in-process for each month in the specified range.
-     *
-     * @param int $contextId Journal/press ID
-     * @param string|null $dateStart Start date in Ymd format
-     * @param string|null $dateEnd End date in Ymd format
-     * @return array|null Monthly editorial statistics
-     */
     public function getStats(
         int $contextId,
         ?string $dateStart = null,
@@ -77,14 +62,6 @@ class EditorialStatsService extends BaseStatsService
         return array_values($monthlyStats);
     }
 
-    /**
-     * Get annual editorial statistics.
-     *
-     * Returns yearly aggregated counts from MIN_YEAR to current year.
-     *
-     * @param int $contextId Journal/press ID
-     * @return array Annual editorial statistics
-     */
     public function getAnnualStats(int $contextId): array
     {
         $startYear = PublicStatsConstants::MIN_YEAR;
@@ -104,15 +81,6 @@ class EditorialStatsService extends BaseStatsService
         return array_values($annualStats);
     }
 
-    /**
-     * Initialize monthly statistics structure.
-     *
-     * Creates empty counters for each month in the range.
-     *
-     * @param int $startTime Start timestamp
-     * @param int $endTime End timestamp
-     * @return array Initialized monthly stats array
-     */
     private function initializeMonthlyStats(int $startTime, int $endTime): array
     {
         $monthlyStats = [];
@@ -134,15 +102,6 @@ class EditorialStatsService extends BaseStatsService
         return $monthlyStats;
     }
 
-    /**
-     * Initialize annual statistics structure.
-     *
-     * Creates empty counters for each year in the range.
-     *
-     * @param int $startYear Start year
-     * @param int $endYear End year
-     * @return array Initialized annual stats array
-     */
     private function initializeAnnualStats(int $startYear, int $endYear): array
     {
         $annualStats = [];
@@ -227,17 +186,6 @@ class EditorialStatsService extends BaseStatsService
         return $decisionsBySubmission;
     }
 
-    /**
-     * Process a submission for monthly statistics.
-     *
-     * Categorizes the submission based on its status and updates
-     * the appropriate month's counters.
-     *
-     * @param Submission $submission Submission to process
-     * @param array &$monthlyStats Stats array to update
-     * @param int $startTime Range start timestamp
-     * @param int $endTime Range end timestamp
-     */
     private function processSubmission(
         Submission $submission,
         array &$monthlyStats,
@@ -281,25 +229,13 @@ class EditorialStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Process a published submission.
-     *
-     * Records the publication in the month it was published.
-     *
-     * @param Submission $submission Published submission
-     * @param array &$monthlyStats Stats array to update
-     * @param int $startTime Range start timestamp
-     * @param int $endTime Range end timestamp
-     */
     private function processPublished(
         Submission $submission,
         array &$monthlyStats,
         int $startTime,
         int $endTime
     ): void {
-        // Use the currently visible publication (what readers actually see),
-        // not the latest draft — a 2023 article with a 2024 unpublished revision
-        // should still count for 2023.
+        // Visible publication, not latest draft (unpublished revisions shouldn't reassign the year).
         $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
@@ -321,17 +257,6 @@ class EditorialStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Process a declined submission.
-     *
-     * Finds the most recent decline decision and records it
-     * in the appropriate month.
-     *
-     * @param Submission $submission Declined submission
-     * @param array &$monthlyStats Stats array to update
-     * @param int $startTime Range start timestamp
-     * @param int $endTime Range end timestamp
-     */
     private function processDeclined(
         Submission $submission,
         array &$monthlyStats,
@@ -368,16 +293,6 @@ class EditorialStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Process a submission for annual statistics.
-     *
-     * Similar to processSubmission but aggregates by year.
-     *
-     * @param Submission $submission Submission to process
-     * @param array &$annualStats Stats array to update
-     * @param int $startYear Range start year
-     * @param int $endYear Range end year
-     */
     private function processSubmissionAnnual(
         Submission $submission,
         array &$annualStats,
@@ -420,23 +335,13 @@ class EditorialStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Process published submission for annual statistics.
-     *
-     * @param Submission $submission Published submission
-     * @param array &$annualStats Stats array to update
-     * @param int $startYear Range start year
-     * @param int $endYear Range end year
-     */
     private function processPublishedAnnual(
         Submission $submission,
         array &$annualStats,
         int $startYear,
         int $endYear
     ): void {
-        // Use the currently visible publication (what readers actually see),
-        // not the latest draft — a 2023 article with a 2024 unpublished revision
-        // should still count for 2023.
+        // Visible publication, not latest draft (unpublished revisions shouldn't reassign the year).
         $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
@@ -456,14 +361,6 @@ class EditorialStatsService extends BaseStatsService
         }
     }
 
-    /**
-     * Process declined submission for annual statistics.
-     *
-     * @param Submission $submission Declined submission
-     * @param array &$annualStats Stats array to update
-     * @param int $startYear Range start year
-     * @param int $endYear Range end year
-     */
     private function processDeclinedAnnual(
         Submission $submission,
         array &$annualStats,

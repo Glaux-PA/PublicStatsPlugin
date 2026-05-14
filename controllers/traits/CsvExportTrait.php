@@ -24,9 +24,6 @@ use PKP\core\PKPRequest;
 
 trait CsvExportTrait
 {
-    // ========================================
-    // HTTP plumbing
-    // ========================================
 
     /**
      * Stream a CSV payload ({filename, headers, rows}) with UTF-8 BOM.
@@ -118,9 +115,6 @@ trait CsvExportTrait
         }
     }
 
-    // ========================================
-    // Endpoints
-    // ========================================
 
     public function exportMonthly(array $args, PKPRequest $request): void
     {
@@ -258,8 +252,7 @@ trait CsvExportTrait
 
     public function exportLanguages(array $args, PKPRequest $request): void
     {
-        $issueIdRaw = $request->getUserVar('issueId');
-        $issueId = ($issueIdRaw !== null && ctype_digit((string) $issueIdRaw)) ? (int) $issueIdRaw : null;
+        $issueId = InputValidator::validatePositiveInt($request->getUserVar('issueId'), 0, 0) ?: null;
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->languages($ctx, $issueId),
@@ -317,7 +310,7 @@ trait CsvExportTrait
 
     public function exportCitingJournals(array $args, PKPRequest $request): void
     {
-        $yearFilter = $request->getUserVar('year');
+        $yearFilter = InputValidator::validateYear($request->getUserVar('year'));
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citingJournals($request, $ctx, $yearFilter),
@@ -382,10 +375,10 @@ trait CsvExportTrait
             'full report'
         );
     }
-
+    
     public function exportCitingInstitutions(array $args, PKPRequest $request): void
     {
-        $yearFilter = $request->getUserVar('year');
+        $yearFilter = InputValidator::validateYear($request->getUserVar('year'));
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citingInstitutions($request, $ctx, $yearFilter),

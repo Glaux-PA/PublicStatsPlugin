@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Cache;
 
 trait AuthorReviewerStatsTrait
 {
-    /**
-     * Get authors by country
-     */
     public function authorsByCountry(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -52,9 +49,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get authors by institution
-     */
     public function authorsByInstitution(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -80,9 +74,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get reviewers by country
-     */
     public function reviewersByCountry(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -108,9 +99,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get reviewers by institution
-     */
     public function reviewersByInstitution(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -136,9 +124,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get alphabetical list of reviewers for a given year (or all years).
-     */
     public function reviewerList(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -166,9 +151,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get authors list (for dropdown/selection)
-     */
     public function authorsList(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -201,9 +183,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get statistics for specific author
-     */
     public function authorStats(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -252,9 +231,6 @@ trait AuthorReviewerStatsTrait
         }
     }
 
-    /**
-     * Get authors list for stats page (with filters)
-     */
     public function authorsListForStats(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -265,7 +241,7 @@ trait AuthorReviewerStatsTrait
 
         try {
             $contextId = $context->getId();
-            $minPublications = 1; // Minimum 1 publication required
+            $minPublications = 1;
             
             $cacheKey = "authors_list_stats_{$contextId}";
             

@@ -21,6 +21,7 @@ use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
 use APP\core\Application;
+use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\controllers\PublicStatisticsHandler;
 
 class PublicStatsPlugin extends GenericPlugin
@@ -28,7 +29,7 @@ class PublicStatsPlugin extends GenericPlugin
     /** @copydoc GenericPlugin::register() */
     public function register($category, $path, $mainContextId = null): bool
     {
-        $success = parent::register($category, $path);
+        $success = parent::register($category, $path, $mainContextId);
 
         if ($success && $this->getEnabled()) {
             Hook::add('NavigationMenus::itemTypes', [$this, 'addMenuItemType']);
@@ -39,17 +40,13 @@ class PublicStatsPlugin extends GenericPlugin
         return $success;
     }
 
-    /**
-     * Provide a name for this plugin
-     */
+    /** @copydoc Plugin::getDisplayName() */
     public function getDisplayName(): string
     {
         return __('plugins.generic.publicStats.displayName');
     }
 
-    /**
-     * Provide a description for this plugin
-     */
+    /** @copydoc Plugin::getDescription() */
     public function getDescription(): string
     {
         return __('plugins.generic.publicStats.description');
@@ -98,14 +95,12 @@ class PublicStatsPlugin extends GenericPlugin
                 $form = new PublicStatsSettingsForm($this);
                 
                 if ($request->getUserVar('save')) {
-                    // Handle form submission
                     $form->readInputData();
                     if ($form->validate()) {
                         $form->execute();
                         return new JSONMessage(true);
                     }
                 } else {
-                    // Display form - must call initData first!
                     $form->initData();
                 }
                 
@@ -114,9 +109,6 @@ class PublicStatsPlugin extends GenericPlugin
         return parent::manage($args, $request);
     }
 
-    /**
-     * Add navigation menu item type
-     */
     public function addMenuItemType($hookName, $args)
     {
         $types = &$args[0];
@@ -127,9 +119,6 @@ class PublicStatsPlugin extends GenericPlugin
         return false;
     }
 
-    /**
-     * Add navigation menu item settings
-     */
     public function addMenuItemTypeSettings($hookName, $args)
     {
         $navigationMenuItem = $args[0];
@@ -159,8 +148,28 @@ class PublicStatsPlugin extends GenericPlugin
     }
 
     /**
-     * Load handler for public stats pages
+     * Enabled subsection IDs for a context. Auto-enables subsections added
+     * after the last save using the knownSubsections snapshot.
      */
+    public function getEnabledSubsections(int $contextId): array
+    {
+        $all = array_merge(...array_values(array_map('array_keys', PublicStatsConstants::SUBSECTIONS)));
+        $saved = $this->getSetting($contextId, 'enabledSubsections');
+
+        if (!is_array($saved)) {
+            return $all;
+        }
+
+        $stillValid = array_values(array_intersect($saved, $all));
+        $known = $this->getSetting($contextId, 'knownSubsections');
+        if (!is_array($known)) {
+            return $stillValid;
+        }
+
+        $newlyAdded = array_values(array_diff($all, $known));
+        return array_values(array_merge($stillValid, $newlyAdded));
+    }
+
     public function loadHandler($hookName, $args)
     {
         $page = $args[0];

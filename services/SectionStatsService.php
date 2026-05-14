@@ -28,9 +28,6 @@ use APP\plugins\generic\publicStats\helpers\StatsAggregationHelper;
 
 class SectionStatsService extends BaseStatsService
 {
-    /**
-     * Get section statistics
-     */
     public function getSectionStats(
         int $contextId,
         ?string $dateStart = null,

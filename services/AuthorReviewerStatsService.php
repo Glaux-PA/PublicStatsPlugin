@@ -9,12 +9,8 @@
  * @class AuthorReviewerStatsService
  * @ingroup plugins_generic_publicStats
  *
- * @brief Service for author and reviewer geographic and institutional statistics.
- *
- * Provides aggregated data about author and reviewer distributions by country
- * and institution (contributor diversity), plus an alphabetical per-year
- * reviewer list (`getReviewerList`) used for the FECYT-aligned public
- * acknowledgment of completed peer reviews.
+ * @brief Author and reviewer statistics: distributions by country/institution
+ * and the per-year reviewer list.
  */
 
 declare(strict_types=1);
@@ -26,18 +22,12 @@ use APP\facades\Repo;
 use Illuminate\Support\Facades\DB;
 use Sokil\IsoCodes\IsoCodesFactory;
 
-/**
- * Service for author and reviewer statistics
- */
 class AuthorReviewerStatsService
 {
     public function __construct(
         private readonly IsoCodesFactory $isoCodes
     ) {}
 
-    /**
-     * Get authors by country
-     */
     public function getAuthorsByCountry(int $contextId): ?array
     {
         $countryStats = [];
@@ -64,9 +54,6 @@ class AuthorReviewerStatsService
             : $this->formatCountryData($countryStats);
     }
 
-    /**
-     * Get authors by institution
-     */
     public function getAuthorsByInstitution(int $contextId): ?array
     {
         $institutionStats = [];
@@ -79,7 +66,6 @@ class AuthorReviewerStatsService
         foreach ($authors as $author) {
             $affiliation = $author->getLocalizedAffiliation();
             
-            // Skip authors without affiliation
             if (empty($affiliation)) {
                 continue;
             }
@@ -111,9 +97,7 @@ class AuthorReviewerStatsService
             return [];
         }
 
-        // Match PKP's own ReviewAssignmentDAO: only count assignments that
-        // weren't declined or cancelled. Otherwise an editor who invited five
-        // people who all rejected would appear as five "active" reviewers.
+        // Mirror ReviewAssignmentDAO: skip declined/cancelled so invitees aren't counted.
         return DB::table('review_assignments')
             ->whereIn('submission_id', $submissionIds)
             ->where('declined', '<>', 1)
@@ -124,9 +108,6 @@ class AuthorReviewerStatsService
             ->all();
     }
 
-    /**
-     * Get reviewers by country
-     */
     public function getReviewersByCountry(int $contextId): ?array
     {
         $submissions = Repo::submission()
@@ -171,9 +152,6 @@ class AuthorReviewerStatsService
             ? null 
             : $this->formatCountryData($countryStats);
     }
-    /**
-     * Get reviewers by institution
-     */
     public function getReviewersByInstitution(int $contextId): ?array
     {
         $submissions = Repo::submission()
@@ -204,7 +182,6 @@ class AuthorReviewerStatsService
         foreach ($reviewers as $reviewer) {
             $affiliation = $reviewer->getLocalizedAffiliation();
             
-            // Skip reviewers without affiliation
             if (empty($affiliation)) {
                 continue;
             }
@@ -284,9 +261,6 @@ class AuthorReviewerStatsService
         return $list;
     }
 
-    /**
-     * Format country data with country names
-     */
     private function formatCountryData(array $countryStats): array
     {
         $formattedData = [];
@@ -317,9 +291,6 @@ class AuthorReviewerStatsService
         return $formattedData;
     }
 
-    /**
-     * Format institution data
-     */
     private function formatInstitutionData(array $institutionStats): array
     {
         $formattedData = [];

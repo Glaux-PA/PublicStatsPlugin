@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Cache;
 
 trait ArticleStatsTrait
 {
-    /**
-     * Get top downloaded articles endpoint
-     */
     public function topDownloaded(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -67,9 +64,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get top viewed articles endpoint
-     */
     public function topViewed(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -110,9 +104,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get recent top downloaded articles (last 60 days)
-     */
     public function recentDownloaded(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -142,9 +133,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get recent top viewed articles (last 60 days)
-     */
     public function recentViewed(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -174,9 +162,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get issue statistics
-     */
     public function issues(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -216,9 +201,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get section statistics
-     */
     public function sections(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
@@ -257,9 +239,6 @@ trait ArticleStatsTrait
         }
     }
 
-    /**
-     * Get sections list for dropdown
-     */
     public function sectionsList(array $args, PKPRequest $request): void
     {
         $context = $request->getContext();
