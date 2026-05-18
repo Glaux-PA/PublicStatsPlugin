@@ -12,6 +12,9 @@ msgstr ""
 "Language: ca_ES"
 
 # Plugin metadata
+msgid "manager.setup.statistics"
+msgstr "Estadístiques"
+
 msgid "manager.navigationMenus.statistics.conditionalWarning"
 msgstr "Aquest enllaç només apareixerà si el plugin d'estadístiques públiques està habilitat."
 
