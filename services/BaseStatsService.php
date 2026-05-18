@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/BaseStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,10 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Abstract base class for statistics services.
- *
- * Provides common functionality shared across all statistics services,
- * including date range handling, submission retrieval, and utility methods.
- * Concrete service classes should extend this class.
  */
 
 declare(strict_types=1);

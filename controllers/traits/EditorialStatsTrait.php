@@ -3,13 +3,11 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/EditorialStatsTrait.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing editorial workflow HTTP endpoints.
- *
- * Contains handlers for submission flow, decision timing,
- * and acceptance-to-publication metrics.
  */
 
 declare(strict_types=1);
@@ -31,12 +29,13 @@ trait EditorialStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('editorial-submissions', $context)) return;
 
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
             $dateRanges = $this->getDateRanges($year);
-            
+
             $cacheKey = sprintf(
                 "editorial_%d_%s_%s",
                 $contextId,
@@ -68,6 +67,7 @@ trait EditorialStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('editorial-annual', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -93,12 +93,13 @@ trait EditorialStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('first-decision-stats', $context)) return;
 
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
             $dateRanges = $this->getDateRanges($year);
-            
+
             $cacheKey = sprintf(
                 "first_decision_%d_%s_%s",
                 $contextId,
@@ -130,12 +131,13 @@ trait EditorialStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('acceptance-publication-stats', $context)) return;
 
         try {
             $contextId = $context->getId();
             $year = InputValidator::validateYear($request->getUserVar('year'));
             $dateRanges = $this->getDateRanges($year);
-            
+
             $cacheKey = sprintf(
                 "acceptance_publication_%d_%s_%s",
                 $contextId,

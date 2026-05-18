@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/controllers/PublicStatisticsHandler.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -170,6 +171,8 @@ class PublicStatisticsHandler extends Handler
             return;
         }
 
+        if (!$this->requireSubsection('monthly-trends', $context)) return;
+
         $year = InputValidator::validateYear($request->getUserVar('year'));
 
         try {
@@ -208,6 +211,8 @@ class PublicStatisticsHandler extends Handler
             return;
         }
 
+        if (!$this->requireSubsection('annual-trends', $context)) return;
+
         $contextId = $context->getId();
 
         $cacheKey = sprintf('annual_stats_%d', $contextId);
@@ -239,8 +244,10 @@ class PublicStatisticsHandler extends Handler
             return;
         }
 
+        if (!$this->requireSubsection('geographic-distribution', $context)) return;
+
         $contextId = $context->getId();
-        
+
         try {
             $data = Cache::remember(
                 "country_data_{$contextId}",
@@ -262,6 +269,8 @@ class PublicStatisticsHandler extends Handler
             $this->outputError('Context not found', 404);
             return;
         }
+
+        if (!$this->requireSubsection('general-languages', $context)) return;
 
         $contextId = $context->getId();
         $issueIdRaw = $request->getUserVar('issueId');
@@ -294,6 +303,8 @@ class PublicStatisticsHandler extends Handler
             $this->outputError('Context not found', 404);
             return;
         }
+
+        if (!$this->requireSubsection('language-trends', $context)) return;
 
         $contextId = $context->getId();
         $cacheKey = "language_trends_{$contextId}";
@@ -464,14 +475,53 @@ class PublicStatisticsHandler extends Handler
         ]);
     }
 
+    // Disabled subsections must not be reachable via direct HTTP even when the
+    // sidebar link is hidden — reviewer-list and author-stats expose personal data.
+    protected function requireSubsection(string $subsectionId, object $context): bool
+    {
+        if (!in_array($subsectionId, $this->getEnabledSubsections($context->getId()), true)) {
+            $this->outputError('Not found', 404);
+            return false;
+        }
+        return true;
+    }
+
     private function setupAssets(TemplateManager $templateMgr, PKPRequest $request): void
     {
         $baseUrl = $request->getBaseUrl() . '/' . $this->plugin->getPluginPath();
-
-        // Load order matters: helpers → feature modules → orchestrator.
-        // Each script writes to window.PublicStats; statistics.js destructures it.
         $jsBase = $baseUrl . '/templates/js';
+        $cssBase = $baseUrl . '/templates/styles';
 
+        // Vendor at CORE priority and registered before the plugin's own scripts.
+        $vendorJs = [
+            'publicStatsVendorChart'    => '/vendor/chart.min.js',
+            'publicStatsVendorHammer'   => '/vendor/hammer.min.js',
+            'publicStatsVendorZoom'     => '/vendor/chartjs-plugin-zoom.min.js',
+            'publicStatsVendorLeaflet'  => '/vendor/leaflet.js',
+        ];
+        foreach ($vendorJs as $handle => $path) {
+            $templateMgr->addJavaScript(
+                $handle,
+                $jsBase . $path,
+                ['contexts' => 'frontend', 'priority' => TemplateManager::STYLE_SEQUENCE_CORE]
+            );
+        }
+
+        $vendorCss = [
+            'publicStatsVendorLeafletCss'    => '/vendor/leaflet.css',
+            'publicStatsVendorFontAwesome'   => '/vendor/fontawesome/css/fontawesome.min.css',
+            'publicStatsVendorFaSolid'       => '/vendor/fontawesome/css/solid.min.css',
+        ];
+        foreach ($vendorCss as $handle => $path) {
+            $templateMgr->addStyleSheet(
+                $handle,
+                $cssBase . $path,
+                ['contexts' => 'frontend', 'priority' => TemplateManager::STYLE_SEQUENCE_CORE]
+            );
+        }
+
+        // Plugin scripts: helpers > feature modules > orchestrator.
+        // Each script writes to window.PublicStats; statistics.js destructures it.
         $templateMgr->addJavaScript(
             'publicStatsHelpers',
             $jsBase . '/statistics-helpers.js',
@@ -501,7 +551,7 @@ class PublicStatisticsHandler extends Handler
 
         $templateMgr->addStyleSheet(
             'publicStatsStyles',
-            $baseUrl . '/templates/styles/styles.css',
+            $cssBase . '/styles.css',
             ['contexts' => 'frontend']
         );
     }

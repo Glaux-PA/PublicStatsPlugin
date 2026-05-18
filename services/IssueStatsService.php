@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/IssueStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,9 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Service for issue-level statistics.
- *
- * Aggregates download and view statistics at the issue level,
- * providing metrics useful for understanding issue popularity.
  */
 
 declare(strict_types=1);

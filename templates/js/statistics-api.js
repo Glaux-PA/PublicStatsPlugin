@@ -561,7 +561,12 @@
         },
       };
 
+      const enabled = Array.isArray(window.enabledSubsections)
+        ? window.enabledSubsections
+        : null;
+
       Object.entries(exportMap).forEach(([sectionId, config]) => {
+        if (enabled && !enabled.includes(sectionId)) return;
         this.addToSection(sectionId, config.type, config.params || {});
       });
     },
@@ -615,41 +620,41 @@
                 <button class="export-menu-toggle" title="${
                   i18n.exportOptions || "Export Options"
                 }">
-                    📊 ${i18n.export || "Export"}
+                    ${i18n.export || "Export"}
                 </button>
                 <div class="export-menu-dropdown" style="display: none;">
                     <button data-action="fullReport">${
-                      i18n.fullReport || "📋 Full Report"
+                      i18n.fullReport || "Full Report"
                     }</button>
                     <hr>
                     <button data-action="monthly">${
-                      i18n.monthlyStats || "📅 Monthly Stats"
+                      i18n.monthlyStats || "Monthly Stats"
                     }</button>
                     <button data-action="annual">${
-                      i18n.annualStats || "📆 Annual Stats"
+                      i18n.annualStats || "Annual Stats"
                     }</button>
                     <button data-action="countries">${
-                      i18n.countryStats || "🌍 Country Stats"
+                      i18n.countryStats || "Country Stats"
                     }</button>
                     <hr>
                     <button data-action="topDownloaded">${
-                      i18n.topDownloaded || "⬇️ Top Downloaded"
+                      i18n.topDownloaded || "Top Downloaded"
                     }</button>
                     <button data-action="topViewed">${
-                      i18n.topViewed || "👁️ Top Viewed"
+                      i18n.topViewed || "Top Viewed"
                     }</button>
                     <button data-action="topCited">${
-                      i18n.topCited || "📚 Top Cited"
+                      i18n.topCited || "Top Cited"
                     }</button>
                     <hr>
                     <button data-action="editorialAnnual">${
-                      i18n.editorialStats || "✏️ Editorial Stats"
+                      i18n.editorialStats || "Editorial Stats"
                     }</button>
                     <button data-action="authorsByCountry">${
-                      i18n.authorsByCountry || "👥 Authors by Country"
+                      i18n.authorsByCountry || "Authors by Country"
                     }</button>
                     <button data-action="reviewersByCountry">${
-                      i18n.reviewersByCountry || "🔍 Reviewers by Country"
+                      i18n.reviewersByCountry || "Reviewers by Country"
                     }</button>
                 </div>
             `;

@@ -56,7 +56,7 @@
     {rdelim});
 
     colorText.addEventListener('input', function() {ldelim}
-    if (/^#[0-9A-Fa-f]{ldelim}6{rdelim}$/.test(this.value)) {ldelim}
+    if (/^#([0-9A-Fa-f]{ldelim}6{rdelim}|[0-9A-Fa-f]{ldelim}3{rdelim})$/.test(this.value)) {ldelim}
     colorPicker.value = this.value;
     updatePreview(this.value);
     {rdelim}

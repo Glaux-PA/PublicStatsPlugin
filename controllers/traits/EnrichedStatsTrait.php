@@ -3,13 +3,11 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/EnrichedStatsTrait.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing OpenAlex-enriched statistics HTTP endpoints.
- *
- * Contains handlers for citation metrics, thematic profiles, open access
- * statistics, citing journals/institutions, and citations by country.
  */
 
 declare(strict_types=1);
@@ -87,6 +85,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('top-cited', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -110,6 +109,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('thematic-profile', $context)) return;
 
         try {
             $data = $this->enrichedService->getThematicProfile($context->getId());
@@ -127,6 +127,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('top-cited', $context)) return;
 
         $submissionId = InputValidator::validateSubmissionId($request, $request->getUserVar('submissionId'));
         if (!$submissionId) {
@@ -174,6 +175,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('top-cited', $context)) return;
 
         try {
             $limit = InputValidator::validateLimit($request->getUserVar('limit'), 20, 100);
@@ -200,6 +202,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('citation-evolution', $context)) return;
 
         try {
             $data = $this->enrichedService->getCitationEvolution($context->getId());
@@ -217,6 +220,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('open-access-stats', $context)) return;
 
         try {
             $data = $this->enrichedService->getOpenAccessStats($context->getId());
@@ -234,6 +238,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('thematic-profile', $context)) return;
 
         try {
             $data = $this->enrichedService->getThematicProfile($context->getId());
@@ -250,6 +255,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('citations-map', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -278,6 +284,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('citing-journals', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -306,6 +313,7 @@ trait EnrichedStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('citing-journals', $context)) return;
 
         try {
             $contextId = $context->getId();

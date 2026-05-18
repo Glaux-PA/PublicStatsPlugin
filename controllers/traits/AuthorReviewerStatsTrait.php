@@ -3,13 +3,11 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/AuthorReviewerStatsTrait.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing author and reviewer statistics HTTP endpoints.
- *
- * Contains handlers for geographic distribution, institutional
- * affiliations, and individual author statistics.
  */
 
 declare(strict_types=1);
@@ -31,6 +29,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('authors-by-country', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -56,6 +55,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('authors-by-institution', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -81,6 +81,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('reviewers-by-country', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -106,6 +107,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('reviewers-by-institution', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -131,6 +133,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('reviewer-list', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -158,6 +161,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('author-individual-stats', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -190,6 +194,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('author-individual-stats', $context)) return;
 
         $authorKey = InputValidator::validateAuthorKey($request->getUserVar('authorKey'));
         if (!$authorKey) {
@@ -238,6 +243,7 @@ trait AuthorReviewerStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('author-individual-stats', $context)) return;
 
         try {
             $contextId = $context->getId();

@@ -51,7 +51,7 @@ ojs/
 ### Step 2: Enable the Plugin
 
 1. Log in to your OJS installation as an administrator
-2. Navigate to **Settings → Website → Plugins**
+2. Navigate to **Settings > Website > Plugins**
 3. Find **Generic Plugins**
 4. Find "Public Statistics" in the list and check the box to enable it
 
@@ -83,7 +83,7 @@ Use your journal's contact email or an institutional address. It is only sent to
 
 To make the statistics page accessible to your readers:
 
-1. Go to **Settings → Website → Setup → Navigation**
+1. Go to **Settings > Website > Setup > Navigation**
 2. Click **Add Item**
 3. In **Navigation Menu Item Type**, select **Statistics**
 4. Enter a **Title** for the menu item (e.g., "Statistics" or "Journal Metrics")
@@ -134,7 +134,7 @@ The six Impact sections (plus the OpenAlex counters on the overview) need an act
 
 The simplest way to activate a worker in OJS is the bundled Acron plugin:
 
-1. Go to Settings → Website → Plugins → Generic Plugins.
+1. Go to Settings > Website > Plugins > Generic Plugins.
 2. Find Acron and tick its checkbox.
 3. From then on, Acron will dispatch pending jobs on every HTTP request to the journal.
 
@@ -154,7 +154,7 @@ To check whether jobs are actually being processed, look at the OJS `jobs` table
 
 Each subsection listed in [Usage](#usage) can be turned on or off independently:
 
-1. Open Settings → Website → Plugins → Public Statistics → Settings.
+1. Open Settings > Website > Plugins > Public Statistics > Settings.
 2. Under "Active statistics sections", expand any group.
 3. Tick or untick each subsection. The group checkbox toggles all children at once.
 4. Click Ok.
@@ -264,6 +264,24 @@ Each module attaches itself to `window.PublicStats.*`; the orchestrator picks th
 ### Adding a translation
 
 Copy `locale/en/locale.po` to `locale/<your-code>/locale.po` and translate the `msgstr` lines. The locale code must match an OJS-supported locale (e.g. `pt_BR`, `de`, `fr_CA`).
+
+## Credits
+
+This plugin was developed with the support of:
+
+&nbsp;
+
+<img src="screenshots/logo-rovira.png" alt="Universitat Rovira i Virgili" height="60">
+
+**Universitat Rovira i Virgili** — funded the development of this plugin.
+
+&nbsp;
+
+<img src="screenshots/glaux.svg" alt="Glaux Publicaciones Académicas" height="60">
+
+**Glaux Publicaciones Académicas** — designed and built the plugin.
+
+&nbsp;
 
 ## License
 

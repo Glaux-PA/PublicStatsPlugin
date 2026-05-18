@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/AuthorStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -57,7 +58,7 @@ class AuthorStatsService extends BaseStatsService
             'orcid'       => $entry['orcid'] ?? null,
         ];
 
-        $submissions = $this->getSubmissionsByIds($entry['submissionIds']);
+        $submissions = $this->getSubmissionsByIds($entry['submissionIds'], $contextId);
         
         if (empty($submissions)) {
             return $this->getEmptyStats();
@@ -359,14 +360,11 @@ class AuthorStatsService extends BaseStatsService
     private function areNamesSimilar(string $name1, string $name2): bool {
         $words1 = explode(' ', $this->normalizeString($name1));
         $words2 = explode(' ', $this->normalizeString($name2));
-        
-        
+
         if (end($words1) !== end($words2)) return false;
-        
-        
+
         if (reset($words1) !== reset($words2)) return false;
-        
-       
+
         $similarity = 0;
         similar_text($name1, $name2, $similarity);
         return $similarity > 80;
@@ -416,14 +414,24 @@ class AuthorStatsService extends BaseStatsService
         return trim($orcid, '/');
     }
     
-    private function getSubmissionsByIds(array $submissionIds): array
+    private function getSubmissionsByIds(array $submissionIds, int $contextId): array
     {
+        if (empty($submissionIds)) {
+            return [];
+        }
+
+        $collector = Repo::submission()
+            ->getCollector()
+            ->filterByContextIds([$contextId]);
+
+        $rows = $collector->getQueryBuilder()
+            ->whereIn('s.submission_id', $submissionIds)
+            ->get();
+
         $submissions = [];
-        foreach ($submissionIds as $id) {
-            $submission = Repo::submission()->get($id);
-            if ($submission) {
-                $submissions[$id] = $submission;
-            }
+        foreach ($rows as $row) {
+            $submission = Repo::submission()->dao->fromRow($row);
+            $submissions[$submission->getId()] = $submission;
         }
         return $submissions;
     }

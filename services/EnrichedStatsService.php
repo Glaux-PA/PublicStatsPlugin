@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/EnrichedStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -104,8 +105,6 @@ class EnrichedStatsService extends BaseStatsService
             'combined' => $combined,
         ];
     }
-
-    // -- Chunked computation helpers ----------------------------------
 
     /**
      * Returns either { __complete__: true, accumulator } when ready, or a
@@ -275,7 +274,7 @@ class EnrichedStatsService extends BaseStatsService
 
         return [
             'total_articles' => $totalArticles,
-            ];
+        ];
     }
 
     private function combineContextStats(array $local, array $external): array

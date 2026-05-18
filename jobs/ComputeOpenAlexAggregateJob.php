@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/jobs/ComputeOpenAlexAggregateJob.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -62,7 +63,13 @@ class ComputeOpenAlexAggregateJob extends BaseJob
 
     public function handle(): void
     {
+        // Bind a request-less OpenAlexService into the container so the
+        // EnrichedStatsService resolved below shares the same instance and
+        // therefore the polite-pool email. Without this rebind, Laravel
+        // would inject a fresh OpenAlexService(null) that can't read the
+        // email from a request (we're in a job, not an HTTP context).
         $openAlexService = new OpenAlexService($this->resolveContactEmail());
+        app()->instance(OpenAlexService::class, $openAlexService);
         $enrichedService = app(EnrichedStatsService::class);
 
         try {
@@ -94,7 +101,6 @@ class ComputeOpenAlexAggregateJob extends BaseJob
         $state = $openAlexService->getChunkedState($this->type, $this->contextId)
             ?? ['processed' => 0, 'total' => 0, 'accumulator' => null, 'is_complete' => false];
 
-        // Duplicate chunk job arriving after completion.
         if (!empty($state['is_complete'])) {
             return;
         }
@@ -108,12 +114,13 @@ class ComputeOpenAlexAggregateJob extends BaseJob
 
         try {
             $newState = match ($this->type) {
-                self::TYPE_ENRICH_CONTEXT      => $enrichedService->enrichContextStatisticsChunk($this->contextId, $state),
-                self::TYPE_OPEN_ACCESS_STATS   => $enrichedService->getOpenAccessStatsChunk($this->contextId, $state),
-                self::TYPE_THEMATIC_PROFILE    => $enrichedService->getThematicProfileChunk($this->contextId, $state),
-                self::TYPE_CITATION_EVOLUTION  => $enrichedService->getCitationEvolutionChunk($this->contextId, $state),
-                self::TYPE_TOP_CITED           => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
+                self::TYPE_ENRICH_CONTEXT       => $enrichedService->enrichContextStatisticsChunk($this->contextId, $state),
+                self::TYPE_OPEN_ACCESS_STATS    => $enrichedService->getOpenAccessStatsChunk($this->contextId, $state),
+                self::TYPE_THEMATIC_PROFILE     => $enrichedService->getThematicProfileChunk($this->contextId, $state),
+                self::TYPE_CITATION_EVOLUTION   => $enrichedService->getCitationEvolutionChunk($this->contextId, $state),
+                self::TYPE_TOP_CITED            => $enrichedService->getTopCitedArticlesChunk($this->contextId, $state),
                 self::TYPE_CITATIONS_BY_COUNTRY => $enrichedService->getCitationsByCountryChunk($this->contextId, $state),
+                default => throw new \InvalidArgumentException("Unknown chunked type: {$this->type}"),
             };
         } catch (\Throwable $e) {
             // Persist progress so the retry doesn't restart from offset 0.

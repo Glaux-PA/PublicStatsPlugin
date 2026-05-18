@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/LanguageStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -66,7 +67,7 @@ class LanguageStatsService
 
         $uiLocale = Locale::getLocale();
 
-        // Normalize locale variants to primary language (es_ES + es_MX → es)
+        // Normalize locale variants to primary language (es_ES + es_MX => es)
         $merged = [];
         foreach ($rows as $row) {
             $langCode = \Locale::getPrimaryLanguage($row->locale) ?: $row->locale;
@@ -163,7 +164,6 @@ class LanguageStatsService
         $allYears = array_keys($yearLangMap);
         sort($allYears);
 
-        // Rank languages by total count across all years (most common first)
         $langTotals = [];
         foreach ($yearLangMap as $yearData) {
             foreach ($yearData as $code => $count) {

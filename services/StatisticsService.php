@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/StatisticsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,10 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Main statistics service for core metrics aggregation.
- *
- * Provides methods to retrieve monthly, annual, and geographic statistics
- * for downloads and views. This is the primary service for basic access metrics
- * and is used by the main statistics display.
  */
 
 declare(strict_types=1);
@@ -80,7 +77,6 @@ class StatisticsService extends BaseStatsService
             $downloads = $downloadsAssoc[$month] ?? 0;
             $views = $viewsAssoc[$month] ?? 0;
 
-            // Format month label (e.g., "2024-01" -> "Jan 2024")
             $timestamp = strtotime($month . '-01');
             $label = date('M Y', $timestamp);
 
@@ -230,7 +226,6 @@ class StatisticsService extends BaseStatsService
                 continue;
             }
 
-            // Validate ISO 3166-1 alpha-2 format
             $countryCode = (string)$total->country;
             if (strlen($countryCode) !== 2) {
                 continue;

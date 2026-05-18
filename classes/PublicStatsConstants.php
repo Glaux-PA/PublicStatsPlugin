@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/classes/PublicStatsConstants.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,10 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Centralized constants for the Public Statistics plugin.
- *
- * This class defines configuration values used throughout the plugin,
- * including date boundaries, cache durations, and API rate limits.
- * Centralizing these values ensures consistency and simplifies maintenance.
  */
 
 declare(strict_types=1);
@@ -47,7 +44,7 @@ class PublicStatsConstants
         'impact'    => 'plugins.generic.publicStats.settings.section.impact',
     ];
 
-    /** Subsections by group: content-section id → sidebar label key. Order = sidebar order. */
+    /** Subsections by group: content-section id => sidebar label key. Order = sidebar order. */
     public const SUBSECTIONS = [
         'general' => [
             'monthly-trends'          => 'plugins.generic.publicStats.monthlyTrends',

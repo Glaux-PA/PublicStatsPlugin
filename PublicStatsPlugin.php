@@ -3,6 +3,7 @@
 /**
  * @file PublicStatsPlugin.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -12,6 +13,8 @@
  * @brief Plugin entry point: registers hooks, navigation menu type and
  *        the settings modal action.
  */
+
+declare(strict_types=1);
 
 namespace APP\plugins\generic\publicStats;
 
@@ -55,7 +58,7 @@ class PublicStatsPlugin extends GenericPlugin
     /**
      * @copydoc Plugin::getActions()
      */
-    public function getActions($request, $actionArgs)
+    public function getActions($request, $actionArgs): array
     {
         $router = $request->getRouter();
         return array_merge(
@@ -88,7 +91,7 @@ class PublicStatsPlugin extends GenericPlugin
     /**
      * @copydoc Plugin::manage()
      */
-    public function manage($args, $request)
+    public function manage($args, $request): JSONMessage
     {
         switch ($request->getUserVar('verb')) {
             case 'settings':
@@ -109,7 +112,7 @@ class PublicStatsPlugin extends GenericPlugin
         return parent::manage($args, $request);
     }
 
-    public function addMenuItemType($hookName, $args)
+    public function addMenuItemType(string $hookName, array $args): bool
     {
         $types = &$args[0];
         $types['NMI_TYPE_STATISTICS'] = [
@@ -119,7 +122,7 @@ class PublicStatsPlugin extends GenericPlugin
         return false;
     }
 
-    public function addMenuItemTypeSettings($hookName, $args)
+    public function addMenuItemTypeSettings(string $hookName, array $args): bool
     {
         $navigationMenuItem = $args[0];
         
@@ -170,7 +173,7 @@ class PublicStatsPlugin extends GenericPlugin
         return array_values(array_merge($stillValid, $newlyAdded));
     }
 
-    public function loadHandler($hookName, $args)
+    public function loadHandler(string $hookName, array $args): bool
     {
         $page = $args[0];
 

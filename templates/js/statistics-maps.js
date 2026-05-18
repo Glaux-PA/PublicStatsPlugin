@@ -144,9 +144,9 @@
 
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
-                            <h3 class="ps-map-tooltip-title">${
+                            <h3 class="ps-map-tooltip-title">${escapeHtml(
                               country.country_name
-                            }</h3>
+                            )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_access.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
                               i18n.totalAccesses
@@ -235,9 +235,9 @@
 
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
-                            <h3 class="ps-map-tooltip-title">${
+                            <h3 class="ps-map-tooltip-title">${escapeHtml(
                               country.country_name
-                            }</h3>
+                            )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_count.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
                               i18n.totalAuthors
@@ -303,9 +303,9 @@
 
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
-                            <h3 class="ps-map-tooltip-title">${
+                            <h3 class="ps-map-tooltip-title">${escapeHtml(
                               country.country_name
-                            }</h3>
+                            )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_count.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
                               i18n.totalReviewers

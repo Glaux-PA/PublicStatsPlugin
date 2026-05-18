@@ -3,13 +3,11 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/ArticleStatsTrait.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @brief Trait providing article statistics HTTP endpoints.
- *
- * Contains handlers for top downloaded, top viewed, recent articles,
- * and issue/section statistics. Uses caching for performance.
  */
 
 declare(strict_types=1);
@@ -31,6 +29,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('general-downloads', $context)) return;
 
         $year = InputValidator::validateYear($request->getUserVar('year'));
 
@@ -71,6 +70,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('general-views', $context)) return;
 
         $year = InputValidator::validateYear($request->getUserVar('year'));
 
@@ -111,6 +111,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('recent-downloads', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -140,6 +141,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('recent-views', $context)) return;
 
         try {
             $contextId = $context->getId();
@@ -169,6 +171,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('general-issues', $context)) return;
 
         $year = InputValidator::validateYear($request->getUserVar('year'));
 
@@ -208,6 +211,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('general-sections', $context)) return;
 
         $year = InputValidator::validateYear($request->getUserVar('year'));
 
@@ -246,6 +250,7 @@ trait ArticleStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
+        if (!$this->requireSubsection('general-sections', $context)) return;
 
         try {
             $contextId = $context->getId();

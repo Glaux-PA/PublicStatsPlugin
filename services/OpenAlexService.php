@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/OpenAlexService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,11 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Service for OpenAlex API integration.
- *
- * Handles all communication with the OpenAlex API to retrieve
- * citation metrics, topics, funding information, and other
- * bibliometric data. Implements rate limiting and caching
- * to respect API limits.
  */
 
 declare(strict_types=1);
@@ -253,7 +249,7 @@ class OpenAlexService
         $doi = trim($doi);
         $doi = preg_replace('/[\r\n\x00-\x1f]/', '', $doi);
 
-        if ($doi === '' || $doi === null) {
+        if ($doi === '') {
             return null;
         }
 
@@ -583,7 +579,6 @@ class OpenAlexService
                     
                     $citationYear = $citingWork['publication_year'] ?? null;
 
-                    // Track unique institutions per citing work to avoid double counting
                     $seenInstitutions = [];
                     
                     foreach ($citingWork['authorships'] as $authorship) {

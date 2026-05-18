@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/AuthorReviewerStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -266,7 +267,6 @@ class AuthorReviewerStatsService
         $formattedData = [];
 
         foreach ($countryStats as $countryCode => $count) {
-            // Ensure countryCode is a valid 2-letter string
             $countryCode = (string) $countryCode;
             if (strlen($countryCode) !== 2) {
                 continue;

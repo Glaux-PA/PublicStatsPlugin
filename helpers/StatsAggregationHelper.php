@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/helpers/StatsAggregationHelper.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -244,9 +245,6 @@ class StatsAggregationHelper
         return $entityStats;
     }
 
-    /**
-     * Prepare final results with totals and article counts
-     */
     private static function prepareFinalResults(array $entityStats): array
     {
         $results = [];

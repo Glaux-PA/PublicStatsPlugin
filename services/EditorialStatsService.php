@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/EditorialStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,11 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Service for editorial workflow statistics.
- *
- * Provides metrics about the submission lifecycle including received,
- * declined, published, and in-process counts. Unlike article statistics
- * which focus on access metrics, this service tracks editorial workflow
- * throughput.
  */
 
 declare(strict_types=1);
@@ -138,8 +134,11 @@ class EditorialStatsService extends BaseStatsService
             ->filterByContextIds([$contextId]);
 
         if ($dateStart === null && $dateEnd === null) {
-            // Materialise the LazyCollection so callers can use array_map / count.
-            return iterator_to_array($collector->getMany(), false);
+            $submissions = [];
+            foreach ($collector->getMany() as $submission) {
+                $submissions[] = $submission;
+            }
+            return $submissions;
         }
 
         $query = $collector->getQueryBuilder();

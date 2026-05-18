@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/DecisionStatsService.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -10,10 +11,6 @@
  * @ingroup plugins_generic_publicStats
  *
  * @brief Service for editorial decision timing statistics.
- *
- * Provides metrics about decision timing including time to first decision
- * and time from acceptance to publication. These metrics help evaluate
- * editorial workflow efficiency.
  */
 
 declare(strict_types=1);
@@ -22,7 +19,6 @@ namespace APP\plugins\generic\publicStats\services;
 
 use APP\facades\Repo;
 use Illuminate\Support\Facades\DB;
-use PKP\db\DAORegistry;
 use PKP\decision\Decision;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\services\BaseStatsService;
@@ -86,9 +82,11 @@ class DecisionStatsService extends BaseStatsService
             ->filterByStatus([\APP\submission\Submission::STATUS_PUBLISHED])
             ->getMany();
 
-        $reviewStatus = $this->getReviewStatusForSubmissions(
-            array_map(fn($s) => $s->getId(), iterator_to_array($submissions))
-        );
+        $submissionIds = [];
+        foreach ($submissions as $s) {
+            $submissionIds[] = $s->getId();
+        }
+        $reviewStatus = $this->getReviewStatusForSubmissions($submissionIds);
 
         $publicationData = $this->processPublications(
             $submissions,
@@ -147,9 +145,11 @@ class DecisionStatsService extends BaseStatsService
     }
 
     /**
-     * Whether each submission went through peer review, plus its assignments.
-     * Two queries total instead of two per submission; ReviewAssignment objects
-     * are rebuilt via _fromRow so callers keep using their getters as before.
+     * Two queries total instead of two per submission. Returns assignments as
+     * raw rows because OJS 3.4 has no public Repo for ReviewAssignment and we
+     * only need date_completed + recommendation downstream.
+     *
+     * @return array{hasReview: array<int, bool>, reviews: array<int, array<object>>}
      */
     private function getReviewStatusForSubmissions(array $submissionIds): array
     {
@@ -173,19 +173,18 @@ class DecisionStatsService extends BaseStatsService
             return ['hasReview' => $hasReviewBySubmission, 'reviews' => $reviewsBySubmission];
         }
 
-        $reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
         $assignmentRows = DB::table('review_assignments')
             ->whereIn('submission_id', $submissionsWithRounds)
             ->where('declined', '<>', 1)
             ->where('cancelled', '<>', 1)
-            ->get();
+            ->get(['submission_id', 'date_completed', 'recommendation']);
 
         foreach ($assignmentRows as $row) {
             $subId = (int) $row->submission_id;
             if (!isset($reviewsBySubmission[$subId])) {
                 $reviewsBySubmission[$subId] = [];
             }
-            $reviewsBySubmission[$subId][] = $reviewAssignmentDao->_fromRow((array) $row);
+            $reviewsBySubmission[$subId][] = $row;
         }
 
         return [
@@ -231,7 +230,6 @@ class DecisionStatsService extends BaseStatsService
             }
         }
 
-        // Sort by decision date (most recent first)
         usort(
             $decisionsData,
             fn($a, $b) =>
@@ -310,6 +308,9 @@ class DecisionStatsService extends BaseStatsService
         ];
     }
 
+    /**
+     * @param array<object> $reviewAssignments Raw rows from getReviewStatusForSubmissions
+     */
     private function getRecommendation(
         bool $hasReview,
         array $reviewAssignments,
@@ -319,10 +320,10 @@ class DecisionStatsService extends BaseStatsService
             return null;
         }
 
-        foreach ($reviewAssignments as $assignment) {
-            $dateCompleted = $assignment->getDateCompleted();
+        foreach ($reviewAssignments as $row) {
+            $dateCompleted = $row->date_completed ?? null;
             if ($dateCompleted && strtotime($dateCompleted) <= $dateDecidedTime) {
-                return $assignment->getRecommendation();
+                return $row->recommendation ?? null;
             }
         }
 
@@ -384,7 +385,6 @@ class DecisionStatsService extends BaseStatsService
             ];
         }
 
-        // Sort by publication date (most recent first)
         usort(
             $publicationData,
             fn($a, $b) =>

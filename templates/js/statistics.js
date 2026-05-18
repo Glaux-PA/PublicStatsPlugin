@@ -51,13 +51,9 @@
       const targetSection = document.getElementById(sectionId);
       if (targetSection) targetSection.style.display = "block";
 
-      if (
-        typeof event !== "undefined" &&
-        event.type !== "DOMContentLoaded" &&
-        event.target
-      ) {
-        event.target.classList.add("active");
-      }
+      const activeLink = document.querySelector(`.menu-link[data-section="${sectionId}"]`);
+      if (activeLink) activeLink.classList.add("active");
+
       this.updateYearSelectorVisibility(sectionId);
       setTimeout(() => this.initializeSectionContent(sectionId), 100);
     },

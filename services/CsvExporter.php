@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/services/CsvExporter.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -274,7 +275,7 @@ class CsvExporter
     public function authorsByCountry(int $contextId): array
     {
         return $this->countryCountCsv(
-            $this->authorReviewerService->getAuthorsByCountry($contextId),
+            $this->authorReviewerService->getAuthorsByCountry($contextId) ?? [],
             'authors_by_country',
             'Authors Count'
         );
@@ -292,7 +293,7 @@ class CsvExporter
     public function reviewersByCountry(int $contextId): array
     {
         return $this->countryCountCsv(
-            $this->authorReviewerService->getReviewersByCountry($contextId),
+            $this->authorReviewerService->getReviewersByCountry($contextId) ?? [],
             'reviewers_by_country',
             'Reviewers Count'
         );
@@ -570,6 +571,7 @@ class CsvExporter
     public function citingInstitutions(PKPRequest $request, int $contextId, ?string $yearFilter): array
     {
         $response = $this->enrichedService->getCitingInstitutions($request, $contextId);
+        $this->assertReady($response, 'citing institutions');
         $filter = $this->normalizeYearFilter($yearFilter);
         $institutions = is_array($response) && is_array($response['institutions'] ?? null) ? $response['institutions'] : [];
 
@@ -632,7 +634,7 @@ class CsvExporter
 
     /**
      * Build the date range used by statistics queries, matching the handler's
-     * convention: explicit year → Jan 1 to Dec 31 of that year; no year →
+     * convention: explicit year => Jan 1 to Dec 31 of that year; no year =>
      * MIN_YEAR to yesterday.
      */
     private function dateRanges(?string $year): array

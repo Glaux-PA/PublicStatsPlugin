@@ -3,6 +3,7 @@
 /**
  * @file PublicStatsSettingsForm.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -12,6 +13,8 @@
  * @brief Settings modal form: OpenAlex contact email, primary colour
  *        and the per-subsection visibility toggles.
  */
+
+declare(strict_types=1);
 
 namespace APP\plugins\generic\publicStats;
 
@@ -84,7 +87,7 @@ class PublicStatsSettingsForm extends Form
         $submitted = $this->getData('enabledSubsections');
         $enabledSubsections = is_array($submitted)
             ? array_values(array_intersect($submitted, $allSubsections))
-            : $allSubsections;
+            : [];
         $this->plugin->updateSetting($contextId, 'enabledSubsections', $enabledSubsections);
         $this->plugin->updateSetting($contextId, 'knownSubsections', $allSubsections);
 

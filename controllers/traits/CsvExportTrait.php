@@ -3,6 +3,7 @@
 /**
  * @file plugins/generic/publicStats/controllers/traits/CsvExportTrait.php
  *
+ * Copyright (c) 2026 Universitat Rovira i Virgili
  * Copyright (c) 2026 Glaux Publicaciones Académicas, S.L.
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
@@ -89,10 +90,15 @@ trait CsvExportTrait
      * to obtain ['filename' => ..., 'headers' => ..., 'rows' => ...], stream
      * it out. Any exception is logged and surfaced as a 500.
      */
-    private function runExport(PKPRequest $request, callable $build, string $errorLabel): void
+    private function runExport(PKPRequest $request, callable $build, string $errorLabel, string $subsectionId = ''): void
     {
         $contextId = $this->validateContextForExport($request);
         if (!$contextId) {
+            return;
+        }
+
+        if ($subsectionId !== '' && !in_array($subsectionId, $this->getEnabledSubsections($contextId), true)) {
+            $this->outputError('Not found', 404);
             return;
         }
 
@@ -122,7 +128,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->monthly($ctx, $year),
-            'monthly stats'
+            'monthly stats',
+            'monthly-trends'
         );
     }
 
@@ -131,7 +138,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->annual($ctx),
-            'annual stats'
+            'annual stats',
+            'annual-trends'
         );
     }
 
@@ -140,7 +148,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->countries($ctx),
-            'country stats'
+            'country stats',
+            'geographic-distribution'
         );
     }
 
@@ -151,7 +160,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->topDownloaded($request, $ctx, $year, $limit),
-            'top downloaded'
+            'top downloaded',
+            'general-downloads'
         );
     }
 
@@ -162,7 +172,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->topViewed($request, $ctx, $year, $limit),
-            'top viewed'
+            'top viewed',
+            'general-views'
         );
     }
 
@@ -172,7 +183,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->editorial($ctx, $year),
-            'editorial stats'
+            'editorial stats',
+            'editorial-submissions'
         );
     }
 
@@ -181,7 +193,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->editorialAnnual($ctx),
-            'editorial annual stats'
+            'editorial annual stats',
+            'editorial-annual'
         );
     }
 
@@ -190,7 +203,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->authorsByCountry($ctx),
-            'authors by country'
+            'authors by country',
+            'authors-by-country'
         );
     }
 
@@ -199,7 +213,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->authorsByInstitution($ctx),
-            'authors by institution'
+            'authors by institution',
+            'authors-by-institution'
         );
     }
 
@@ -208,7 +223,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->reviewersByCountry($ctx),
-            'reviewers by country'
+            'reviewers by country',
+            'reviewers-by-country'
         );
     }
 
@@ -217,7 +233,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->reviewersByInstitution($ctx),
-            'reviewers by institution'
+            'reviewers by institution',
+            'reviewers-by-institution'
         );
     }
 
@@ -227,7 +244,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->issues($request, $ctx, $year),
-            'issue stats'
+            'issue stats',
+            'general-issues'
         );
     }
 
@@ -237,7 +255,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->sections($ctx, $year),
-            'section stats'
+            'section stats',
+            'general-sections'
         );
     }
 
@@ -246,7 +265,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->languageTrends($ctx),
-            'language trends'
+            'language trends',
+            'language-trends'
         );
     }
 
@@ -256,7 +276,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->languages($ctx, $issueId),
-            'language stats'
+            'language stats',
+            'general-languages'
         );
     }
 
@@ -266,7 +287,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->topCited($request, $ctx, $limit),
-            'top cited'
+            'top cited',
+            'top-cited'
         );
     }
 
@@ -276,7 +298,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->recentDownloaded($request, $ctx, $limit),
-            'recent downloaded'
+            'recent downloaded',
+            'recent-downloads'
         );
     }
 
@@ -286,7 +309,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->recentViewed($request, $ctx, $limit),
-            'recent viewed'
+            'recent viewed',
+            'recent-views'
         );
     }
 
@@ -295,7 +319,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citationEvolution($ctx),
-            'citation evolution'
+            'citation evolution',
+            'citation-evolution'
         );
     }
 
@@ -304,7 +329,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->openAccessStats($ctx),
-            'open access stats'
+            'open access stats',
+            'open-access-stats'
         );
     }
 
@@ -314,7 +340,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citingJournals($request, $ctx, $yearFilter),
-            'citing journals'
+            'citing journals',
+            'citing-journals'
         );
     }
 
@@ -323,7 +350,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citationsByCountry($ctx),
-            'citations by country'
+            'citations by country',
+            'citations-map'
         );
     }
 
@@ -332,7 +360,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->thematicProfile($ctx),
-            'thematic profile'
+            'thematic profile',
+            'thematic-profile'
         );
     }
 
@@ -342,7 +371,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->firstDecision($ctx, $year),
-            'first decision stats'
+            'first decision stats',
+            'first-decision-stats'
         );
     }
 
@@ -352,7 +382,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->acceptancePublication($ctx, $year),
-            'acceptance to publication stats'
+            'acceptance to publication stats',
+            'acceptance-publication-stats'
         );
     }
 
@@ -362,7 +393,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->reviewerList($ctx, $year),
-            'reviewer list'
+            'reviewer list',
+            'reviewer-list'
         );
     }
 
@@ -382,7 +414,8 @@ trait CsvExportTrait
         $this->runExport(
             $request,
             fn(int $ctx) => $this->csvExporter->citingInstitutions($request, $ctx, $yearFilter),
-            'citing institutions'
+            'citing institutions',
+            'citing-journals'
         );
     }
 }
