@@ -181,7 +181,7 @@ class EnrichedStatsService extends BaseStatsService
             $byId[(int) $submission->getId()] = $submission;
         }
 
-        // Preserve the iteration order of submission_ids so chunks are deterministic.
+        // Preserve submission_ids order for deterministic chunks.
         $submissions = [];
         foreach ($chunkIds as $id) {
             if (isset($byId[$id])) {

@@ -168,7 +168,7 @@ class OpenAlexService
             return $cached;
         }
 
-        // Cache::add wins only once, so subsequent concurrent calls skip the dispatch.
+        // Cache::add is atomic — concurrent callers skip dispatch.
         $lockKey = self::lockKeyFor($type, $contextId);
         $lockTtl = max(120, (int) (PublicStatsConstants::CACHE_TTL_EXTERNAL / 24));
         if (Cache::add($lockKey, 1, $lockTtl)) {

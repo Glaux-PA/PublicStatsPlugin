@@ -74,8 +74,7 @@
       }
 
       if (author.orcid) {
-        // Strip the URL prefix if present, then validate the bare id; only
-        // render the link when it matches the canonical ORCID format.
+        // Strip URL prefix; render link only if canonical ORCID format.
         const bareOrcid = String(author.orcid).replace(/^https?:\/\/orcid\.org\//i, "");
         const safeOrcid = escapeHtml(bareOrcid);
         if (/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i.test(bareOrcid)) {
@@ -291,8 +290,7 @@
       const canvas = document.getElementById("citationEvolutionChart");
       if (!canvas) return;
 
-      // Show/hide a sibling <p> instead of replacing the parent's innerHTML
-      // so the canvas stays in the DOM (the next render needs to find it).
+      // Show/hide a sibling <p> to keep the canvas in the DOM.
       const showPlaceholder = (text, cls) => {
         const container = canvas.parentElement;
         canvas.style.display = "none";
@@ -755,8 +753,7 @@
       if (!this.citingJournalsOriginalData) return [];
 
       if (year === "all") {
-        // Collapse per-year entries for the same article into one row,
-        // summing times_cited so each cited article appears only once.
+        // Collapse per-year entries into one row per article, summing times_cited.
         return this.citingJournalsOriginalData.map((journal) => {
           const byId = {};
           (journal.cited_articles || []).forEach((article) => {

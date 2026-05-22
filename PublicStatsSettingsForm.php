@@ -82,7 +82,7 @@ class PublicStatsSettingsForm extends Form
         }
         $this->plugin->updateSetting($contextId, 'primaryColor', $primaryColor);
 
-        // Whitelist enabled subsections; snapshot the known set so initData can detect new ones later.
+        // Whitelist against known subsections.
         $allSubsections = array_merge(...array_values(array_map('array_keys', PublicStatsConstants::SUBSECTIONS)));
         $submitted = $this->getData('enabledSubsections');
         $enabledSubsections = is_array($submitted)

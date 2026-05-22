@@ -219,7 +219,7 @@ class EditorialStatsService extends BaseStatsService
 
         if ($status === PKPSubmission::STATUS_DECLINED) {
             $decisions = $decisionsBySubmission[$submission->getId()] ?? [];
-            $this->processDeclined($submission, $monthlyStats, $startTime, $endTime, $decisions);
+            $this->processDeclined($monthlyStats, $startTime, $endTime, $decisions);
             return;
         }
 
@@ -234,7 +234,7 @@ class EditorialStatsService extends BaseStatsService
         int $startTime,
         int $endTime
     ): void {
-        // Visible publication, not latest draft (unpublished revisions shouldn't reassign the year).
+        // Visible publication, not latest draft.
         $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
@@ -257,7 +257,6 @@ class EditorialStatsService extends BaseStatsService
     }
 
     private function processDeclined(
-        Submission $submission,
         array &$monthlyStats,
         int $startTime,
         int $endTime,
@@ -325,7 +324,7 @@ class EditorialStatsService extends BaseStatsService
 
         if ($status === PKPSubmission::STATUS_DECLINED) {
             $decisions = $decisionsBySubmission[$submission->getId()] ?? [];
-            $this->processDeclinedAnnual($submission, $annualStats, $startYear, $endYear, $decisions);
+            $this->processDeclinedAnnual($annualStats, $startYear, $endYear, $decisions);
             return;
         }
 
@@ -340,7 +339,7 @@ class EditorialStatsService extends BaseStatsService
         int $startYear,
         int $endYear
     ): void {
-        // Visible publication, not latest draft (unpublished revisions shouldn't reassign the year).
+        // Visible publication, not latest draft.
         $publication = $submission->getCurrentPublication();
         if (!$publication) {
             return;
@@ -361,7 +360,6 @@ class EditorialStatsService extends BaseStatsService
     }
 
     private function processDeclinedAnnual(
-        Submission $submission,
         array &$annualStats,
         int $startYear,
         int $endYear,

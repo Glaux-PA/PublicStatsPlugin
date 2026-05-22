@@ -56,10 +56,10 @@ class IssueStatsService extends BaseStatsService
             $contextId
         );
 
-        return $this->enrichWithUrls($issueStats, $request, $contextId);
+        return $this->enrichWithUrls($issueStats, $request);
     }
 
-    private function enrichWithUrls(array $issueStats, PKPRequest $request, int $contextId): array
+    private function enrichWithUrls(array $issueStats, PKPRequest $request): array
     {
         foreach ($issueStats as &$stats) {
             $issue = Repo::issue()->get($stats['issueId']);

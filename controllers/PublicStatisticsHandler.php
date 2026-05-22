@@ -521,7 +521,6 @@ class PublicStatisticsHandler extends Handler
         }
 
         // Plugin scripts: helpers > feature modules > orchestrator.
-        // Each script writes to window.PublicStats; statistics.js destructures it.
         $templateMgr->addJavaScript(
             'publicStatsHelpers',
             $jsBase . '/statistics-helpers.js',

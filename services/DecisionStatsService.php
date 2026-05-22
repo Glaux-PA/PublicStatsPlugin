@@ -280,7 +280,7 @@ class DecisionStatsService extends BaseStatsService
         $submissionTimeNormalized = strtotime(date('Y-m-d 00:00:00', $submissionTime));
         $dateDecidedTimeNormalized = strtotime(date('Y-m-d 00:00:00', $dateDecidedTime));
 
-        $daysToDecision = floor(
+        $daysToDecision = (int) floor(
             ($dateDecidedTimeNormalized - $submissionTimeNormalized) / (60 * 60 * 24)
         );
 
@@ -315,7 +315,7 @@ class DecisionStatsService extends BaseStatsService
         bool $hasReview,
         array $reviewAssignments,
         int $dateDecidedTime
-    ): ?string {
+    ): int|null {
         if (!$hasReview || empty($reviewAssignments)) {
             return null;
         }
@@ -365,7 +365,7 @@ class DecisionStatsService extends BaseStatsService
             $submissionTimeNormalized = strtotime(date('Y-m-d 00:00:00', $submissionTime));
             $publishedTimeNormalized = strtotime(date('Y-m-d 00:00:00', $publishedTime));
 
-            $daysToPublication = floor(
+            $daysToPublication = (int) floor(
                 ($publishedTimeNormalized - $submissionTimeNormalized) / (60 * 60 * 24)
             );
 
