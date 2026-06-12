@@ -23,7 +23,9 @@ use PKP\plugins\Hook;
 use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
+use PKP\notification\PKPNotification;
 use APP\core\Application;
+use APP\notification\NotificationManager;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use APP\plugins\generic\publicStats\controllers\PublicStatisticsHandler;
 
@@ -101,6 +103,12 @@ class PublicStatsPlugin extends GenericPlugin
                     $form->readInputData();
                     if ($form->validate()) {
                         $form->execute();
+                        $notificationMgr = new NotificationManager();
+                        $notificationMgr->createTrivialNotification(
+                            $request->getUser()->getId(),
+                            PKPNotification::NOTIFICATION_TYPE_SUCCESS,
+                            ['contents' => __('common.changesSaved')]
+                        );
                         return new JSONMessage(true);
                     }
                 } else {

@@ -488,6 +488,14 @@
   });
 
   document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".sidebar-section").forEach((section) => {
+      const content = section.querySelector(".section-content");
+      const toggle = section.querySelector(".section-toggle");
+      if (toggle && content && content.classList.contains("section-collapsed")) {
+        toggle.style.transform = "rotate(-90deg)";
+      }
+    });
+
     const enabledSubs = Array.isArray(window.enabledSubsections)
       ? window.enabledSubsections
       : null;
