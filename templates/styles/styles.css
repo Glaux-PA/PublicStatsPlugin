@@ -524,6 +524,30 @@
   margin-bottom: 10px;
 }
 
+.export-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #28a745 0%, #20883a 100%);
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+  transition: all 0.2s ease;
+  width: auto;
+  height: auto;
+}
+
+.export-menu-toggle:hover {
+  background: linear-gradient(135deg, #218838 0%, #1a6e2e 100%);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
 .export-menu-dropdown hr {
   margin: 5px 0;
   border: none;
