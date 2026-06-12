@@ -18,7 +18,9 @@
 
 /* RESET & BASE */
 
-* {
+.page_statistics *,
+.page_statistics *::before,
+.page_statistics *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -27,6 +29,9 @@
 .page_statistics .container {
   display: flex;
   justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
 }
 
 .page_statistics {
@@ -279,20 +284,6 @@
   border-radius: 50%;
 }
 
-/* SECTION TOGGLE */
-
-.section-collapsed .section-toggle {
-  transform: rotate(-90deg);
-}
-
-.section-collapsed .section-content {
-  max-height: 0;
-}
-
-.section-content {
-  max-height: 500px;
-}
-
 /* YEAR SELECTOR & FILTERS */
 
 .year-selector-container {
@@ -309,7 +300,7 @@
   margin-right: 10px;
 }
 
-select {
+.page_statistics select {
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
