@@ -219,38 +219,79 @@
 }
 
 .page_statistics .stats-table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
 }
 
 .page_statistics .stats-table th,
 .page_statistics .stats-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 12px !important;
+  text-align: left !important;
+  border: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  color: #333 !important;
+  background: transparent !important;
 }
 
 .page_statistics .stats-table th {
-  background: #fafbfc;
-  font-weight: 600;
-  color: #555;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  background: #fafbfc !important;
+  font-weight: 600 !important;
+  color: #555 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.page_statistics .stats-table td:first-child,
+.page_statistics .stats-table th:first-child {
+  white-space: nowrap !important;
+  width: 40px !important;
 }
 
 .page_statistics .stats-table td:last-child {
-  text-align: right;
-  font-weight: 600;
-  color: #333;
+  text-align: right !important;
+  font-weight: 600 !important;
+  color: #333 !important;
 }
 
 .page_statistics .stats-table th:last-child {
-  text-align: right;
+  text-align: right !important;
 }
 
 .page_statistics .stats-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: #f8f9fa !important;
+}
+
+.page_statistics .stats-table tbody tr:hover td {
+  background-color: #f8f9fa !important;
+}
+
+/* Overlay appended to <body>, outside .page_statistics — cannot use parent scope */
+.export-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page_statistics .ps-computing-placeholder {
+  padding: 20px;
+  text-align: center;
 }
 
 /* !important needed to override OJS theme a { color } rules */
@@ -770,9 +811,10 @@
 }
 
 .page_statistics .ps-articles-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
   font-size: 0.9em;
   background: white;
   border-radius: 6px;
@@ -781,31 +823,37 @@
 }
 
 .page_statistics .ps-articles-table thead tr {
-  background-color: #495057;
-  color: white;
+  background-color: #495057 !important;
+  color: white !important;
 }
 
 .page_statistics .ps-articles-table th {
-  padding: 12px 10px;
-  text-align: left;
-  font-weight: 500;
-  font-size: 0.85em;
+  padding: 12px 10px !important;
+  text-align: left !important;
+  font-weight: 500 !important;
+  font-size: 0.85em !important;
+  border: none !important;
+  color: white !important;
+  background: transparent !important;
 }
 
 .page_statistics .ps-articles-table th.ps-col-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .page_statistics .ps-articles-table td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 10px !important;
+  border: none !important;
+  border-bottom: 1px solid #eee !important;
+  color: #333 !important;
+  background: transparent !important;
 }
 
-.page_statistics .ps-articles-table tr:nth-child(even) {
-  background-color: #f8f9fa;
+.page_statistics .ps-articles-table tr:nth-child(even) td {
+  background-color: #f8f9fa !important;
 }
-.page_statistics .ps-articles-table tr:nth-child(odd) {
-  background-color: #ffffff;
+.page_statistics .ps-articles-table tr:nth-child(odd) td {
+  background-color: #ffffff !important;
 }
 
 .page_statistics .ps-articles-table .ps-cell-num {
@@ -1049,26 +1097,6 @@
 
   .page_statistics .export-menu-dropdown button:hover {
     padding-left: 20px;
-  }
-
-  .page_statistics .export-menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    animation: fadeIn 0.2s ease;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 
   .page_statistics .ps-articles-table .ps-col-authors,

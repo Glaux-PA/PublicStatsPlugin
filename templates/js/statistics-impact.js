@@ -81,7 +81,7 @@
         );
         const safeOrcid = escapeHtml(bareOrcid);
         if (/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i.test(bareOrcid)) {
-          html += `<div><strong>ORCID:</strong> <a href="https://orcid.org/${safeOrcid}" target="_blank" rel="noopener noreferrer">${safeOrcid}</a></div>`;
+          html += `<div><strong>ORCID:</strong> <a class="ps-article-link" href="https://orcid.org/${safeOrcid}" target="_blank" rel="noopener noreferrer">${safeOrcid}</a></div>`;
         } else {
           html += `<div><strong>ORCID:</strong> ${safeOrcid}</div>`;
         }
