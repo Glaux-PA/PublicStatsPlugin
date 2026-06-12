@@ -192,7 +192,7 @@
       ) {
         Utils.showNoDataMessage(
           "editorialAnnualChart",
-          i18n.noEditorialAnnualData
+          i18n.noEditorialAnnualData,
         );
         return;
       }
@@ -221,7 +221,7 @@
             {
               label: i18n.published,
               data: statsData.editorialStatsAnnual.map(
-                (item) => item.published
+                (item) => item.published,
               ),
               borderColor: "#2ecc71",
               backgroundColor: "rgba(46, 204, 113, 0.1)",
@@ -249,7 +249,7 @@
             {
               label: i18n.inProcess,
               data: statsData.editorialStatsAnnual.map(
-                (item) => item.inProcess
+                (item) => item.inProcess,
               ),
               borderColor: "#f39c12",
               backgroundColor: "rgba(243, 156, 18, 0.1)",
@@ -421,12 +421,13 @@
       ) {
         Utils.showNoDataMessage(
           "languageTrendsChart",
-          i18n.noLanguageTrendsData
+          i18n.noLanguageTrendsData,
         );
         return;
       }
 
-      if (ChartInstances.languageTrends) ChartInstances.languageTrends.destroy();
+      if (ChartInstances.languageTrends)
+        ChartInstances.languageTrends.destroy();
 
       const colors = Utils.generateColors(data.series.length);
 
@@ -474,7 +475,7 @@
       ) {
         Utils.showNoDataMessage(
           "institutionStatsChart",
-          i18n.noInstitutionData
+          i18n.noInstitutionData,
         );
         return;
       }
@@ -531,7 +532,7 @@
       ) {
         Utils.showNoDataMessage(
           "reviewerInstitutionStatsChart",
-          i18n.noInstitutionData
+          i18n.noInstitutionData,
         );
         return;
       }

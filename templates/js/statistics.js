@@ -51,7 +51,9 @@
       const targetSection = document.getElementById(sectionId);
       if (targetSection) targetSection.style.display = "block";
 
-      const activeLink = document.querySelector(`.menu-link[data-section="${sectionId}"]`);
+      const activeLink = document.querySelector(
+        `.menu-link[data-section="${sectionId}"]`,
+      );
       if (activeLink) activeLink.classList.add("active");
 
       this.updateYearSelectorVisibility(sectionId);
@@ -291,7 +293,7 @@
       });
 
       const issueTable = document.querySelector(
-        "#general-issues .stats-card:nth-child(2) .card-title"
+        "#general-issues .stats-card:nth-child(2) .card-title",
       );
       if (issueTable) {
         issueTable.textContent = `${i18n.downloadsByIssue}${yearText}`;
@@ -316,7 +318,7 @@
       window.history.pushState({ year: year }, "", newUrl.toString());
 
       const current = document.querySelector(
-        '.content-section[style*="display: block"]'
+        '.content-section[style*="display: block"]',
       );
       if (current) {
         Navigation.initializeSectionContent(current.id);
@@ -384,7 +386,7 @@
     Impact.journalsChartLimit = limit;
     if (Impact.citingJournalsOriginalData) {
       const filteredData = Impact.filterCitingJournalsByCitationYear(
-        Impact.citingJournalsSelectedYear
+        Impact.citingJournalsSelectedYear,
       );
       Impact.renderCitingJournalsChart(filteredData);
       Impact.renderCitingJournalsTable(filteredData);
@@ -491,7 +493,11 @@
     document.querySelectorAll(".sidebar-section").forEach((section) => {
       const content = section.querySelector(".section-content");
       const toggle = section.querySelector(".section-toggle");
-      if (toggle && content && content.classList.contains("section-collapsed")) {
+      if (
+        toggle &&
+        content &&
+        content.classList.contains("section-collapsed")
+      ) {
         toggle.style.transform = "rotate(-90deg)";
       }
     });
@@ -512,7 +518,7 @@
         .forEach((group) => {
           const total = group.querySelectorAll(".menu-item").length;
           const hidden = group.querySelectorAll(
-            ".menu-item.ps-item-disabled"
+            ".menu-item.ps-item-disabled",
           ).length;
           if (total > 0 && total === hidden) {
             group.classList.add("ps-group-disabled");
@@ -521,7 +527,7 @@
     }
 
     const firstLink = document.querySelector(
-      ".sidebar-section:not(.ps-group-disabled) .menu-item:not(.ps-item-disabled) .menu-link"
+      ".sidebar-section:not(.ps-group-disabled) .menu-item:not(.ps-item-disabled) .menu-link",
     );
     if (firstLink) firstLink.classList.add("active");
 

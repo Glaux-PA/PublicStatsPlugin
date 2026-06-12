@@ -1,22 +1,10 @@
-/**
- * Public Statistics Plugin - Styles
- *
- * Uses CSS custom properties (variables) for the primary color scheme.
- * The primary color is set dynamically from plugin settings.
- */
-
-/* CSS VARIABLES - Primary Color Scheme */
-
 :root {
-  /* Default colors - will be overridden by inline styles from plugin settings */
   --ps-primary: #8b2635;
   --ps-primary-light: #9b3645;
   --ps-primary-dark: #6b1e2a;
   --ps-primary-darker: #5b1620;
   --ps-primary-rgb: 139, 38, 53;
 }
-
-/* RESET & BASE */
 
 .page_statistics *,
 .page_statistics *::before,
@@ -35,8 +23,8 @@
 }
 
 .page_statistics {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   background-color: #f8f9fa;
   color: #333;
 }
@@ -45,8 +33,6 @@
   display: flex;
   min-height: 100vh;
 }
-
-/* SIDEBAR */
 
 .page_statistics .sidebar {
   width: 280px;
@@ -92,7 +78,9 @@
 
 .page_statistics .section-content {
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
   max-height: 1000px;
   opacity: 1;
 }
@@ -100,7 +88,9 @@
 .page_statistics .section-content.section-collapsed {
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.3s ease, opacity 0.2s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.2s ease;
 }
 
 .page_statistics .section-toggle {
@@ -108,6 +98,23 @@
   font-size: 12px;
   transition: transform 0.3s ease;
   display: inline-block;
+}
+
+.page_statistics .section-toggle i {
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+
+.page_statistics .section-collapsed .section-toggle i {
+  transform: rotate(-90deg);
+}
+
+.page_statistics .section-icon {
+  margin-right: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+  width: 18px;
+  text-align: center;
 }
 
 .page_statistics .sidebar-menu {
@@ -121,9 +128,9 @@
 .page_statistics .menu-link {
   display: block;
   padding: 12px 20px;
-  color: #555;
+  color: #555 !important;
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: none !important;
   font-size: 14px;
   transition: all 0.2s;
   border-left: 3px solid transparent;
@@ -131,18 +138,15 @@
 
 .page_statistics .menu-link:hover {
   background-color: #f5f5f5;
-  color: #333;
-  text-decoration: none;
+  color: #333 !important;
+  text-decoration: none !important;
 }
 
-/* ACTIVE MENU */
 .page_statistics .menu-link.active {
-  background-color: var(--ps-primary);
-  color: white;
+  background-color: var(--ps-primary) !important;
+  color: white !important;
   border-left-color: var(--ps-primary-dark);
 }
-
-/* MAIN CONTENT */
 
 .page_statistics .main-content {
   flex: 1;
@@ -214,8 +218,6 @@
   overflow-x: auto;
 }
 
-/* TABLES */
-
 .page_statistics .stats-table {
   width: 100%;
   border-collapse: collapse;
@@ -251,21 +253,19 @@
   background-color: #f8f9fa;
 }
 
-/* TABLE LINKS */
+/* !important needed to override OJS theme a { color } rules */
 .page_statistics .stats-table a,
 .page_statistics .ps-article-link {
-  color: var(--ps-primary);
-  text-decoration: none;
+  color: var(--ps-primary) !important;
+  text-decoration: none !important;
   transition: color 0.2s;
 }
 
 .page_statistics .stats-table a:hover,
 .page_statistics .ps-article-link:hover {
-  color: var(--ps-primary-dark);
-  text-decoration: underline;
+  color: var(--ps-primary-dark) !important;
+  text-decoration: underline !important;
 }
-
-/* MAP LEGEND */
 
 .page_statistics .map-legend {
   display: flex;
@@ -285,8 +285,6 @@
   height: 12px;
   border-radius: 50%;
 }
-
-/* YEAR SELECTOR & FILTERS */
 
 .page_statistics .year-selector-container {
   margin-bottom: 20px;
@@ -315,8 +313,6 @@
   flex-wrap: wrap;
 }
 
-/* TABLE COLOR INDICATOR */
-
 .page_statistics .table-color-indicator {
   display: inline-block;
   width: 16px;
@@ -325,8 +321,6 @@
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
-
-/* RESET ZOOM BUTTON */
 
 .page_statistics .reset-zoom-btn {
   padding: 6px 12px;
@@ -343,7 +337,9 @@
   background-color: var(--ps-primary-dark);
 }
 
-/* LOADING INDICATOR */
+.page_statistics .reset-zoom-btn i {
+  margin-right: 4px;
+}
 
 .page_statistics .loading-indicator {
   position: absolute;
@@ -367,7 +363,6 @@
   padding: 40px;
 }
 
-/* SPINNER */
 .page_statistics .loading-spinner {
   width: 60px;
   height: 60px;
@@ -382,7 +377,6 @@
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -395,7 +389,6 @@
   font-weight: 500;
 }
 
-/* LOADING DOTS */
 .page_statistics .loading-dots {
   display: flex;
   justify-content: center;
@@ -415,27 +408,23 @@
 .page_statistics .loading-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
-
 .page_statistics .loading-dots span:nth-child(2) {
   animation-delay: -0.16s;
 }
 
 @keyframes loading-dots {
-
   0%,
   80%,
   100% {
     transform: scale(0);
     opacity: 0.5;
   }
-
   40% {
     transform: scale(1);
     opacity: 1;
   }
 }
 
-/* Skeleton loader */
 .page_statistics .skeleton-loader {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
@@ -449,13 +438,10 @@
   0% {
     background-position: 200% 0;
   }
-
   100% {
     background-position: -200% 0;
   }
 }
-
-/* METRIC CARDS */
 
 .page_statistics .metric-card {
   background: #f8f9fa;
@@ -463,7 +449,9 @@
   border-radius: 8px;
   text-align: center;
   border: 2px solid #e9ecef;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .page_statistics .metric-card:hover {
@@ -471,7 +459,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* METRIC VALUE */
 .page_statistics .metric-value {
   font-size: 32px;
   font-weight: 700;
@@ -486,8 +473,6 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
-/* CSV EXPORT BUTTONS */
 
 .page_statistics .export-csv-btn {
   background: linear-gradient(135deg, #28a745 0%, #20883a 100%);
@@ -517,7 +502,10 @@
   box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
 }
 
-/* GLOBAL EXPORT MENU */
+.page_statistics .export-csv-btn i {
+  margin-right: 5px;
+  font-size: 0.9em;
+}
 
 .page_statistics .global-export-container {
   display: flex;
@@ -550,13 +538,23 @@
   box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
+.page_statistics .export-menu-dropdown {
+  display: none;
+}
+
 .page_statistics .export-menu-dropdown hr {
   margin: 5px 0;
   border: none;
   border-top: 1px solid #e9ecef;
 }
 
-/* Section header adjustments for export buttons */
+.page_statistics .ps-group-disabled {
+  display: none !important;
+}
+.page_statistics .ps-item-disabled {
+  display: none !important;
+}
+
 .page_statistics .content-section .section-header,
 .page_statistics .content-section h2,
 .page_statistics .content-section h3 {
@@ -567,7 +565,325 @@
   gap: 10px;
 }
 
-/* RESPONSIVE - TABLET & MOBILE */
+.page_statistics .ps-section-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.page_statistics .ps-empty-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.page_statistics .ps-error-message {
+  text-align: center;
+  padding: 40px;
+  color: #e74c3c;
+}
+
+.page_statistics .ps-cell-bold-right {
+  font-weight: bold;
+  text-align: right;
+}
+.page_statistics .ps-cell-center {
+  text-align: center;
+}
+.page_statistics .ps-cell-clickable {
+  cursor: pointer;
+}
+
+.page_statistics .ps-color-success {
+  color: #27ae60;
+}
+.page_statistics .ps-color-warning {
+  color: #f39c12;
+}
+.page_statistics .ps-color-muted {
+  color: #666;
+}
+.page_statistics .ps-color-error {
+  color: #e74c3c;
+}
+.page_statistics .ps-color-primary {
+  color: var(--ps-primary);
+}
+.page_statistics .ps-color-blue {
+  color: #3498db;
+}
+.page_statistics .ps-color-green {
+  color: #2ecc71;
+}
+.page_statistics .ps-color-purple {
+  color: #9b59b6;
+}
+
+.page_statistics .ps-stat-box {
+  text-align: center;
+}
+
+.page_statistics .ps-stat-value {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.page_statistics .ps-stat-value-large {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+.page_statistics .ps-stat-label {
+  color: #666;
+  margin-top: 5px;
+}
+
+.page_statistics .ps-stat-label-sm {
+  color: #666;
+  font-size: 14px;
+}
+
+.page_statistics .ps-no-data-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.page_statistics .ps-no-data-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  opacity: 0.3;
+}
+
+.page_statistics .ps-no-data-text {
+  font-size: 14px;
+}
+
+.page_statistics .ps-grid-span-2 {
+  grid-column: span 2;
+}
+
+.page_statistics .ps-map-tooltip {
+  text-align: center;
+  min-width: 120px;
+}
+
+.page_statistics .ps-map-tooltip-title {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.page_statistics .ps-map-tooltip-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--ps-primary);
+}
+
+.page_statistics .ps-map-tooltip-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.page_statistics .ps-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #666;
+}
+
+.page_statistics .ps-empty-state-icon {
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.page_statistics .ps-empty-state-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 10px 0;
+}
+
+.page_statistics .ps-empty-state-desc {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.7;
+}
+
+#citingJournalsTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.page_statistics .journal-row {
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.page_statistics .journal-row:hover {
+  background-color: #f5f5f5;
+}
+.page_statistics .journal-row td {
+  vertical-align: middle;
+}
+
+.page_statistics .expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.page_statistics .expand-icon i {
+  font-size: 12px;
+}
+
+.page_statistics .journal-articles-row td {
+  padding: 0 !important;
+  border-top: none;
+}
+
+.page_statistics .journal-articles-row table th,
+.page_statistics .journal-articles-row table td {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+.page_statistics .ps-articles-detail {
+  padding: 20px 25px;
+  background: linear-gradient(to bottom, #f8f9fa, #f1f3f4);
+  border-bottom: 2px solid #dee2e6;
+}
+
+.page_statistics .ps-articles-detail-title {
+  color: #495057;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.page_statistics .ps-articles-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.page_statistics .ps-articles-table thead tr {
+  background-color: #495057;
+  color: white;
+}
+
+.page_statistics .ps-articles-table th {
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.85em;
+}
+
+.page_statistics .ps-articles-table th.ps-col-center {
+  text-align: center;
+}
+
+.page_statistics .ps-articles-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.page_statistics .ps-articles-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+.page_statistics .ps-articles-table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.page_statistics .ps-articles-table .ps-cell-num {
+  text-align: center;
+  color: #999;
+  font-size: 0.9em;
+  padding-left: 15px;
+}
+
+.page_statistics .ps-articles-table .ps-cell-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page_statistics .ps-articles-table .ps-cell-authors {
+  color: #666;
+  font-size: 0.9em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page_statistics .ps-articles-table .ps-cell-year {
+  text-align: center;
+  color: #666;
+}
+
+.page_statistics .ps-articles-table .ps-cell-cited {
+  text-align: center !important;
+  font-weight: 600;
+  color: var(--ps-primary);
+  font-size: 1.05em;
+}
+
+.page_statistics .ps-article-link {
+  color: var(--ps-primary) !important;
+  text-decoration: none !important;
+}
+
+.page_statistics .ps-article-link:hover {
+  text-decoration: underline !important;
+  color: var(--ps-primary-dark) !important;
+}
+
+.page_statistics .ps-col-num {
+  width: 45px;
+}
+/* .ps-col-title is intentionally fluid — no fixed width */
+.page_statistics .ps-col-authors {
+  width: 180px;
+}
+.page_statistics .ps-col-year {
+  width: 65px;
+}
+.page_statistics .ps-col-cited {
+  width: 85px;
+}
+.page_statistics .ps-col-expand {
+  width: 40px;
+  text-align: center;
+}
+.page_statistics .ps-col-index {
+  width: 50px;
+}
+.page_statistics .ps-col-color {
+  width: 40px;
+}
+.page_statistics .ps-col-issn {
+  width: 120px;
+}
+.page_statistics .ps-col-citations {
+  width: 80px;
+}
+
+.page_statistics .ps-author-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
 
 @media (max-width: 992px) {
   .page_statistics .container {
@@ -583,7 +899,6 @@
   .page_statistics .sidebar-header {
     padding: 15px;
   }
-
   .page_statistics .sidebar-header h1 {
     font-size: 16px;
   }
@@ -605,7 +920,6 @@
   .page_statistics .section-title {
     font-size: 13px;
   }
-
   .page_statistics .section-content {
     background: #f8f9fa;
   }
@@ -630,7 +944,6 @@
     white-space: nowrap;
   }
 
-  /* ACTIVE MENU MOBILE */
   .page_statistics .menu-link.active {
     background-color: var(--ps-primary);
     color: white;
@@ -641,24 +954,19 @@
     padding: 15px;
     margin: 0;
   }
-
   .page_statistics .content-title {
     font-size: 20px;
   }
-
   .page_statistics .content-subtitle {
     font-size: 13px;
   }
-
   .page_statistics .year-selector-container {
     padding: 12px;
   }
-
   .page_statistics .filter-group {
     flex-direction: column;
     gap: 15px;
   }
-
   .page_statistics .stats-table {
     font-size: 13px;
   }
@@ -671,31 +979,25 @@
   .page_statistics .chart-container {
     height: 250px;
   }
-
   .page_statistics .card-title {
     font-size: 14px;
   }
-
   .page_statistics .card-body {
     padding: 15px;
   }
-
   .page_statistics .loading-spinner {
     width: 50px;
     height: 50px;
   }
-
   .page_statistics .loading-indicator p {
     font-size: 14px;
   }
 
-  /* Export buttons mobile */
   .page_statistics .export-csv-btn {
     padding: 4px 8px;
     font-size: 0.75rem;
   }
 
-  /* Global export menu - mobile fixes */
   .page_statistics .global-export-container {
     padding: 10px 15px;
     justify-content: center;
@@ -733,7 +1035,6 @@
       transform: translateY(100%);
       opacity: 0;
     }
-
     to {
       transform: translateY(0);
       opacity: 1;
@@ -750,7 +1051,6 @@
     padding-left: 20px;
   }
 
-  /* Overlay when dropdown is open on mobile */
   .page_statistics .export-menu-overlay {
     position: fixed;
     top: 0;
@@ -766,10 +1066,18 @@
     from {
       opacity: 0;
     }
-
     to {
       opacity: 1;
     }
+  }
+
+  .page_statistics .ps-articles-table .ps-col-authors,
+  .page_statistics .ps-articles-table .ps-cell-authors,
+  .page_statistics .ps-articles-table th.ps-col-authors,
+  .page_statistics .ps-articles-table .ps-col-year,
+  .page_statistics .ps-articles-table .ps-cell-year,
+  .page_statistics .ps-articles-table th.ps-col-year {
+    display: none;
   }
 }
 
@@ -777,20 +1085,16 @@
   .page_statistics .sidebar-header h1 {
     font-size: 14px;
   }
-
   .page_statistics .section-title {
     font-size: 12px;
   }
-
   .page_statistics .menu-link {
     padding: 6px 12px;
     font-size: 12px;
   }
-
   .page_statistics .content-title {
     font-size: 18px;
   }
-
   .page_statistics .stats-table {
     font-size: 12px;
   }
@@ -804,450 +1108,19 @@
     font-size: 10px;
     gap: 8px;
   }
-
   .page_statistics .legend-color {
     width: 10px;
     height: 10px;
   }
-
   .page_statistics .export-menu-dropdown button {
     padding: 16px 20px;
   }
 }
 
-/* Print styles - hide export buttons */
 @media print {
-
   .page_statistics .export-csv-btn,
   .page_statistics .export-menu,
   .page_statistics .global-export-container {
     display: none !important;
   }
-}
-
-/* Iconos de sección del menú lateral */
-.page_statistics .section-icon {
-  margin-right: 8px;
-  font-size: 14px;
-  opacity: 0.9;
-  width: 18px;
-  text-align: center;
-}
-
-/* Section toggle icon (flecha) */
-.page_statistics .section-toggle {
-  margin-left: auto;
-  font-size: 12px;
-  transition: transform 0.3s ease;
-  display: inline-block;
-}
-
-.page_statistics .section-toggle i {
-  font-size: 11px;
-  transition: transform 0.3s ease;
-}
-
-/* Rotate icon when section is collapsed */
-.page_statistics .section-collapsed .section-toggle i {
-  transform: rotate(-90deg);
-}
-
-/* CSV export button icon */
-.page_statistics .export-csv-btn i {
-  margin-right: 5px;
-  font-size: 0.9em;
-}
-
-/* COMMON TABLE STYLES */
-
-/* Empty state messages */
-.page_statistics .ps-empty-message {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-}
-
-.page_statistics .ps-error-message {
-    text-align: center;
-    padding: 40px;
-    color: #e74c3c;
-}
-
-/* Table cell styles */
-.page_statistics .ps-cell-bold-right {
-    font-weight: bold;
-    text-align: right;
-}
-
-.page_statistics .ps-cell-center {
-    text-align: center;
-}
-
-.page_statistics .ps-cell-clickable {
-    cursor: pointer;
-}
-
-/* Color indicators */
-.page_statistics .ps-color-success {
-    color: #27ae60;
-}
-
-.page_statistics .ps-color-warning {
-    color: #f39c12;
-}
-
-.page_statistics .ps-color-muted {
-    color: #666;
-}
-
-.page_statistics .ps-color-error {
-    color: #e74c3c;
-}
-
-.page_statistics .ps-color-primary {
-    color: var(--ps-primary);
-}
-
-.page_statistics .ps-color-blue {
-    color: #3498db;
-}
-
-.page_statistics .ps-color-green {
-    color: #2ecc71;
-}
-
-.page_statistics .ps-color-purple {
-    color: #9b59b6;
-}
-
-/* STAT CARDS & SUMMARIES */
-
-.page_statistics .ps-stat-box {
-    text-align: center;
-}
-
-.page_statistics .ps-stat-value {
-    font-size: 32px;
-    font-weight: bold;
-}
-
-.page_statistics .ps-stat-value-large {
-    font-size: 48px;
-    font-weight: bold;
-    margin: 20px 0;
-}
-
-.page_statistics .ps-stat-label {
-    color: #666;
-    margin-top: 5px;
-}
-
-.page_statistics .ps-stat-label-sm {
-    color: #666;
-    font-size: 14px;
-}
-
-/* No data placeholder */
-.page_statistics .ps-no-data-container {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
-
-.page_statistics .ps-no-data-icon {
-    font-size: 48px;
-    margin-bottom: 10px;
-    opacity: 0.3;
-}
-
-.page_statistics .ps-no-data-text {
-    font-size: 14px;
-}
-
-/* Grid span utilities */
-.page_statistics .ps-grid-span-2 {
-    grid-column: span 2;
-}
-
-/* MAP TOOLTIPS */
-
-.page_statistics .ps-map-tooltip {
-    text-align: center;
-    min-width: 120px;
-}
-
-.page_statistics .ps-map-tooltip-title {
-    margin: 0 0 8px 0;
-    color: #333;
-    font-size: 14px;
-}
-
-.page_statistics .ps-map-tooltip-value {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--ps-primary);
-}
-
-.page_statistics .ps-map-tooltip-label {
-    font-size: 12px;
-    color: #666;
-}
-
-/* EMPTY STATE LARGE */
-
-.page_statistics .ps-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    color: #666;
-}
-
-.page_statistics .ps-empty-state-icon {
-    margin-bottom: 20px;
-    opacity: 0.3;
-}
-
-.page_statistics .ps-empty-state-title {
-    font-size: 18px;
-    font-weight: 500;
-    margin: 0 0 10px 0;
-}
-
-.page_statistics .ps-empty-state-desc {
-    font-size: 14px;
-    margin: 0;
-    opacity: 0.7;
-}
-
-/* EXPORT MENU */
-
-.page_statistics .ps-group-disabled {
-    display: none !important;
-}
-
-.page_statistics .ps-item-disabled {
-    display: none !important;
-}
-
-.page_statistics .export-menu-dropdown {
-    display: none;
-}
-
-.page_statistics .ps-section-header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-/* CITING JOURNALS - EXPANDABLE TABLE */
-
-#citingJournalsTable {
-    table-layout: fixed;
-    width: 100%;
-}
-
-.page_statistics .journal-row {
-    transition: background-color 0.15s ease;
-    cursor: pointer;
-}
-
-.page_statistics .journal-row:hover {
-    background-color: #f5f5f5;
-}
-
-.page_statistics .journal-row td {
-    vertical-align: middle;
-}
-
-.page_statistics .expand-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    color: #666;
-    transition: transform 0.2s;
-}
-
-.page_statistics .expand-icon i {
-    font-size: 12px;
-}
-
-/* Journal articles detail row */
-.page_statistics .journal-articles-row td {
-    padding: 0 !important;
-    border-top: none;
-}
-
-.page_statistics .journal-articles-row table th,
-.page_statistics .journal-articles-row table td {
-    text-transform: none !important;
-    letter-spacing: normal !important;
-}
-
-/* Articles detail container */
-.page_statistics .ps-articles-detail {
-    padding: 20px 25px 20px 25px;
-    background: linear-gradient(to bottom, #f8f9fa, #f1f3f4);
-    border-bottom: 2px solid #dee2e6;
-}
-
-.page_statistics .ps-articles-detail-title {
-    color: #495057;
-    font-size: 0.9em;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-/* Articles sub-table */
-.page_statistics .ps-articles-table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    font-size: 0.9em;
-    background: white;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.page_statistics .ps-articles-table thead tr {
-    background-color: #495057;
-    color: white;
-}
-
-.page_statistics .ps-articles-table th {
-    padding: 12px 10px;
-    text-align: left;
-    font-weight: 500;
-    font-size: 0.85em;
-}
-
-.page_statistics .ps-articles-table th.ps-col-center {
-    text-align: center;
-}
-
-.page_statistics .ps-articles-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.page_statistics .ps-articles-table tr:nth-child(even) {
-    background-color: #f8f9fa;
-}
-
-.page_statistics .ps-articles-table tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-.page_statistics .ps-articles-table .ps-cell-num {
-    text-align: center;
-    color: #999;
-    font-size: 0.9em;
-    padding-left: 15px;
-}
-
-.page_statistics .ps-articles-table .ps-cell-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.page_statistics .ps-articles-table .ps-cell-authors {
-    color: #666;
-    font-size: 0.9em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.page_statistics .ps-articles-table .ps-cell-year {
-    text-align: center;
-    color: #666;
-}
-
-.page_statistics .ps-articles-table .ps-cell-cited {
-    text-align: center !important;
-    font-weight: 600;
-    color: var(--ps-primary);
-    font-size: 1.05em;
-}
-
-/* Article link style */
-.page_statistics .ps-article-link {
-    color: var(--ps-primary);
-    text-decoration: none;
-}
-
-.page_statistics .ps-article-link:hover {
-    text-decoration: underline;
-    color: var(--ps-primary-dark);
-}
-
-/* Column widths for articles table */
-.page_statistics .ps-col-num {
-    width: 45px;
-}
-
-/* .ps-col-title is intentionally fluid (no width). */
-
-.page_statistics .ps-col-authors {
-    width: 180px;
-}
-
-.page_statistics .ps-col-year {
-    width: 65px;
-}
-
-.page_statistics .ps-col-cited {
-    width: 85px;
-}
-
-/* Column widths for journals table */
-.page_statistics .ps-col-expand {
-    width: 40px;
-    text-align: center;
-}
-
-.page_statistics .ps-col-index {
-    width: 50px;
-}
-
-.page_statistics .ps-col-color {
-    width: 40px;
-}
-
-.page_statistics .ps-col-issn {
-    width: 120px;
-}
-
-.page_statistics .ps-col-citations {
-    width: 80px;
-}
-
-/* Author cards grid */
-.page_statistics .ps-author-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-/* Responsive: hide authors and year columns on small screens */
-@media (max-width: 992px) {
-
-    .page_statistics .ps-articles-table .ps-col-authors,
-    .page_statistics .ps-articles-table .ps-cell-authors,
-    .page_statistics .ps-articles-table th.ps-col-authors,
-    .page_statistics .ps-articles-table .ps-col-year,
-    .page_statistics .ps-articles-table .ps-cell-year,
-    .page_statistics .ps-articles-table th.ps-col-year {
-        display: none;
-    }
-}
-
-/* Reset zoom button icon */
-.page_statistics .reset-zoom-btn i {
-  margin-right: 4px;
 }

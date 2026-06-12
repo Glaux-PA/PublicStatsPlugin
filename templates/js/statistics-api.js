@@ -182,7 +182,10 @@
     },
 
     async getReviewerList(year = null) {
-      if (statsData.reviewerList !== null && statsData.reviewerList !== undefined)
+      if (
+        statsData.reviewerList !== null &&
+        statsData.reviewerList !== undefined
+      )
         return statsData.reviewerList;
       const data = await this.fetchData("reviewerList", { year });
       statsData.reviewerList = data;
@@ -347,7 +350,6 @@
       if (statsData.topCitedArticles) statsData.topCitedArticles = null;
     },
 
-
     exportCsv(endpoint, params = {}) {
       const url = this.buildUrl(endpoint, params);
       window.location.href = url;
@@ -406,7 +408,8 @@
     },
 
     exportLanguages() {
-      const issueId = document.getElementById("languageIssueFilter")?.value || null;
+      const issueId =
+        document.getElementById("languageIssueFilter")?.value || null;
       this.exportCsv("exportLanguages", issueId ? { issueId } : {});
     },
 
@@ -443,8 +446,7 @@
     },
 
     exportCitingJournals() {
-      const year =
-        (PS.Impact && PS.Impact.citingJournalsSelectedYear) || "all";
+      const year = (PS.Impact && PS.Impact.citingJournalsSelectedYear) || "all";
       this.exportCsv("exportCitingJournals", { year });
     },
 
@@ -465,7 +467,7 @@
     createButton(
       label,
       onClick,
-      icon = '<i class="fa-solid fa-file-csv"></i>'
+      icon = '<i class="fa-solid fa-file-csv"></i>',
     ) {
       const btn = document.createElement("button");
       btn.className = "export-csv-btn";
@@ -480,7 +482,7 @@
       if (!section) return;
 
       const header = section.querySelector(
-        ".content-title, .section-header, h2, h3"
+        ".content-title, .section-header, h2, h3",
       );
       if (!header) return;
 
@@ -498,7 +500,7 @@
       }
 
       const btn = this.createButton(i18n.exportCsv || "CSV", () =>
-        exportFn.call(API, params.year, params.limit)
+        exportFn.call(API, params.year, params.limit),
       );
 
       if (!header.style.display || header.style.display !== "flex") {
@@ -604,7 +606,7 @@
 
         if (this.isMobile()) {
           const existingOverlay = document.querySelector(
-            ".export-menu-overlay"
+            ".export-menu-overlay",
           );
           if (!existingOverlay) {
             document.body.appendChild(this.createOverlay());

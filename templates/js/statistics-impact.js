@@ -75,7 +75,10 @@
 
       if (author.orcid) {
         // Strip URL prefix; render link only if canonical ORCID format.
-        const bareOrcid = String(author.orcid).replace(/^https?:\/\/orcid\.org\//i, "");
+        const bareOrcid = String(author.orcid).replace(
+          /^https?:\/\/orcid\.org\//i,
+          "",
+        );
         const safeOrcid = escapeHtml(bareOrcid);
         if (/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i.test(bareOrcid)) {
           html += `<div><strong>ORCID:</strong> <a href="https://orcid.org/${safeOrcid}" target="_blank" rel="noopener noreferrer">${safeOrcid}</a></div>`;
@@ -200,7 +203,7 @@
 
         const titleCell = row.insertCell(1);
         titleCell.innerHTML = `<a href="${escapeHtml(
-          article.urlPublished
+          article.urlPublished,
         )}">${escapeHtml(article.title)}</a>`;
 
         row.insertCell(2).textContent = article.datePublished || "-";
@@ -262,7 +265,7 @@
           const row = body.insertRow();
           row.insertCell(0).textContent = index + 1;
           row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-            article.urlPublished
+            article.urlPublished,
           )}">${escapeHtml(article.title)}</a>`;
           row.insertCell(2).textContent = article.authors || "-";
           row.insertCell(3).textContent = article.year || "-";
@@ -274,8 +277,8 @@
             (article.citations > 50
               ? "ps-color-success"
               : article.citations > 20
-              ? "ps-color-warning"
-              : "ps-color-muted");
+                ? "ps-color-warning"
+                : "ps-color-muted");
         });
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
@@ -298,14 +301,17 @@
         if (!ph) {
           ph = document.createElement("p");
           ph.className = "ps-computing-placeholder";
-          ph.style.cssText = "display:flex;align-items:center;justify-content:center;height:100%;margin:0;text-align:center;";
+          ph.style.cssText =
+            "display:flex;align-items:center;justify-content:center;height:100%;margin:0;text-align:center;";
           container.appendChild(ph);
         }
         ph.className = `ps-computing-placeholder ${cls}`;
         ph.textContent = text || "";
       };
       const clearPlaceholder = () => {
-        const ph = canvas.parentElement.querySelector(".ps-computing-placeholder");
+        const ph = canvas.parentElement.querySelector(
+          ".ps-computing-placeholder",
+        );
         if (ph) ph.remove();
         canvas.style.display = "";
       };
@@ -400,9 +406,7 @@
 
         const table = tbody.closest("table");
         if (table) {
-          const citationsHeader = table.querySelector(
-            "thead tr th:last-child"
-          );
+          const citationsHeader = table.querySelector("thead tr th:last-child");
           if (citationsHeader) {
             citationsHeader.textContent = year
               ? (i18n.citationsReceivedInYear || "Citations received in ") +
@@ -434,7 +438,7 @@
           const row = tbody.insertRow();
           row.insertCell(0).textContent = index + 1;
           row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-            article.urlPublished
+            article.urlPublished,
           )}">${escapeHtml(article.title)}</a>`;
           row.insertCell(2).textContent = article.authors || "-";
           row.insertCell(3).textContent = article.year || "-";
@@ -446,8 +450,8 @@
             (article.citations > 50
               ? "ps-color-success"
               : article.citations > 20
-              ? "ps-color-warning"
-              : "ps-color-muted");
+                ? "ps-color-warning"
+                : "ps-color-muted");
         });
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
@@ -464,16 +468,14 @@
         const data = response;
 
         if (data && data.is_computing) {
-          document.getElementById(
-            "oaSummaryCards"
-          ).innerHTML = `<p class="ps-empty-message">${escapeHtml(computingText(data))}</p>`;
+          document.getElementById("oaSummaryCards").innerHTML =
+            `<p class="ps-empty-message">${escapeHtml(computingText(data))}</p>`;
           return;
         }
 
         if (!data || !data.total) {
-          document.getElementById(
-            "oaSummaryCards"
-          ).innerHTML = `<p class="ps-empty-message">${i18n.noOaData}</p>`;
+          document.getElementById("oaSummaryCards").innerHTML =
+            `<p class="ps-empty-message">${i18n.noOaData}</p>`;
           return;
         }
 
@@ -482,9 +484,8 @@
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading OA stats:", error);
-        document.getElementById(
-          "oaSummaryCards"
-        ).innerHTML = `<p class="ps-error-message">${i18n.errorLoading}</p>`;
+        document.getElementById("oaSummaryCards").innerHTML =
+          `<p class="ps-error-message">${i18n.errorLoading}</p>`;
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -583,16 +584,14 @@
         const data = response;
 
         if (data && data.is_computing) {
-          document.getElementById(
-            "thematicTableBody"
-          ).innerHTML = `<tr><td colspan="4" class="ps-empty-message">${escapeHtml(computingText(data))}</td></tr>`;
+          document.getElementById("thematicTableBody").innerHTML =
+            `<tr><td colspan="4" class="ps-empty-message">${escapeHtml(computingText(data))}</td></tr>`;
           return;
         }
 
         if (!data || !data.topics || data.topics.length === 0) {
-          document.getElementById(
-            "thematicTableBody"
-          ).innerHTML = `<tr><td colspan="4" class="ps-empty-message">${i18n.noThematicData}</td></tr>`;
+          document.getElementById("thematicTableBody").innerHTML =
+            `<tr><td colspan="4" class="ps-empty-message">${i18n.noThematicData}</td></tr>`;
           return;
         }
 
@@ -601,9 +600,8 @@
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading thematic profile:", error);
-        document.getElementById(
-          "thematicTableBody"
-        ).innerHTML = `<tr><td colspan="4" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
+        document.getElementById("thematicTableBody").innerHTML =
+          `<tr><td colspan="4" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -625,7 +623,7 @@
         type: "bar",
         data: {
           labels: topTopics.map((t) =>
-            t.name.length > 40 ? t.name.substring(0, 40) + "..." : t.name
+            t.name.length > 40 ? t.name.substring(0, 40) + "..." : t.name,
           ),
           datasets: [
             {
@@ -692,20 +690,14 @@
         const response = await PS.API.getCitingJournals();
 
         if (response && response.is_computing) {
-          document.getElementById(
-            "citingJournalsTableBody"
-          ).innerHTML = `<tr><td colspan="6" class="ps-empty-message">${escapeHtml(computingText(response))}</td></tr>`;
+          document.getElementById("citingJournalsTableBody").innerHTML =
+            `<tr><td colspan="6" class="ps-empty-message">${escapeHtml(computingText(response))}</td></tr>`;
           return;
         }
 
-        if (
-          !response ||
-          !response.journals ||
-          response.journals.length === 0
-        ) {
-          document.getElementById(
-            "citingJournalsTableBody"
-          ).innerHTML = `<tr><td colspan="6" class="ps-empty-message">${i18n.noCitingJournalsData}</td></tr>`;
+        if (!response || !response.journals || response.journals.length === 0) {
+          document.getElementById("citingJournalsTableBody").innerHTML =
+            `<tr><td colspan="6" class="ps-empty-message">${i18n.noCitingJournalsData}</td></tr>`;
           return;
         }
 
@@ -715,16 +707,15 @@
         this.populateCitingJournalsYearFilter();
 
         const filteredData = this.filterCitingJournalsByCitationYear(
-          this.citingJournalsSelectedYear
+          this.citingJournalsSelectedYear,
         );
         this.renderCitingJournalsChart(filteredData);
         this.renderCitingJournalsTable(filteredData);
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading citing journals:", error);
-        document.getElementById(
-          "citingJournalsTableBody"
-        ).innerHTML = `<tr><td colspan="6" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
+        document.getElementById("citingJournalsTableBody").innerHTML =
+          `<tr><td colspan="6" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -764,7 +755,7 @@
             }
           });
           const merged = Object.values(byId).sort(
-            (a, b) => b.times_cited - a.times_cited
+            (a, b) => b.times_cited - a.times_cited,
           );
           return { ...journal, cited_articles: merged };
         });
@@ -773,7 +764,7 @@
       return this.citingJournalsOriginalData
         .map((journal) => {
           const filteredArticles = (journal.cited_articles || []).filter(
-            (article) => article.citation_year == year
+            (article) => article.citation_year == year,
           );
 
           const filteredCitations = journal.citations_by_year?.[year] || 0;
@@ -807,7 +798,7 @@
           labels: topJournals.map((journal) =>
             journal.name.length > 50
               ? journal.name.substring(0, 50) + "..."
-              : journal.name
+              : journal.name,
           ),
           datasets: [
             {
@@ -886,8 +877,8 @@
           journal.citations > 50
             ? "ps-color-success"
             : journal.citations > 20
-            ? "ps-color-warning"
-            : "ps-color-muted"
+              ? "ps-color-warning"
+              : "ps-color-muted",
         );
 
         const detailRow = tbody.insertRow();
@@ -920,9 +911,7 @@
                   <tr>
                     <th class="ps-col-center">#</th>
                     <th>${i18n.articleTitle || "Título"}</th>
-                    <th class="ps-col-authors">${
-                      i18n.authors || "Autores"
-                    }</th>
+                    <th class="ps-col-authors">${i18n.authors || "Autores"}</th>
                     <th class="ps-col-center ps-col-year">${
                       i18n.year || "Año"
                     }</th>
@@ -943,7 +932,7 @@
                 <td class="ps-cell-num">${artIndex + 1}</td>
                 <td class="ps-cell-title">${titleHtml}</td>
                 <td class="ps-cell-authors">${escapeHtml(
-                  article.authors || "-"
+                  article.authors || "-",
                 )}</td>
                 <td class="ps-cell-year">${article.year || "-"}</td>
                 <td class="ps-cell-cited">${article.times_cited}</td>

@@ -22,7 +22,7 @@
         const row = body.insertRow();
         row.insertCell(0).textContent = index;
         row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-          article.urlPublished
+          article.urlPublished,
         )}">${escapeHtml(article.title)}</a>`;
         row.insertCell(2).textContent = article[key];
         index++;
@@ -49,7 +49,7 @@
           const row = body.insertRow();
           row.insertCell(0).textContent = index + 1;
           row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-            article.urlPublished
+            article.urlPublished,
           )}">${escapeHtml(article.title)}</a>`;
           row.insertCell(2).textContent = article.authors || "-";
           row.insertCell(3).textContent = (
@@ -83,7 +83,7 @@
           const row = body.insertRow();
           row.insertCell(0).textContent = index + 1;
           row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-            article.urlPublished
+            article.urlPublished,
           )}">${escapeHtml(article.title)}</a>`;
           row.insertCell(2).textContent = article.authors || "-";
           row.insertCell(3).textContent = (article.views || 0).toLocaleString();
@@ -111,7 +111,7 @@
       this.renderArticlesTable(
         "recentTopDownloadsTableBody",
         statsData.recentTopDownloaded,
-        "downloads"
+        "downloads",
       );
     },
 
@@ -131,7 +131,7 @@
       this.renderArticlesTable(
         "recentTopViewsTableBody",
         statsData.recentTopViewed,
-        "views"
+        "views",
       );
     },
 
@@ -154,7 +154,7 @@
         const row = body.insertRow();
         row.insertCell(0).textContent = index;
         row.insertCell(1).innerHTML = `<a href="${escapeHtml(
-          issue.urlPublished
+          issue.urlPublished,
         )}">${escapeHtml(issue.issueTitle)}</a>`;
         row.insertCell(2).textContent = issue.downloads.toLocaleString();
         row.insertCell(3).textContent = issue.views.toLocaleString();
@@ -182,9 +182,8 @@
       statsData.sectionStats.forEach((section, i) => {
         const row = body.insertRow();
         row.insertCell(0).textContent = index;
-        row.insertCell(
-          1
-        ).innerHTML = `<span class="table-color-indicator" style="background-color: ${colors[i]}"></span>`;
+        row.insertCell(1).innerHTML =
+          `<span class="table-color-indicator" style="background-color: ${colors[i]}"></span>`;
         row.insertCell(2).textContent = section.sectionTitle;
         row.insertCell(3).textContent = section.downloads.toLocaleString();
         row.insertCell(4).textContent = section.views.toLocaleString();
@@ -215,9 +214,8 @@
       items.forEach((item, i) => {
         const row = body.insertRow();
         row.insertCell(0).textContent = i + 1;
-        row.insertCell(
-          1
-        ).innerHTML = `<span class="table-color-indicator" style="background-color: ${colors[i]}"></span>`;
+        row.insertCell(1).innerHTML =
+          `<span class="table-color-indicator" style="background-color: ${colors[i]}"></span>`;
         row.insertCell(2).textContent = item.name;
         row.insertCell(3).textContent = item.count.toLocaleString();
       });
@@ -237,7 +235,7 @@
 
       const totalArticles = data.series.reduce(
         (sum, s) => sum + s.data.reduce((a, b) => a + b, 0),
-        0
+        0,
       );
       const languageCount = data.series.length;
       const leadingLanguage = data.series[0]?.name || "—";
@@ -290,7 +288,7 @@
           acc.inProcess += item.inProcess;
           return acc;
         },
-        { received: 0, published: 0, declined: 0, inProcess: 0 }
+        { received: 0, published: 0, declined: 0, inProcess: 0 },
       );
 
       div.innerHTML = `
@@ -340,7 +338,7 @@
           acc.inProcess += item.inProcess;
           return acc;
         },
-        { received: 0, published: 0, declined: 0, inProcess: 0 }
+        { received: 0, published: 0, declined: 0, inProcess: 0 },
       );
 
       div.innerHTML = `
@@ -430,13 +428,12 @@
         row.insertCell(0).textContent = index + 1;
 
         let colorIndex = topInstitutions.findIndex(
-          (t) => t.institution === item.institution
+          (t) => t.institution === item.institution,
         );
         let color = colorIndex !== -1 ? colors[colorIndex] : "#cccccc";
 
-        row.insertCell(
-          1
-        ).innerHTML = `<span class="table-color-indicator" style="background-color: ${color}"></span>`;
+        row.insertCell(1).innerHTML =
+          `<span class="table-color-indicator" style="background-color: ${color}"></span>`;
         row.insertCell(2).textContent = item.institution;
         row.insertCell(3).textContent = item.total_count.toLocaleString();
       });
@@ -530,13 +527,12 @@
         row.insertCell(0).textContent = index + 1;
 
         let colorIndex = topInstitutions.findIndex(
-          (t) => t.institution === item.institution
+          (t) => t.institution === item.institution,
         );
         let color = colorIndex !== -1 ? colors[colorIndex] : "#cccccc";
 
-        row.insertCell(
-          1
-        ).innerHTML = `<span class="table-color-indicator" style="background-color: ${color}"></span>`;
+        row.insertCell(1).innerHTML =
+          `<span class="table-color-indicator" style="background-color: ${color}"></span>`;
         row.insertCell(2).textContent = item.institution;
         row.insertCell(3).textContent = item.total_count.toLocaleString();
       });
@@ -546,7 +542,7 @@
       const data = statsData.firstDecisionStats;
 
       const reviewedDiv = document.getElementById(
-        "firstDecisionAverageReviewed"
+        "firstDecisionAverageReviewed",
       );
       const allDiv = document.getElementById("firstDecisionAverageAll");
 
@@ -583,8 +579,8 @@
                     </div>
                     <div class="ps-stat-label-sm">
                         ${i18n.daysAverage || "days average"} (${
-          data.count_reviewed
-        } ${i18n.submissionsReviewed || "reviewed submissions"})
+                          data.count_reviewed
+                        } ${i18n.submissionsReviewed || "reviewed submissions"})
                     </div>
                 `;
       }
@@ -596,8 +592,8 @@
                     </div>
                     <div class="ps-stat-label-sm">
                         ${i18n.daysAverage || "days average"} (${
-          data.count_all
-        } ${i18n.totalSubmissions || "total submissions"})
+                          data.count_all
+                        } ${i18n.totalSubmissions || "total submissions"})
                     </div>
                 `;
       }
@@ -669,8 +665,8 @@
                     </div>
                     <div class="ps-stat-label-sm">
                         ${i18n.daysAverage || "days average"} (${
-          data.count_reviewed
-        } ${i18n.publicationsReviewed || "reviewed publications"})
+                          data.count_reviewed
+                        } ${i18n.publicationsReviewed || "reviewed publications"})
                     </div>
                 `;
       }
@@ -682,8 +678,8 @@
                     </div>
                     <div class="ps-stat-label-sm">
                         ${i18n.daysAverage || "days average"} (${
-          data.count_all
-        } ${i18n.totalPublications || "total publications"})
+                          data.count_all
+                        } ${i18n.totalPublications || "total publications"})
                     </div>
                 `;
       }

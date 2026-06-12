@@ -172,7 +172,7 @@
                 const value = context.parsed || 0;
                 const total = context.dataset.data.reduce(
                   (a, b) => Number(a) + Number(b),
-                  0
+                  0,
                 );
                 const percentage =
                   total > 0 ? ((value / total) * 100).toFixed(1) : 0;

@@ -117,7 +117,7 @@
       }).addTo(ChartInstances.worldMap);
 
       const maxAccess = Math.max(
-        ...statsData.countryData.map((c) => c.total_access)
+        ...statsData.countryData.map((c) => c.total_access),
       );
 
       statsData.countryData.forEach((country) => {
@@ -128,10 +128,10 @@
             country.total_access >= 1000
               ? "#ff6b6b"
               : country.total_access >= 500
-              ? "#4ecdc4"
-              : country.total_access >= 100
-              ? "#45b7d1"
-              : "#96ceb4";
+                ? "#4ecdc4"
+                : country.total_access >= 100
+                  ? "#45b7d1"
+                  : "#96ceb4";
 
           const marker = L.circleMarker(coords, {
             radius: size,
@@ -145,7 +145,7 @@
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
                             <h3 class="ps-map-tooltip-title">${escapeHtml(
-                              country.country_name
+                              country.country_name,
                             )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_access.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
@@ -206,7 +206,7 @@
       }).addTo(ChartInstances.authorsMap);
 
       const maxAuthors = Math.max(
-        ...statsData.authorsByCountry.map((c) => c.total_count)
+        ...statsData.authorsByCountry.map((c) => c.total_count),
       );
 
       statsData.authorsByCountry.forEach((country) => {
@@ -217,12 +217,12 @@
             country.total_count >= 100
               ? "#8b2635"
               : country.total_count >= 50
-              ? "#c74251"
-              : country.total_count >= 20
-              ? "#e6677a"
-              : country.total_count >= 10
-              ? "#f096a6"
-              : "#f8c5cf";
+                ? "#c74251"
+                : country.total_count >= 20
+                  ? "#e6677a"
+                  : country.total_count >= 10
+                    ? "#f096a6"
+                    : "#f8c5cf";
 
           const marker = L.circleMarker(coords, {
             radius: size,
@@ -236,7 +236,7 @@
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
                             <h3 class="ps-map-tooltip-title">${escapeHtml(
-                              country.country_name
+                              country.country_name,
                             )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_count.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
@@ -274,7 +274,7 @@
       }).addTo(ChartInstances.reviewersMap);
 
       const maxReviewers = Math.max(
-        ...statsData.reviewersByCountry.map((c) => c.total_count)
+        ...statsData.reviewersByCountry.map((c) => c.total_count),
       );
 
       statsData.reviewersByCountry.forEach((country) => {
@@ -285,12 +285,12 @@
             country.total_count >= 100
               ? "#8b2635"
               : country.total_count >= 50
-              ? "#c74251"
-              : country.total_count >= 20
-              ? "#e6677a"
-              : country.total_count >= 10
-              ? "#f096a6"
-              : "#f8c5cf";
+                ? "#c74251"
+                : country.total_count >= 20
+                  ? "#e6677a"
+                  : country.total_count >= 10
+                    ? "#f096a6"
+                    : "#f8c5cf";
 
           const marker = L.circleMarker(coords, {
             radius: size,
@@ -304,7 +304,7 @@
           marker.bindPopup(`
                         <div class="ps-map-tooltip">
                             <h3 class="ps-map-tooltip-title">${escapeHtml(
-                              country.country_name
+                              country.country_name,
                             )}</h3>
                             <div class="ps-map-tooltip-value">${country.total_count.toLocaleString()}</div>
                             <div class="ps-map-tooltip-label">${
@@ -334,16 +334,14 @@
                   parseInt(p.total, 10) || 0
                 }`
               : base;
-          document.getElementById(
-            "citationsMapTableBody"
-          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${msg}</td></tr>`;
+          document.getElementById("citationsMapTableBody").innerHTML =
+            `<tr><td colspan="3" class="ps-empty-message">${msg}</td></tr>`;
           return;
         }
 
         if (!data || data.length === 0) {
-          document.getElementById(
-            "citationsMapTableBody"
-          ).innerHTML = `<tr><td colspan="3" class="ps-empty-message">${i18n.noCitationMapData}</td></tr>`;
+          document.getElementById("citationsMapTableBody").innerHTML =
+            `<tr><td colspan="3" class="ps-empty-message">${i18n.noCitationMapData}</td></tr>`;
           return;
         }
 
@@ -352,9 +350,8 @@
       } catch (error) {
         if (error && error.code === "STALE_REQUEST") return;
         console.error("Error loading citations map:", error);
-        document.getElementById(
-          "citationsMapTableBody"
-        ).innerHTML = `<tr><td colspan="3" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
+        document.getElementById("citationsMapTableBody").innerHTML =
+          `<tr><td colspan="3" class="ps-error-message">${i18n.errorLoading}</td></tr>`;
       } finally {
         Utils.hideLoadingIndicator();
       }
@@ -389,10 +386,10 @@
           ratio >= 0.75
             ? "#ff6b6b"
             : ratio >= 0.5
-            ? "#4ecdc4"
-            : ratio >= 0.25
-            ? "#45b7d1"
-            : "#96ceb4";
+              ? "#4ecdc4"
+              : ratio >= 0.25
+                ? "#45b7d1"
+                : "#96ceb4";
 
         const marker = L.circleMarker(coords, {
           radius: size,
@@ -406,7 +403,7 @@
         marker.bindPopup(`
                     <div class="ps-map-tooltip">
                         <h3 class="ps-map-tooltip-title">${escapeHtml(
-                          country.country_name
+                          country.country_name,
                         )}</h3>
                         <div class="ps-map-tooltip-value">${country.citations_count.toLocaleString()}</div>
                         <div class="ps-map-tooltip-label">${
@@ -440,12 +437,12 @@
     getHeatColor(normalized) {
       if (normalized < 0.33) {
         return `rgb(${Math.round(normalized * 3 * 255)}, ${Math.round(
-          normalized * 3 * 255
+          normalized * 3 * 255,
         )}, 255)`;
       } else if (normalized < 0.66) {
         const n = (normalized - 0.33) * 3;
         return `rgb(255, ${Math.round(255 * (1 - n))}, ${Math.round(
-          255 * (1 - n)
+          255 * (1 - n),
         )})`;
       } else {
         return `rgb(255, 0, 0)`;
