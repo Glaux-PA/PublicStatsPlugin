@@ -68,6 +68,7 @@ class PublicStatsConstants
             'reviewer-list'                => 'plugins.generic.publicStats.reviewerList',
             'first-decision-stats'         => 'plugins.generic.publicStats.firstDecisionDays',
             'acceptance-publication-stats' => 'plugins.generic.publicStats.acceptancePublicationDays',
+            'rejection-rate'               => 'plugins.generic.publicStats.rejectionRate',
         ],
         'reach' => [
             'recent-downloads' => 'plugins.generic.publicStats.mostDownloaded60Days',

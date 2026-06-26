@@ -308,6 +308,24 @@ msgstr "Opcions d'exportació"
 msgid "plugins.generic.publicStats.externalCitations"
 msgstr "Cites externes"
 
+msgid "plugins.generic.publicStats.rejectionRate"
+msgstr "Taxa de rebuig"
+
+msgid "plugins.generic.publicStats.rejectionRateTitle"
+msgstr "Taxa de rebuig per any"
+
+msgid "plugins.generic.publicStats.rejectionRateDescription"
+msgstr "Percentatge de manuscrits rebutjats cada any respecte als rebuts"
+
+msgid "plugins.generic.publicStats.rejectionRatePercent"
+msgstr "Taxa de rebuig (%)"
+
+msgid "plugins.generic.publicStats.overallRejectionRate"
+msgstr "Taxa de rebuig global"
+
+msgid "plugins.generic.publicStats.peakRejectionYear"
+msgstr "Any amb major rebuig"
+
 msgid "plugins.generic.publicStats.firstDecisionDays"
 msgstr "Dies fins a la primera decisió"
 

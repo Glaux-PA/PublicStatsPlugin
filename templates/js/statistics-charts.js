@@ -588,12 +588,136 @@
         editorialAnnualChart: ChartInstances.editorialAnnual,
         issueStatsChart: ChartInstances.issue,
         sectionStatsChart: ChartInstances.section,
+        rejectionRateChart: ChartInstances.rejectionRate,
       };
 
       const chart = chartMap[chartId];
       if (chart && chart.resetZoom) {
         chart.resetZoom();
       }
+    },
+
+    initializeRejectionRateChart() {
+      const ctx = document.getElementById("rejectionRateChart");
+      if (!ctx || !ctx.getContext) return;
+
+      const data = statsData.editorialStatsAnnual;
+      if (!data || data.length === 0) {
+        Utils.showNoDataMessage("rejectionRateChart", i18n.noEditorialAnnualData);
+        return;
+      }
+
+      const filtered = data.filter((d) => d.received > 0);
+      if (filtered.length === 0) {
+        Utils.showNoDataMessage("rejectionRateChart", i18n.noEditorialAnnualData);
+        return;
+      }
+
+      if (ChartInstances.rejectionRate) ChartInstances.rejectionRate.destroy();
+
+      const baseOpts = ChartConfig.getLineChartOptions();
+      ChartInstances.rejectionRate = new Chart(ctx.getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: filtered.map((d) => d.label),
+          datasets: [
+            {
+              label: i18n.rejectionRatePercent || "%",
+              data: filtered.map((d) => d.rejectionRate),
+              backgroundColor: "rgba(139, 38, 53, 0.8)",
+              borderColor: "rgba(139, 38, 53, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          ...baseOpts,
+          scales: {
+            x: baseOpts.scales.x,
+            y: {
+              beginAtZero: true,
+              max: 100,
+              grid: { color: "rgba(0,0,0,0.05)" },
+              ticks: { callback: (v) => v + "%" },
+            },
+          },
+          plugins: {
+            ...baseOpts.plugins,
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.parsed.y}%`,
+              },
+            },
+            legend: { display: false },
+          },
+        },
+      });
+    },
+
+    renderRejectionRateSummary() {
+      const div = document.getElementById("rejectionRateSummary");
+      if (!div) return;
+
+      const data = statsData.editorialStatsAnnual;
+      if (!data || data.length === 0) {
+        div.innerHTML = `<div class="ps-grid-span-2 ps-empty-message"><p>${i18n.noEditorialAnnualData || ""}</p></div>`;
+        return;
+      }
+
+      const withData = data.filter((d) => d.received > 0);
+      const totalReceived = withData.reduce((s, d) => s + d.received, 0);
+      const totalDeclined = withData.reduce((s, d) => s + d.declined, 0);
+      const overallRate = totalReceived > 0
+        ? (totalDeclined / totalReceived * 100).toFixed(1)
+        : "—";
+
+      const peak = withData.reduce(
+        (best, d) => (d.rejectionRate > best.rejectionRate ? d : best),
+        { rejectionRate: 0, label: "—" }
+      );
+
+      div.innerHTML = `
+        <div class="stats-card">
+          <div class="card-body" style="text-align:center; padding: 30px 20px;">
+            <div class="ps-stat-value ps-color-primary">${overallRate}%</div>
+            <div class="ps-stat-label">${i18n.overallRejectionRate || "Overall rejection rate"}</div>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="card-body" style="text-align:center; padding: 30px 20px;">
+            <div class="ps-stat-value ps-color-primary" style="font-size:28px">${peak.label}</div>
+            <div class="ps-stat-label">${i18n.peakRejectionYear || "Peak rejection year"} (${peak.rejectionRate}%)</div>
+          </div>
+        </div>
+      `;
+    },
+
+    renderRejectionRateTable() {
+      const body = document.getElementById("rejectionRateTableBody");
+      if (!body) return;
+
+      const data = statsData.editorialStatsAnnual;
+      if (!data || data.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" class="ps-empty-message">${i18n.noEditorialAnnualData || ""}</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = "";
+      [...data].reverse().forEach((d) => {
+        if (d.received === 0) return;
+        const row = body.insertRow();
+        row.insertCell(0).textContent = d.label;
+        row.insertCell(1).textContent = d.received.toLocaleString();
+        row.insertCell(2).textContent = d.declined.toLocaleString();
+        const rateCell = row.insertCell(3);
+        rateCell.textContent = d.rejectionRate + "%";
+        rateCell.style.setProperty("font-weight", "600", "important");
+        rateCell.style.setProperty(
+          "color",
+          d.rejectionRate >= 50 ? "#e74c3c" : "#333",
+          "important"
+        );
+      });
     },
   };
 

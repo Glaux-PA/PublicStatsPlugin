@@ -298,6 +298,24 @@ msgstr "Opciones de exportación"
 msgid "plugins.generic.publicStats.externalCitations"
 msgstr "Citas externas"
 
+msgid "plugins.generic.publicStats.rejectionRate"
+msgstr "Tasa de rechazo"
+
+msgid "plugins.generic.publicStats.rejectionRateTitle"
+msgstr "Tasa de rechazo por año"
+
+msgid "plugins.generic.publicStats.rejectionRateDescription"
+msgstr "Porcentaje de manuscritos rechazados cada año respecto a los recibidos"
+
+msgid "plugins.generic.publicStats.rejectionRatePercent"
+msgstr "Tasa de rechazo (%)"
+
+msgid "plugins.generic.publicStats.overallRejectionRate"
+msgstr "Tasa de rechazo global"
+
+msgid "plugins.generic.publicStats.peakRejectionYear"
+msgstr "Año con mayor rechazo"
+
 msgid "plugins.generic.publicStats.firstDecisionDays"
 msgstr "Días hasta primera decisión"
 

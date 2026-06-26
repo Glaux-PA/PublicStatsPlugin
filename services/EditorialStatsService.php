@@ -74,6 +74,14 @@ class EditorialStatsService extends BaseStatsService
             $this->processSubmissionAnnual($submission, $annualStats, $startYear, $endYear, $decisionsBySubmission);
         }
 
+        foreach ($annualStats as &$yearData) {
+            $received = $yearData['received'];
+            $yearData['rejectionRate'] = $received > 0
+                ? round($yearData['declined'] / $received * 100, 1)
+                : 0.0;
+        }
+        unset($yearData);
+
         return array_values($annualStats);
     }
 
@@ -109,7 +117,8 @@ class EditorialStatsService extends BaseStatsService
                 'received' => 0,
                 'declined' => 0,
                 'published' => 0,
-                'inProcess' => 0
+                'inProcess' => 0,
+                'rejectionRate' => 0.0,
             ];
         }
 

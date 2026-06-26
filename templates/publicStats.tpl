@@ -195,6 +195,12 @@
                                 {translate key="plugins.generic.publicStats.acceptancePublicationDays"}
                             </div>
                         </li>
+                        <li class="menu-item">
+                            <div class="menu-link" data-section="rejection-rate"
+                                onclick="showSection('rejection-rate')">
+                                {translate key="plugins.generic.publicStats.rejectionRate"}
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -1131,6 +1137,56 @@
                                         </tr>
                                     </thead>
                                     <tbody id="acceptancePublicationTableBody">
+                                        {* Populated by JavaScript *}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {* Rejection rate section *}
+            <div id="rejection-rate" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">{translate key="plugins.generic.publicStats.rejectionRateTitle"}</h1>
+                    <p class="content-subtitle">{translate key="plugins.generic.publicStats.rejectionRateDescription"}</p>
+                </div>
+                <div class="stats-grid">
+                    {* Summary metric cards *}
+                    <div id="rejectionRateSummary"
+                        style="grid-column: span 2; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
+                        {* Populated by JavaScript *}
+                    </div>
+
+                    {* Chart full width *}
+                    <div class="stats-card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <h2 class="card-title">{translate key="plugins.generic.publicStats.rejectionRatePercent"}</h2>
+                            <button onclick="resetChartZoom('rejectionRateChart')"
+                                class="reset-zoom-btn">{translate key="plugins.generic.publicStats.resetZoom"}</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="rejectionRateChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    {* Table full width *}
+                    <div class="stats-card" style="grid-column: span 2;">
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="stats-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{translate key="plugins.generic.publicStats.year"}</th>
+                                            <th>{translate key="plugins.generic.publicStats.received"}</th>
+                                            <th>{translate key="plugins.generic.publicStats.declined"}</th>
+                                            <th>{translate key="plugins.generic.publicStats.rejectionRatePercent"}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rejectionRateTableBody">
                                         {* Populated by JavaScript *}
                                     </tbody>
                                 </table>

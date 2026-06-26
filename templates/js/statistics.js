@@ -222,6 +222,12 @@
             Tables.renderAcceptancePublicationSummary();
             Tables.renderAcceptancePublicationTable();
           },
+          "rejection-rate": async () => {
+            await API.getEditorialAnnual();
+            Charts.initializeRejectionRateChart();
+            Charts.renderRejectionRateSummary();
+            Charts.renderRejectionRateTable();
+          },
           "author-individual-stats": async () => {
             await this.loadAuthorSelector();
             if (selectedAuthor) {

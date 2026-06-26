@@ -127,7 +127,7 @@
 
 .page_statistics .menu-link {
   display: block;
-  padding: 12px 20px;
+  padding: 10px 20px 10px 36px;
   color: #555 !important;
   cursor: pointer;
   text-decoration: none !important;
@@ -638,28 +638,28 @@
 }
 
 .page_statistics .ps-color-success {
-  color: #27ae60;
+  color: #27ae60 !important;
 }
 .page_statistics .ps-color-warning {
-  color: #f39c12;
+  color: #f39c12 !important;
 }
 .page_statistics .ps-color-muted {
-  color: #666;
+  color: #666 !important;
 }
 .page_statistics .ps-color-error {
-  color: #e74c3c;
+  color: #e74c3c !important;
 }
 .page_statistics .ps-color-primary {
-  color: var(--ps-primary);
+  color: var(--ps-primary) !important;
 }
 .page_statistics .ps-color-blue {
-  color: #3498db;
+  color: #3498db !important;
 }
 .page_statistics .ps-color-green {
-  color: #2ecc71;
+  color: #2ecc71 !important;
 }
 .page_statistics .ps-color-purple {
-  color: #9b59b6;
+  color: #9b59b6 !important;
 }
 
 .page_statistics .ps-stat-box {
@@ -1142,6 +1142,13 @@
   }
   .page_statistics .export-menu-dropdown button {
     padding: 16px 20px;
+  }
+
+  #languageTrendsSummary,
+  #editorialSummary,
+  #editorialAnnualSummary,
+  #rejectionRateSummary {
+    grid-template-columns: 1fr !important;
   }
 }
 

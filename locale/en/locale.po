@@ -306,6 +306,24 @@ msgstr "Export options"
 msgid "plugins.generic.publicStats.externalCitations"
 msgstr "External citations"
 
+msgid "plugins.generic.publicStats.rejectionRate"
+msgstr "Rejection rate"
+
+msgid "plugins.generic.publicStats.rejectionRateTitle"
+msgstr "Rejection rate by year"
+
+msgid "plugins.generic.publicStats.rejectionRateDescription"
+msgstr "Percentage of submitted manuscripts rejected each year"
+
+msgid "plugins.generic.publicStats.rejectionRatePercent"
+msgstr "Rejection rate (%)"
+
+msgid "plugins.generic.publicStats.overallRejectionRate"
+msgstr "Overall rejection rate"
+
+msgid "plugins.generic.publicStats.peakRejectionYear"
+msgstr "Peak rejection year"
+
 msgid "plugins.generic.publicStats.firstDecisionDays"
 msgstr "Days to first decision"
 

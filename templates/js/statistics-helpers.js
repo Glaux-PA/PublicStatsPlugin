@@ -47,6 +47,7 @@
     citingJournals: null,
     language: null,
     languageTrends: null,
+    rejectionRate: null,
   };
 
   const Utils = {
