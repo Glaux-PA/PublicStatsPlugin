@@ -489,6 +489,16 @@ class PublicStatisticsHandler extends Handler
         return true;
     }
 
+    protected function requireAnySubsection(array $subsectionIds, object $context): bool
+    {
+        $enabled = $this->getEnabledSubsections($context->getId());
+        if (empty(array_intersect($subsectionIds, $enabled))) {
+            $this->outputError('Not found', 404);
+            return false;
+        }
+        return true;
+    }
+
     private function setupAssets(TemplateManager $templateMgr, PKPRequest $request): void
     {
         $baseUrl = $request->getBaseUrl() . '/' . $this->plugin->getPluginPath();

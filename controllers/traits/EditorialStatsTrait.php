@@ -67,7 +67,7 @@ trait EditorialStatsTrait
             $this->outputError('Context not found', 404);
             return;
         }
-        if (!$this->requireSubsection('editorial-annual', $context)) return;
+        if (!$this->requireAnySubsection(['editorial-annual', 'rejection-rate'], $context)) return;
 
         try {
             $contextId = $context->getId();
