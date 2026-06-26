@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace APP\plugins\generic\publicStats\services;
 
 use PKP\submission\PKPSubmission;
+use APP\core\Application;
 use APP\facades\Repo;
 use Illuminate\Support\Facades\DB;
 use Sokil\IsoCodes\IsoCodesFactory;
@@ -237,6 +238,8 @@ class AuthorReviewerStatsService
             ->filterByUserIds($reviewerIds)
             ->getMany();
 
+        $primaryLocale = Application::get()->getRequest()->getContext()?->getPrimaryLocale();
+
         $list = [];
         foreach ($reviewers as $reviewer) {
             $countryCode = $reviewer->getCountry();
@@ -251,8 +254,9 @@ class AuthorReviewerStatsService
             }
 
             $list[] = [
-                'fullName'    => $reviewer->getFullName(),
-                'affiliation' => $reviewer->getLocalizedAffiliation() ?: null,
+                'fullName'    => $reviewer->getFullName(true, false, $primaryLocale),
+                'affiliation' => ($primaryLocale ? $reviewer->getAffiliation($primaryLocale) : null)
+                    ?: $reviewer->getLocalizedAffiliation() ?: null,
                 'country'     => $countryName,
             ];
         }
