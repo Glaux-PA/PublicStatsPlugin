@@ -101,7 +101,7 @@ class PublicStatisticsHandler extends Handler
     {
         $context = $request->getContext();
         if (!$context) {
-            return $request->getDispatcher()->handle404();
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
         }
 
         $selectedYear = InputValidator::validateYear($request->getUserVar('year'));
@@ -483,6 +483,16 @@ class PublicStatisticsHandler extends Handler
     protected function requireSubsection(string $subsectionId, object $context): bool
     {
         if (!in_array($subsectionId, $this->getEnabledSubsections($context->getId()), true)) {
+            $this->outputError('Not found', 404);
+            return false;
+        }
+        return true;
+    }
+
+    protected function requireAnySubsection(array $subsectionIds, object $context): bool
+    {
+        $enabled = $this->getEnabledSubsections($context->getId());
+        if (empty(array_intersect($subsectionIds, $enabled))) {
             $this->outputError('Not found', 404);
             return false;
         }
