@@ -603,13 +603,19 @@
 
       const data = statsData.editorialStatsAnnual;
       if (!data || data.length === 0) {
-        Utils.showNoDataMessage("rejectionRateChart", i18n.noEditorialAnnualData);
+        Utils.showNoDataMessage(
+          "rejectionRateChart",
+          i18n.noEditorialAnnualData,
+        );
         return;
       }
 
       const filtered = data.filter((d) => d.received > 0);
       if (filtered.length === 0) {
-        Utils.showNoDataMessage("rejectionRateChart", i18n.noEditorialAnnualData);
+        Utils.showNoDataMessage(
+          "rejectionRateChart",
+          i18n.noEditorialAnnualData,
+        );
         return;
       }
 
@@ -667,13 +673,14 @@
       const withData = data.filter((d) => d.received > 0);
       const totalReceived = withData.reduce((s, d) => s + d.received, 0);
       const totalDeclined = withData.reduce((s, d) => s + d.declined, 0);
-      const overallRate = totalReceived > 0
-        ? (totalDeclined / totalReceived * 100).toFixed(1)
-        : "—";
+      const overallRate =
+        totalReceived > 0
+          ? ((totalDeclined / totalReceived) * 100).toFixed(1)
+          : "—";
 
       const peak = withData.reduce(
         (best, d) => (d.rejectionRate > best.rejectionRate ? d : best),
-        { rejectionRate: 0, label: "—" }
+        { rejectionRate: 0, label: "—" },
       );
 
       div.innerHTML = `
@@ -715,7 +722,7 @@
         rateCell.style.setProperty(
           "color",
           d.rejectionRate >= 50 ? "#e74c3c" : "#333",
-          "important"
+          "important",
         );
       });
     },
