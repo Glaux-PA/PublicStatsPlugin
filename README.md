@@ -1,4 +1,4 @@
-# Public Statistics Plugin for OJS 3.4
+# Public Statistics Plugin for OJS 3.5
 
 Public-facing statistics page for Open Journal Systems. Adds a dashboard with usage, editorial, geographic and OpenAlex-based impact metrics, available to every reader of your journal.
 
@@ -22,8 +22,8 @@ All sections except the OpenAlex ones work as soon as the plugin is enabled. The
 
 ## Requirements
 
-- OJS 3.4.0
-- PHP 8.1 or higher
+- OJS 3.5.0
+- PHP 8.2 or higher
 
 ## Installation
 
@@ -224,7 +224,7 @@ For issues or feature requests, contact the plugin maintainer.
 
 ## For developers
 
-Standard OJS 3.4 plugin layout: services hold the business logic, traits group the HTTP endpoints, the JS dashboard is split into small modules attached to `window.PublicStats`.
+Standard OJS 3.5 plugin layout: services hold the business logic, traits group the HTTP endpoints, the JS dashboard is split into small modules attached to `window.PublicStats`.
 
 ### Backend
 
