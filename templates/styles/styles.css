@@ -259,11 +259,15 @@
   text-align: right !important;
 }
 
-.page_statistics .stats-table tbody tr:hover {
+.page_statistics .stats-table > tbody > tr:hover:not(.journal-articles-row) {
   background-color: #f8f9fa !important;
 }
 
-.page_statistics .stats-table tbody tr:hover td {
+.page_statistics
+  .stats-table
+  > tbody
+  > tr:hover:not(.journal-articles-row)
+  > td {
   background-color: #f8f9fa !important;
 }
 

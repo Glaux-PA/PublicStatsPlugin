@@ -22,6 +22,7 @@ use APP\statistics\StatisticsHelper;
 use APP\core\Application;
 use APP\facades\Repo;
 use PKP\core\PKPRequest;
+use PKP\userGroup\UserGroup;
 
 class ArticleStatsService
 {
@@ -103,10 +104,7 @@ class ArticleStatsService
     ): array {
         $statsService = Services::get('publicationStats');
 
-        $userGroups = Repo::userGroup()
-            ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
+        $userGroups = UserGroup::withContextIds([$contextId])->get();
 
         $assocType = ($metricType === 'downloads')
             ? Application::ASSOC_TYPE_SUBMISSION_FILE
@@ -201,7 +199,7 @@ class ArticleStatsService
                     null,
                     'article',
                     'view',
-                    $submission->getBestId()
+                    [$submission->getBestId()]
                 ),
             ];
 

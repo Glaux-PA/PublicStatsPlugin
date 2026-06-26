@@ -23,7 +23,7 @@ use PKP\plugins\Hook;
 use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
-use PKP\notification\PKPNotification;
+use PKP\notification\Notification;
 use APP\core\Application;
 use APP\notification\NotificationManager;
 use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
@@ -106,7 +106,7 @@ class PublicStatsPlugin extends GenericPlugin
                         $notificationMgr = new NotificationManager();
                         $notificationMgr->createTrivialNotification(
                             $request->getUser()->getId(),
-                            PKPNotification::NOTIFICATION_TYPE_SUCCESS,
+                            Notification::NOTIFICATION_TYPE_SUCCESS,
                             ['contents' => __('common.changesSaved')]
                         );
                         return new JSONMessage(true);
@@ -184,9 +184,10 @@ class PublicStatsPlugin extends GenericPlugin
     public function loadHandler(string $hookName, array $args): bool
     {
         $page = $args[0];
+        $handler = &$args[3];
 
         if ($this->getEnabled() && $page == 'publicStats') {
-            define('HANDLER_CLASS', PublicStatisticsHandler::class);
+            $handler = new PublicStatisticsHandler();
             return true;
         }
         return false;

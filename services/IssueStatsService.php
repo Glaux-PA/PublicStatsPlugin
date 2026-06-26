@@ -70,7 +70,7 @@ class IssueStatsService extends BaseStatsService
                     null,
                     'issue',
                     'view',
-                    $issue->getBestIssueId()
+                    [$issue->getBestIssueId()]
                 );
             }
         }

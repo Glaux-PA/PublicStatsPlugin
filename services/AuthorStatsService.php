@@ -28,6 +28,7 @@ use APP\plugins\generic\publicStats\classes\PublicStatsConstants;
 use Illuminate\Support\Facades\Cache;
 use PKP\core\PKPRequest;
 use PKP\submission\PKPSubmission;
+use PKP\userGroup\UserGroup;
 
 class AuthorStatsService extends BaseStatsService
 {
@@ -140,7 +141,7 @@ class AuthorStatsService extends BaseStatsService
                     $authorMap[$key] = [
                         'name'        => $author->getFullName(),
                         'email'       => $author->getEmail(),
-                        'affiliation' => $author->getLocalizedAffiliation(),
+                        'affiliation' => $author->getLocalizedAffiliationNamesAsString(),
                         'orcid'       => $author->getOrcid(),
                         'country'     => $author->getCountry(),
                         'ids'         => [],
@@ -164,8 +165,8 @@ class AuthorStatsService extends BaseStatsService
                     $authorMap[$key]['email'] = $author->getEmail();
                 }
 
-                if (empty($authorMap[$key]['affiliation']) && !empty($author->getLocalizedAffiliation())) {
-                    $authorMap[$key]['affiliation'] = $author->getLocalizedAffiliation();
+                if (empty($authorMap[$key]['affiliation']) && !empty($author->getLocalizedAffiliationNamesAsString())) {
+                    $authorMap[$key]['affiliation'] = $author->getLocalizedAffiliationNamesAsString();
                 }
 
                 if (empty($authorMap[$key]['orcid']) && !empty($author->getOrcid())) {
@@ -458,10 +459,7 @@ class AuthorStatsService extends BaseStatsService
             }
         }
         
-        $userGroups = Repo::userGroup()
-            ->getCollector()
-            ->filterByContextIds([$contextId])
-            ->getMany();
+        $userGroups = UserGroup::withContextIds([$contextId])->get();
         
         $articleStats = [];
         foreach ($submissions as $submissionId => $submission) {
@@ -485,7 +483,7 @@ class AuthorStatsService extends BaseStatsService
                     null,
                     'article',
                     'view',
-                    $submission->getBestId()
+                    [$submission->getBestId()]
                 ),
                 'section' => $this->getSectionName($publication, $sectionsMap)
             ];
@@ -564,7 +562,7 @@ class AuthorStatsService extends BaseStatsService
                 if (!isset($coAuthors[$key])) {
                     $coAuthors[$key] = [
                         'name' => $author->getFullName(),
-                        'affiliation' => $author->getLocalizedAffiliation(),
+                        'affiliation' => $author->getLocalizedAffiliationNamesAsString(),
                         'collaborations' => 0
                     ];
                 }

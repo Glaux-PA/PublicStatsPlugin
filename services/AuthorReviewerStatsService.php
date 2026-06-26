@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace APP\plugins\generic\publicStats\services;
 
 use PKP\submission\PKPSubmission;
+use APP\core\Application;
 use APP\facades\Repo;
 use Illuminate\Support\Facades\DB;
 use Sokil\IsoCodes\IsoCodesFactory;
@@ -65,16 +66,16 @@ class AuthorReviewerStatsService
             ->getMany();
 
         foreach ($authors as $author) {
-            $affiliation = $author->getLocalizedAffiliation();
-            
-            if (empty($affiliation)) {
-                continue;
-            }
+            foreach ($author->getLocalizedAffiliationNames() as $affiliation) {
+                if (empty($affiliation)) {
+                    continue;
+                }
 
-            if (!isset($institutionStats[$affiliation])) {
-                $institutionStats[$affiliation] = 0;
+                if (!isset($institutionStats[$affiliation])) {
+                    $institutionStats[$affiliation] = 0;
+                }
+                $institutionStats[$affiliation]++;
             }
-            $institutionStats[$affiliation]++;
         }
 
         if (empty($institutionStats)) {
@@ -237,6 +238,10 @@ class AuthorReviewerStatsService
             ->filterByUserIds($reviewerIds)
             ->getMany();
 
+        // Render the public reviewer list in the journal's primary locale so it
+        // is canonical and stays stable regardless of the visitor's UI language.
+        $primaryLocale = Application::get()->getRequest()->getContext()?->getPrimaryLocale();
+
         $list = [];
         foreach ($reviewers as $reviewer) {
             $countryCode = $reviewer->getCountry();
@@ -251,8 +256,9 @@ class AuthorReviewerStatsService
             }
 
             $list[] = [
-                'fullName'    => $reviewer->getFullName(),
-                'affiliation' => $reviewer->getLocalizedAffiliation() ?: null,
+                'fullName'    => $reviewer->getFullName(true, false, $primaryLocale),
+                'affiliation' => ($primaryLocale ? $reviewer->getAffiliation($primaryLocale) : null)
+                    ?: $reviewer->getLocalizedAffiliation() ?: null,
                 'country'     => $countryName,
             ];
         }

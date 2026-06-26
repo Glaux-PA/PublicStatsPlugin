@@ -55,12 +55,7 @@ class LanguageStatsService
             ->groupBy('pg.locale');
 
         if ($issueId !== null) {
-            $query->join('publication_settings as ps_issue', function ($join) use ($issueId) {
-                $join->on('ps_issue.publication_id', '=', 'p.publication_id')
-                    ->where('ps_issue.setting_name', '=', 'issueId')
-                    ->where('ps_issue.locale', '=', '')
-                    ->where('ps_issue.setting_value', '=', (string) $issueId);
-            });
+            $query->where('p.issue_id', '=', $issueId);
         }
 
         $rows = $query->orderByDesc('article_count')->get();
@@ -98,15 +93,12 @@ class LanguageStatsService
      */
     public function getLanguageTrends(int $contextId): array
     {
-        // MySQL: YEAR() + CAST AS UNSIGNED. PostgreSQL: EXTRACT + CAST AS INTEGER.
+        // MySQL: YEAR(). PostgreSQL: EXTRACT.
         $driver = DB::connection()->getDriverName();
         $isPgsql = $driver === 'pgsql';
         $yearExpr  = $isPgsql
             ? 'EXTRACT(YEAR FROM i.date_published)::integer'
             : 'YEAR(i.date_published)';
-        $issueCast = $isPgsql
-            ? 'CAST(ps_issue.setting_value AS INTEGER)'
-            : 'CAST(ps_issue.setting_value AS UNSIGNED)';
 
         $rows = DB::table('publications as p')
             ->join('publication_galleys as pg', function ($join) {
@@ -119,13 +111,8 @@ class LanguageStatsService
                     ->where('s.context_id', '=', $contextId)
                     ->where('s.status', '=', PKPSubmission::STATUS_PUBLISHED);
             })
-            ->join('publication_settings as ps_issue', function ($join) {
-                $join->on('ps_issue.publication_id', '=', 'p.publication_id')
-                    ->where('ps_issue.setting_name', '=', 'issueId')
-                    ->where('ps_issue.locale', '=', '');
-            })
-            ->join('issues as i', function ($join) use ($issueCast) {
-                $join->on('i.issue_id', '=', DB::raw($issueCast))
+            ->join('issues as i', function ($join) {
+                $join->on('i.issue_id', '=', 'p.issue_id')
                     ->where('i.published', '=', 1);
             })
             ->where('p.status', '=', PKPSubmission::STATUS_PUBLISHED)
