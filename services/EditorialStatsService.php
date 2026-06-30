@@ -333,7 +333,7 @@ class EditorialStatsService extends BaseStatsService
 
         if ($status === PKPSubmission::STATUS_DECLINED) {
             $decisions = $decisionsBySubmission[$submission->getId()] ?? [];
-            $this->processDeclinedAnnual($annualStats, $startYear, $endYear, $decisions);
+            $this->processDeclinedAnnual($annualStats, $submissionYear, $decisions);
             return;
         }
 
@@ -370,35 +370,19 @@ class EditorialStatsService extends BaseStatsService
 
     private function processDeclinedAnnual(
         array &$annualStats,
-        int $startYear,
-        int $endYear,
+        int $submissionYear,
         array $decisions = []
     ): void {
-        $latestDeclineYear = null;
-
+        $hasDeclineDecision = false;
         foreach ($decisions as $decision) {
-            if (!in_array($decision->getData('decision'), self::DECLINE_DECISIONS)) {
-                continue;
-            }
-
-            $dateDecided = $decision->getData('dateDecided');
-            if (!$dateDecided) {
-                continue;
-            }
-
-            $declinedYear = (int)date('Y', strtotime($dateDecided));
-
-            if ($latestDeclineYear === null || $declinedYear > $latestDeclineYear) {
-                $latestDeclineYear = $declinedYear;
+            if (in_array($decision->getData('decision'), self::DECLINE_DECISIONS)) {
+                $hasDeclineDecision = true;
+                break;
             }
         }
 
-        if ($latestDeclineYear !== null &&
-            $latestDeclineYear >= $startYear &&
-            $latestDeclineYear <= $endYear &&
-            isset($annualStats[$latestDeclineYear])
-        ) {
-            $annualStats[$latestDeclineYear]['declined']++;
+        if ($hasDeclineDecision && isset($annualStats[$submissionYear])) {
+            $annualStats[$submissionYear]['declined']++;
         }
     }
 }
