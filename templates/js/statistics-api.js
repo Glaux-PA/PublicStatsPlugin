@@ -71,7 +71,7 @@
     async getOpenAccessStats() {
       if (statsData.openAccessStats) return statsData.openAccessStats;
       const data = await this.fetchData("openAccessStats");
-      // Skip caching while computing — the next call may already have the result.
+      // Skip caching while computing: the next call may already have the result.
       if (!data || !data.is_computing) statsData.openAccessStats = data;
       return data;
     },
@@ -296,7 +296,7 @@
     async getCitationsByCountry() {
       if (statsData.citationsByCountry) return statsData.citationsByCountry;
       const data = await this.fetchData("citationsByCountry");
-      // Skip caching while computing — the next call may already have the result.
+      // Skip caching while computing: the next call may already have the result.
       if (data && !data.is_computing) statsData.citationsByCountry = data;
       return data;
     },
@@ -304,7 +304,7 @@
     async getCitingJournals() {
       if (statsData.citingJournals) return statsData.citingJournals;
       const data = await this.fetchData("citingJournals");
-      // Skip caching while computing — the next call may already have the result.
+      // Skip caching while computing: the next call may already have the result.
       if (data && !data.is_computing) statsData.citingJournals = data;
       return data;
     },

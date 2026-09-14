@@ -479,7 +479,7 @@ class PublicStatisticsHandler extends Handler
     }
 
     // Disabled subsections must not be reachable via direct HTTP even when the
-    // sidebar link is hidden — reviewer-list and author-stats expose personal data.
+    // sidebar link is hidden: reviewer-list and author-stats expose personal data.
     protected function requireSubsection(string $subsectionId, object $context): bool
     {
         if (!in_array($subsectionId, $this->getEnabledSubsections($context->getId()), true)) {

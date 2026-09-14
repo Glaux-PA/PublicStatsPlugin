@@ -34,7 +34,7 @@ trait EnrichedStatsTrait
             $contextId = $context->getId();
             $cacheKey = "total_enriched_{$contextId}";
 
-            // Don't use Cache::remember — it would freeze any is_computing placeholder.
+            // Cache::remember would freeze any is_computing placeholder, so read manually.
             $data = Cache::get($cacheKey);
             if ($data === null) {
                 $data = $this->enrichedService->getEnrichedContextStats($contextId);
@@ -62,7 +62,7 @@ trait EnrichedStatsTrait
             $contextId = $context->getId();
             $cacheKey = "external_citations_{$contextId}";
 
-            // Don't use Cache::remember — it would freeze any is_computing placeholder.
+            // Don't use Cache::remember here: it would pin an is_computing placeholder.
             $data = Cache::get($cacheKey);
             if ($data === null) {
                 $data = $this->enrichedService->getExternalEnrichmentStats($contextId);

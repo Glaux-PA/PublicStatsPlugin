@@ -80,7 +80,7 @@ class OpenAlexService
         string $context = ''
     ): ?array {
         $attempts = 3;
-        $backoffMs = [250, 1000, 2000]; // exponential-ish: 250ms, 1s, 2s
+        $backoffMs = [250, 1000, 2000]; // exponential-ish: 250ms, 1s, 2s.
 
         // Polite-pool routing requires `mailto` as a query param; headers are ignored.
         if ($this->contactEmail && !isset($query['mailto'])) {
@@ -98,7 +98,7 @@ class OpenAlexService
                     return $response->json();
                 }
 
-                // 4xx (other than 429) are permanent — don't retry.
+                // 4xx (other than 429) are permanent, so don't retry.
                 $isTransient = $status === 429 || $status >= 500;
                 if (!$isTransient) {
                     Logger::error("OpenAlex {$context}: non-retryable HTTP {$status}");
@@ -169,7 +169,7 @@ class OpenAlexService
             return $cached;
         }
 
-        // Cache::add is atomic — concurrent callers skip dispatch.
+        // Cache::add is atomic, so concurrent callers skip dispatch.
         $lockKey = self::lockKeyFor($type, $contextId);
         $lockTtl = max(120, (int) (PublicStatsConstants::CACHE_TTL_EXTERNAL / 24));
         if (Cache::add($lockKey, 1, $lockTtl)) {
@@ -384,7 +384,7 @@ class OpenAlexService
             if (!$cursor) break;
         }
 
-        // Don't cache a partial traversal — a 5xx mid-pagination would freeze incomplete data.
+        // Don't cache a partial traversal: a 5xx mid-pagination would freeze incomplete data.
         if (!$anyFailed) {
             Cache::put($cacheKey, $results, PublicStatsConstants::CACHE_TTL_EXTERNAL);
         }
