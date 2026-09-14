@@ -130,7 +130,7 @@ Building these aggregates over a whole journal can take several minutes on large
 
 #### Background queue: required only for the Impact sections
 
-The six Impact sections (plus the OpenAlex counters on the overview) need an active queue worker. Everything else in the plugin — usage stats, editorial, geographic, reviewer list, language trends, author dashboard, etc. — is computed on demand inside the HTTP request and cached locally, so it works without a worker.
+The six Impact sections (plus the OpenAlex counters on the overview) need an active queue worker. Everything else in the plugin (usage stats, editorial, geographic, reviewer list, language trends, author dashboard, etc.) is computed on demand inside the HTTP request and cached locally, so it works without a worker.
 
 The simplest way to activate a worker in OJS is the bundled Acron plugin:
 
@@ -146,7 +146,7 @@ If Acron is not a good fit (very low traffic, or you'd rather run a dedicated wo
 
 You only need one of the two.
 
-If you don't plan to run any worker, open the plugin settings and disable the six Impact subsections. The rest of the dashboard keeps working untouched. The OpenAlex counters on the overview will still try to compute on first load and stay on "computing…" — disable them via settings if you want them gone.
+If you don't plan to run any worker, open the plugin settings and disable the six Impact subsections. The rest of the dashboard keeps working untouched. The OpenAlex counters on the overview will still try to compute on first load and stay on "computing…"; disable them via settings if you want them gone.
 
 To check whether jobs are actually being processed, look at the OJS `jobs` table in the database. If rows accumulate and never disappear, no worker is running.
 
@@ -177,26 +177,27 @@ The dashboard groups statistics into four categories (General, Editorial, Reach,
 
 ### General
 
-- **Monthly trends** — views and downloads aggregated by month
-- **Annual trends** — same data aggregated by year
-- **Top downloads** — most-downloaded articles
-- **Top views** — most-viewed articles
-- **By section** — distribution across journal sections
-- **By issue** — metrics for each issue
-- **Language distribution** — published articles broken down by language (with per-issue filter)
-- **Language trends** — yearly evolution of articles per language (zoomable chart)
-- **Geographic distribution** — readers by country (world map + table)
+- **Monthly trends**: views and downloads aggregated by month
+- **Annual trends**: the same data, aggregated by year instead
+- **Top downloads**: your most-downloaded articles
+- **Top views**: your most-viewed articles
+- **By section**: distribution across journal sections
+- **By issue**: metrics broken down per issue
+- **Language distribution**: published articles by language, with a per-issue filter
+- **Language trends**: yearly evolution of articles per language (zoomable chart)
+- **Geographic distribution**: readers by country, shown as a world map plus a table
 
 ### Editorial
 
-- **Author dashboard** — per-author publications, downloads and views
-- **Monthly submissions** — received / published / declined / in-process timeline
-- **Annual submissions** — same data aggregated by year
-- **Authors by country / institution** — contributor distribution
-- **Reviewers by country / institution** — reviewer distribution
-- **Reviewer list** — alphabetical public list of reviewers who completed reviews each year
-- **First-decision time** — average days from submission to first decision
-- **Acceptance-to-publication time** — average days from accepted to published
+- **Author dashboard**: publications, downloads and views for each author
+- **Monthly submissions**: received / published / declined / in-process timeline
+- **Annual submissions**: the same submission data, aggregated by year
+- **Authors by country / institution**: where your contributors come from
+- **Reviewers by country / institution**: where your reviewers come from
+- **Reviewer list**: alphabetical public list of reviewers who completed reviews each year
+- **First-decision time**: average days from submission to first decision
+- **Acceptance-to-publication time**: average days from accepted to published
+- **Rejection rate**: declined/received ratio per year, with an overall rate and the peak year
 
 ### Reach
 
@@ -205,18 +206,18 @@ The dashboard groups statistics into four categories (General, Editorial, Reach,
 
 ### Impact _(requires OpenAlex)_
 
-- **Top cited** — most-cited articles, all-time and per year
-- **Citation evolution** — citations received per year
-- **Open Access stats** — Diamond / Gold / Hybrid / Green / Bronze / Closed breakdown
-- **Thematic profile** — research areas inferred from OpenAlex topics
-- **Citations by country** — geographic origin of citations (map + table)
-- **Citing journals** — top journals citing your articles, with per-article drill-down
+- **Top cited**: most-cited articles, all-time and per year
+- **Citation evolution**: citations received per year
+- **Open Access stats**: the Diamond / Gold / Hybrid / Green / Bronze / Closed breakdown
+- **Thematic profile**: research areas inferred from OpenAlex topics
+- **Citations by country**: where citations originate geographically
+- **Citing journals**: the top journals citing your articles, with a per-article drill-down
 
 ![Geographic Statistics](screenshots/geographic.png)
 
 ## Data Export
 
-Every section has a CSV export button. The export uses the same data the section displays and respects the active filters (year, issue, etc.).
+Every section has a CSV export button, with one exception: **Rejection rate** reuses the Annual submissions data displayed elsewhere and has no export of its own, so use the Annual submissions export instead. Exports use the same data the section displays and respect the active filters (year, issue, etc.).
 
 ## Support
 
@@ -228,12 +229,12 @@ Standard OJS 3.5 plugin layout: services hold the business logic, traits group t
 
 ### Backend
 
-- `controllers/PublicStatisticsHandler.php` — page handler. Each public method is a JSON or HTML endpoint registered on the `publicStats` page route.
-- `controllers/traits/*Trait.php` — endpoint groups (article rankings, editorial, author/reviewer, impact, CSV exports). Traits are thin HTTP wrappers; logic lives in services.
-- `services/*.php` — business logic, one service per domain (statistics, articles, editorial, language, OpenAlex, CSV export).
-- `jobs/*.php` — Laravel queue jobs for heavy OpenAlex aggregations. They run via the OJS queue worker (`acron` plugin or `php tools/jobs.php run`).
-- `classes/PublicStatsConstants.php` — central registry of subsection IDs and their group. Adding a subsection here is enough for it to appear in the settings form.
-- `classes/Logger.php` — wrapper over `error_log` that prefixes every line with `[publicStats]`. Use `Logger::error($msg, $exception)` and `Logger::warning($msg)`; never call `error_log` directly.
+- `controllers/PublicStatisticsHandler.php` is the page handler. Each public method is a JSON or HTML endpoint registered on the `publicStats` page route.
+- `controllers/traits/*Trait.php` group endpoints by feature (article rankings, editorial, author/reviewer, impact, CSV exports). Traits are thin HTTP wrappers; logic lives in services.
+- `services/*.php`: business logic, one service per domain (statistics, articles, editorial, language, OpenAlex, CSV export).
+- `jobs/*.php` hold the Laravel queue jobs for heavy OpenAlex aggregations. They run via the OJS queue worker (`acron` plugin or `php tools/jobs.php run`).
+- `classes/PublicStatsConstants.php` is the central registry of subsection IDs and their group; adding a subsection here is enough for it to appear in the settings form.
+- `classes/Logger.php` wraps `error_log` and prefixes every line with `[publicStats]`. Use `Logger::error($msg, $exception)` and `Logger::warning($msg)`; never call `error_log` directly.
 
 ### Frontend
 
@@ -259,7 +260,7 @@ Each module attaches itself to `window.PublicStats.*`; the orchestrator picks th
 4. Register an `API.get<Foo>` wrapper in `statistics-api.js` and a renderer (chart, map or table) in the matching frontend module.
 5. Add the sidebar item and the content section to `templates/publicStats.tpl`, plus a handler entry in `Navigation.initializeSectionContent` (`statistics.js`). If the new section needs an i18n string in JS, add it to the bag built by `PublicStatisticsHandler::buildJsI18nJson()`.
 6. Add translation keys to `locale/<code>/locale.po` for each supported language.
-7. If the data is expensive to compute (per-DOI OpenAlex calls or similar), wire it through the chunked-job pattern instead — add a `TYPE_*` constant to `ComputeOpenAlexAggregateJob`, register it in `CHUNKED_TYPES`, and expose the wrapper via `readOrAdvanceChunked`.
+7. If the data is expensive to compute (per-DOI OpenAlex calls or similar), wire it through the chunked-job pattern instead: add a `TYPE_*` constant to `ComputeOpenAlexAggregateJob`, register it in `CHUNKED_TYPES`, and expose the wrapper via `readOrAdvanceChunked`.
 
 ### Adding a translation
 
@@ -273,13 +274,13 @@ This plugin was developed with the support of:
 
 <img src="screenshots/logo-rovira.png" alt="Universitat Rovira i Virgili" height="60">
 
-**Universitat Rovira i Virgili** — funded the development of this plugin.
+**Universitat Rovira i Virgili** funded the development of this plugin.
 
 &nbsp;
 
 <img src="screenshots/glaux.svg" alt="Glaux Publicaciones Académicas" height="60">
 
-**Glaux Publicaciones Académicas** — designed and built the plugin.
+**Glaux Publicaciones Académicas** designed and built the plugin.
 
 &nbsp;
 
