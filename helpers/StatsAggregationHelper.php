@@ -10,7 +10,7 @@
  * @class StatsAggregationHelper
  * @ingroup plugins_generic_publicStats
  *
- * @brief Aggregates statistics by entity (sections, issues, …).
+ * @brief Aggregates statistics by entity (sections, issues, etc.).
  *
  * Shared by the per-entity services to avoid duplicating the
  * downloads/views/total accumulation pattern.

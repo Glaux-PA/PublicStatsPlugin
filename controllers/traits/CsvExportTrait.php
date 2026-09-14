@@ -43,7 +43,7 @@ trait CsvExportTrait
 
         $output = fopen('php://output', 'w');
 
-        // BOM for Excel UTF-8 compatibility
+        // BOM for Excel UTF-8 compatibility.
         fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
         fputcsv($output, $headers);

@@ -167,9 +167,9 @@ trait AuthorReviewerStatsTrait
             $contextId = $context->getId();
             $minPublications = InputValidator::validatePositiveInt(
                 $request->getUserVar('minPublications'),
-                1,  // default
-                1,  // min
-                100 // max
+                default: 1,
+                min: 1,
+                max: 100
             );
             
             $cacheKey = "authors_list_{$contextId}_{$minPublications}";

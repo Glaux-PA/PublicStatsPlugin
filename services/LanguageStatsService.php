@@ -67,7 +67,7 @@ class LanguageStatsService
 
         $uiLocale = Locale::getLocale();
 
-        // Normalize locale variants to primary language (es_ES + es_MX => es)
+        // Normalize locale variants to primary language (es_ES + es_MX => es).
         $merged = [];
         foreach ($rows as $row) {
             $langCode = \Locale::getPrimaryLanguage($row->locale) ?: $row->locale;
@@ -228,7 +228,7 @@ class LanguageStatsService
             return implode(' ', $parts);
         }
 
-        // Fallback: use the issue title from settings
+        // Fallback: use the issue title from settings.
         $title = DB::table('issue_settings')
             ->where('issue_id', '=', $issue->issue_id)
             ->where('setting_name', '=', 'title')

@@ -590,7 +590,7 @@ class EnrichedStatsService extends BaseStatsService
             foreach ($metrics['topics'] as $topic) {
                 $name = $topic['display_name'] ?? 'Unknown';
                 $accumulator['topics_count'][$name] = ($accumulator['topics_count'][$name] ?? 0) + 1;
-                break; // primary topic only
+                break; // primary topic only.
             }
         }
 

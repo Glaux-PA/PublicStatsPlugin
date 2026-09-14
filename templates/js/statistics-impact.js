@@ -13,7 +13,7 @@
   const { escapeHtml, Utils } = window.PublicStatsHelpers;
   const PS = (window.PublicStats = window.PublicStats || {});
 
-  // "Calculando estadísticas... 50/200" while a chunked job is running.
+  // e.g. "Computing statistics... 50/200" while a chunked job is running.
   function computingText(response) {
     const base = i18n.computingPlaceholder;
     const progress = response && response.progress;

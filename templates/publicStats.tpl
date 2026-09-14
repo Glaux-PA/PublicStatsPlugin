@@ -1508,7 +1508,7 @@
                     </div>
                 </div>
             </div>
-            {* Citing  institutions section *}
+            {* Citing journals section *}
             <div id="citing-journals" class="content-section" style="display: none;">
                 {* Year filter - same style as global year selector *}
                 <div class="year-selector-container">
@@ -1516,7 +1516,7 @@
                         for="citingJournalsYearFilter">{translate key="plugins.generic.publicStats.selectYear"}</label>
                     <select id="citingJournalsYearFilter" onchange="filterCitingJournalsByYear(this.value)">
                         <option value="all">{translate key="plugins.generic.publicStats.allTime"}</option>
-                        {* Years will be populated by JavaScript *}
+                        {* Populated by JavaScript *}
                     </select>
                 </div>
 

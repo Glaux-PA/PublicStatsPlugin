@@ -371,9 +371,9 @@ class AuthorStatsService extends BaseStatsService
     }
     
     /**
-     * Normalize string for comparison
-     * 
-     * Elimina: acentos, puntuación, mayúsculas, espacios múltiples
+     * Normalize string for comparison.
+     *
+     * Strips accents and punctuation, lowercases, and collapses multiple spaces.
      */
     private function normalizeString(string $text): string
     {
@@ -581,7 +581,7 @@ class AuthorStatsService extends BaseStatsService
     
     /**
      * `sectionId => localizedTitle` for the context, cached 24h. Only scalars
-     * are stored — the opcache-backed cache uses var_export() and chokes on
+     * are stored: the opcache-backed cache uses var_export() and chokes on
      * Section objects (no __set_state).
      *
      * @return array<int, string>

@@ -64,7 +64,7 @@ class ComputeOpenAlexAggregateJob extends BaseJob
     public function handle(): void
     {
         // Rebind so EnrichedStatsService shares this instance and its polite-pool
-        // email; without it Laravel injects OpenAlexService(null) — no HTTP context.
+        // email; without it Laravel injects OpenAlexService(null), since there's no HTTP context here.
         $openAlexService = new OpenAlexService($this->resolveContactEmail());
         app()->instance(OpenAlexService::class, $openAlexService);
         $enrichedService = app(EnrichedStatsService::class);
